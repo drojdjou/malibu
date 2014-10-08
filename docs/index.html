@@ -350,7 +350,7 @@
 
 
 
-    <a name="xmath"></a>
+    <a name="util"></a>
     <h1>Util</h1>
     <p>A collection of misc utility functions and properties. Some are added as extenstion to the built-in Math object, others are grouped in an object called Util.</p>
 
@@ -362,9 +362,6 @@
 
     <h2>Math.pointInRect(point, rectangle)</h2>
     <p>Returns true if point is inside rectangle. Rectangle needs to be an object with top/left/right/bottom properties defined. Point needs to have x/y properties.</p>
-
-    <h2>Math.randomBtwn(minVal, maxVal)</h2>
-    <p>Returns random number between <code>minVal</code> and <code>maxVal</code>.</p>
 
     <h2>Math.norm (value , min, max)</h2>
     <p>Normalizes a number from another range into a value between 0 and 1. </p>
@@ -385,22 +382,11 @@
         }
     </script></p>
 
-    <h2>Util.delay(func, scope, time)</h2>
-    <p>Delays execution of <code>func</code> by <code>time</code> milliseconds (it omitted defaults to 0). Optional <code>scope</code> argument specifies the scope in which <code>func</code> should be invoked.</p> 
+    <h2>Util.handleTap(element, callback)</h2>
+    <p>Adds a fast click handler to an element.</p>
 
-    <h2>Util.debounce(func, wait)</h2>
-    <p>Throttles invoking <code>func</code> to every <code>wait</code> milliseconds. Usage:<br></p>
-<blockquote>// some callback function that is called (too) often
-var func = function() {}
-
-// now it's invoked every 100ms
-func = Util.debounce(func, 100);</blockquote>
-    <em>This function can be useful, but in most cases it's an ugly hack, so think twice before you use it!</em>
-
-
-    
-    
-
+    <h2>Util.clearTapHandler(element, tapHandler)</h2>
+    <p>Removes a previously added fast click handler from an element.</p>
 
     <a name="virtualscroll"></a>
     <h1>VirtualScroll

@@ -1,11 +1,12 @@
-Events = function (obj, blockGlobalRemoval) {
+Events = function (obj) {
 
 	var events = obj || {}; 
 
-	var listeners = {}, contexts = {}, triggerLock = false;
-	var toRemove = [], numToRemove;
-	var toCall = [], numToCall;
-	var REMOVE = "r", CALL = "c";
+	var listeners = {}, contexts = {};
+	var lock = false;
+
+	var lateTriggers = [];
+	var lateRemovals = [];
 
 	events.on = function (event, callback, context) {
 		if(!listeners[event]) listeners[event] = [];
@@ -13,61 +14,50 @@ Events = function (obj, blockGlobalRemoval) {
 		if(context) contexts[callback] = context;
 	};
 
-	events.off = function (event, callback, deffered) {
-		if(!deffered) {
-			if(listeners[event]) {
-				listeners[event].splice(callback, 1);
+	events.off = function (event, callback) {
+		if(listeners[event]) {
+			var i = listeners[event].indexOf(callback);
+
+			if(i == -1) return;
+
+			if(lock) {
+				lateRemovals.push({ event: event, callback: callback });
+				return;
 			}
-		} else {
-			toRemove.push(arguments);
-			numToRemove = toRemove.length;
+
+			listeners[event].splice(i, 1);
 		}
 	};
 
-	if(!blockGlobalRemoval) {
-		events.offAll = function(event, deffered) {
-			var es = listeners[event];
-			var esl = ex.length;
-			for(var i = 0; i < esl; i++) {
-				events.off(event, es[i], deffered);
-			}
-		}
-	}
+	events.offAll = function(event) {
+		if(listeners[event]) listeners[event].length = 0;
+	};
 
-	events.trigger = function (event, data, deffered) {
-
-		if(deffered && triggerLock) {
-			toCall.push(arguments);
-			numToCall = toCall.length;
-			return;
-		}
+	events.trigger = function (event, data) {
 
 		if(listeners[event]) {
-			triggerLock = true;
+
+			if(lock) {
+				lateTriggers.push({ event: event, data: data });
+				return;
+			}
+
+			lock = true;
+
 			var i = 0, nl = listeners[event].length;
 			while(i < nl) {
 				var f = listeners[event][i];
 				f.call(contexts[f], data);
 				i++;
 			}
-			triggerLock = false;
+			
+			lock = false
 		}
 
-		if(numToRemove > 0) {
-			for(var i = 0; i < numToRemove; i++) {
-				var r = toRemove[i];
-				events.off(r[0], r[1], false);
-			}
-			toRemove = [];
-			numToRemove = 0;
-		}
-
-		if(numToCall > 0) {
-			var nc = toCall.shift();
-			numToCall = toCall.length;
-			events.trigger(nc[0], nc[1]);
-		}
-	}
+		var d;
+		while(d = lateTriggers.shift()) events.trigger(d.event, d.data);
+		while(d = lateRemovals.shift()) events.off(d.event, d.callback);
+	};
 
 	return events;
 

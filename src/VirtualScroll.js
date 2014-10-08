@@ -21,8 +21,8 @@ var VirtualScroll = (function(document) {
 	var hasWheelEvent = 'onwheel' in document;
 	var hasMouseWheelEvent = 'onmousewheel' in document;
 	var hasTouch = 'ontouchstart' in document;
-	var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
-	var hasPointer = !!window.navigator.msPointerEnabled;
+	// var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
+	// var hasPointer = !!window.navigator.msPointerEnabled;
 	var hasKeyDown = 'onkeydown' in document;
 
 	var isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
@@ -139,12 +139,12 @@ var VirtualScroll = (function(document) {
 			document.addEventListener("touchmove", onTouchMove);
 		}
 		
-		if(hasPointer && hasTouchWin) {
-			bodyTouchAction = document.body.style.msTouchAction;
-			document.body.style.msTouchAction = "none";
-			document.addEventListener("MSPointerDown", onTouchStart, true);
-			document.addEventListener("MSPointerMove", onTouchMove, true);
-		}
+		// if(hasPointer && hasTouchWin) {
+		// 	bodyTouchAction = document.body.style.msTouchAction;
+		// 	document.body.style.msTouchAction = "none";
+		// 	document.addEventListener("MSPointerDown", onTouchStart, true);
+		// 	document.addEventListener("MSPointerMove", onTouchMove, true);
+		// }
 
 		if(hasKeyDown) document.addEventListener("keydown", onKeyDown);
 
@@ -160,11 +160,11 @@ var VirtualScroll = (function(document) {
 			document.removeEventListener("touchmove", onTouchMove);
 		}
 		
-		if(hasPointer && hasTouchWin) {
-			document.body.style.msTouchAction = bodyTouchAction;
-			document.removeEventListener("MSPointerDown", onTouchStart, true);
-			document.removeEventListener("MSPointerMove", onTouchMove, true);
-		}
+		// if(hasPointer && hasTouchWin) {
+		// 	document.body.style.msTouchAction = bodyTouchAction;
+		// 	document.removeEventListener("MSPointerDown", onTouchStart, true);
+		// 	document.removeEventListener("MSPointerMove", onTouchMove, true);
+		// }
 
 		if(hasKeyDown) document.removeEventListener("keydown", onKeyDown);
 

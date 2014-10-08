@@ -5,80 +5,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-    <link rel="stylesheet" href="css/extend.css">
+    <style type="text/css">
+
+    body {
+        background-color: #000;
+        color: #0f0;
+        font-family: monospace;
+        margin: 10px;
+    }
+
+    </style>
 
     <script type="text/javascript" src="../src/Events.js"></script>
 
 </head>
 <body>
 
+<div></div>
+
 <script type="text/javascript">
 
-    var E1 = "someEvent1";
-    var E2 = "someEvent2";
-    var E3 = "someEvent3";
+    var info = (function() {
+
+        var info  = document.querySelector('div');
+
+        return function(m) {
+            info.innerHTML += m + '<br>';
+        }
+
+    })();
+ 
+    var E1 = "event-1";
+    var E2 = "event-2";
+    var E3 = "event-3";
 
     var broadcast = new Events();
 
-    var callbacks = [];
-    var numc = 10;
-
-    for(var i = 0; i < numc; i++) {
-        var f = (function() {
-            var n = i;
-            return function() { 
-                console.log(E2, n); 
-                broadcast.off(E1, callbacks[n]);
-
-                // Case 1. E3 event will not reach the callback - it was removed before it was triggered
-                // if(n == 1) broadcast.off(E3, e3list);
-                // if(n == 3) broadcast.trigger(E3);
-                // Same as the line above:
-                // if(n == 3) broadcast.trigger(E3, null, false);
-
-                // Case 2. E3 event will reach the callback - the removal was deffered, but the trigger was not
-                // if(n == 1) broadcast.off(E3, e3list, true);
-                // if(n == 3) broadcast.trigger(E3);
-
-                // Case 3. E3 event will not reach the callback - the removal was deffered, 
-                // but the trigger was deffered too, so happens after removal
-                // (that happens even if 'off' is called after 'trigger' as below)
-                // if(n == 3) broadcast.off(E3, e3list, true);
-                // if(n == 1) broadcast.trigger(E3, null, true);
-
-                // Case 4. E3 event will reach the callback, because it is called before off and both are immediate
-                // if(n == 1) broadcast.trigger(E3);
-                // if(n == 3) broadcast.off(E3);
-
-                // Case 4. E3 event will not reach the callback - it was called before off, but deffered
-                if(n == 1) broadcast.trigger(E3, null, true);
-                if(n == 3) broadcast.off(E3);
-                
-            }
-        })();
-        callbacks.push(f);
+    var event1callback = function(data) {
+        info('+ event 1 callback');
     }
 
-    var addAll = function() {
-        for(var i = 0; i < numc; i++) {
-            broadcast.on(E2, callbacks[i]);
-        }
+    var event2callbackA = function(data) {
+        info('+ event 2 callback A');
     }
 
-    var removeAll = function() {
-        for(var i = 0; i < numc; i++) {
-            broadcast.off(E2, callbacks[i]);
-        }
+    var event2callbackB = function(data) {
+        info('+ event 2 callback B');
+        broadcast.off(E2, event2callbackB);
     }
 
-    var e3list = broadcast.on(E3, function() {
-        console.log("e3 triggered!");
-    });
+    var event2callbackC = function(data) {
+        info('+ event 2 callback C');
+        broadcast.off(E2, event2callbackD);
+    }
 
-    broadcast.on(E1, addAll);
+    var event2callbackD = function(data) {
+        info('+ event 2 callback D');
+    }
 
+    var event3callbackA = function(data) {
+        info('+ event 3 callback A');
+    }
+
+    var event3callbackB = function(data) {
+        info('+ event 3 callback B');
+    }
+
+    var event3callbackC = function(data) {
+        info('+ event 3 callback C');
+    }
+
+    var event3callbackX = function(data) {
+        info('+ event 3 callback X triggers E1');
+        broadcast.trigger(E1);
+    }
+
+    //
+
+    info('---- add E1 listener then trigger');
+    broadcast.on(E1, event1callback);
     broadcast.trigger(E1);
+    info('');
+
+    info('---- remove E1 listener then trigger E1. Add listener again');
+    broadcast.off(E1, event1callback);
+    broadcast.trigger(E1);
+    broadcast.on(E1, event1callback);
+    info('[ callback should not be invoked ]');
+    info('');
+
+
+    info('---- add 3 x E2 listener then trigger E2 twice');
+    info('[ E2 listener B removes itself, so second time it should not fire ]');
+    info('[ E2 listener C removes D, so second time D should not fire ]');
+    broadcast.on(E2, event2callbackA);
+    broadcast.on(E2, event2callbackB);
+    broadcast.on(E2, event2callbackC);
+    broadcast.on(E2, event2callbackD);
     broadcast.trigger(E2);
+    info('');
+    broadcast.trigger(E2);
+    info('');
+
+    info('---- add 3 x E3 listener then trigger E3');
+    broadcast.on(E3, event3callbackA);
+    broadcast.on(E3, event3callbackB);
+    broadcast.on(E3, event3callbackC);
+    broadcast.trigger(E3);
+    broadcast.off(E3, event3callbackA);
+    broadcast.off(E3, event3callbackB);
+    broadcast.off(E3, event3callbackC);
+    info('');
+
+    info('---- add 4 x E3 listeners, first of them triggers E1. Trigger E3');
+    info('[ E1 should still be invoked at the end ]');
+    broadcast.on(E3, event3callbackX);
+    broadcast.on(E3, event3callbackA);
+    broadcast.on(E3, event3callbackB);
+    broadcast.on(E3, event3callbackC);
+    broadcast.trigger(E3);
+    info('');
 
 
 </script>

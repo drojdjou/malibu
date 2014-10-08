@@ -18,11 +18,6 @@ Math.pointInRect = function(p, r) {
 	return (p.x >= r.left && p.x <= r.right) && (p.y >= r.top && p.y <= r.bottom);
 };
 
-//Returns random number between minVal and maxVal.
-Math.randomBtwn = function(minVal, maxVal) {
-		return minVal + (Math.random() * (maxVal - minVal));
-};
-
 //Normalizes a number from another range into a value between 0 and 1. 
 Math.norm = function(value , min, max){
 	return (value - min) / (max - min);
@@ -96,35 +91,10 @@ Util = {
 		return tapHandler;
 	},
 
-	delay: function(func, time, scope) {
-		time = time || 0;
-		setTimeout(function () {
-			func.apply(scope);
-		}, time);
-	},
-
-	debounce: function (func, wait) {
-		var timeout, args, context, timestamp, result;
-		return function () {
-			context = this;
-			args = arguments;
-			timestamp = Date.now();
-			var later = function () {
-				var last = Date.now() - timestamp;
-				if (last < wait) {
-					timeout = setTimeout(later, wait - last);
-				} else {
-					timeout = null;
-				}
-			};
-			if (!timeout) {
-				timeout = setTimeout(later, wait);
-				result = func.apply(context, args);
-				context = args = null;
-			}
-
-			return result;
-		};
+	clearTapHandler: function(element, tapHandler) {
+		element.removeEventListener("touchstart", tapHandler.touchStart);
+		element.removeEventListener("touchend", tapHandler.touchEnd);
+		element.removeEventListener("click", tapHandler.click);
 	},
 
 	cssEase: {
