@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Features Detection - Framework Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <style type="text/css">
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 1.1em;
+            background-color: #000;
+            color: #aaa;
+        }
+
+        ol {
+            color: #999;
+            line-height: 1.4em;
+        }
+    </style>
+
+    <script type="text/javascript" src="../src/Simplrz.js"></script>
+
+</head>
+<body>
+
+<ol id="features"></ol>
+
+<script type="text/javascript">
+
+var featureList = document.querySelector("#features");
+
+var props = [
+    "ie", "webrct", "firefox", "ipad7",
+    "canvas", "flash", 
+    "webgl", "touch", 
+    "pointer", "css3d", 
+    "css2d", "csstransitions", 
+    "cssanimations", "history"
+];
+
+var add = function(m) {
+    var li = document.createElement("li");
+    li.innerHTML = m;
+    featureList.appendChild(li);
+}
+
+var prefixes = [];
+for(var prefix in Simplrz.prefix) {
+    prefixes.push(prefix + ": " + Simplrz.prefix[prefix]);
+}
+
+add("<b>user-agent</b> - " + navigator.userAgent);
+add("<b>platform</b> - " + navigator.platform);
+add("<b>prefix</b> - " + prefixes.join(", "));
+add("<b>classes</b> - " + Simplrz.classes.join(", "));
+add("<b>pixel ratio</b> - " + Simplrz.pixelRatio);
+add("<b>window</b> - w: " + window.innerWidth + " x " + window.innerHeight);
+add("<b>screen</b> - w: " + screen.width + " x " + screen.height);
+
+for(var p in props) {
+    var prop = props[p];
+    var li = document.createElement("li");
+    li.innerHTML = "<b>" + prop + "</b> - " + Simplrz[prop];
+    featureList.appendChild(li);
+}
+
+</script>
+
+</body>
+</html>   
+
+
+
+
+
+
+
+          

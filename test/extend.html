@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DomExtend - Framework Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link rel="stylesheet" href="css/extend.css">
+
+    <script type="text/javascript" src="../src/Simplrz.js"></script>
+    <script type="text/javascript" src="../src/domExtend/State.js"></script>
+    <script type="text/javascript" src="../src/domExtend/Transform.js"></script>
+    <script type="text/javascript" src="../src/domExtend/DomExtend.js"></script>
+    <script type="text/javascript" src="../src/Loader.js"></script>
+
+</head>
+<body>
+
+    <div id="square"></div>
+
+<script type="text/javascript">
+
+    var s = document.ext.select("#square");
+    
+    console.log(s.ext.visible());
+    // s.ext.hide();
+
+    s.ext.on("click", function(e) {
+        console.log("You clicked me!");
+        // s.ext.x += 100 - Math.random() * 200;
+        // s.ext.y += 100 - Math.random() * 200;
+        s.ext.rotZ =Math.random()* 180;
+        s.ext.scaleX = Math.random()* 2;
+        s.ext.scaleY = Math.random()* 2;
+        s.ext.transform();
+        s.ext.css("backgroundColor","hsl(" + Math.random()*360 + ",100%,50%");
+    });
+
+    s.ext.x = window.innerWidth * 0.5 - s.ext.width() * 0.5;
+    s.ext.y = window.innerHeight * 0.5 - s.ext.height() * 0.5;
+    s.ext.transform({ rotZ: 45 });
+
+</script>
+
+<script type="text/javascript">
+    if(location.host.indexOf("localhost") > -1 || location.host.indexOf("192.168") > -1 || location.host.indexOf("127.0") > -1) {
+        document.write('<script src=\"http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1\"></' + 'script>');
+    }
+</script>
+
+</body>
+</html>   
+
+
+
+
+
+
+
+          

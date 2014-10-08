@@ -1,0 +1,12 @@
+{
+  "name": "malibu",
+  "version": "0.0.2",
+  "main": "malibu.min.js",
+  "ignore": [
+    "docs",
+    "test",
+    "version.json",
+    "build",
+    "build.js"
+  ]
+}

@@ -1,0 +1,5 @@
+#!/bin/bash
+node build.js
+
+ls -lh malibu*.js
+ls -l malibu*.js

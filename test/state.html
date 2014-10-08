@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>State - Framework Tests (v0.3)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <style type="text/css">
+
+        body {
+            position: absolute;
+            width: 100%;
+            margin: 10px;
+
+            font-family: Arial, sans-serif;
+            font-size: 0.8em;
+            background-color: #000;
+            color: #fff;
+        }
+
+        ul {
+            list-style-type: none;
+            clear: both;
+            display: block;
+            overflow: auto;
+            padding: 0;
+        }
+
+        li {
+            background-color: red;
+            width: 100px;
+            height: 100px;
+            padding: 10px;
+            margin: 2px;
+            float: left;
+        }
+
+        .blue {
+            background-color: #0050dd;
+        }
+
+        p {
+            line-height: 1.1;
+            margin: 0.4em 0 0 0;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<ul>
+    <li style="color: #aaa">1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+    <li id="seven">7</li>
+    <li>8</li>
+</ul>
+
+<p>[1] should be blue with grey text (defined inline)</p>
+<p>[2] should be missing</p>
+<p>[3] should show the value of the color property</p>
+<p>[4] should be green and moved down</p>
+<p>[5] should be before 3</p>
+<p>[6] onclick should toggle between blue and red</p>
+<p>[8] should be before 6 and label should say 8b</p>
+
+<div id="logs"></div>
+
+<script type="text/javascript" src="../src/Simplrz.js"></script>
+<script type="text/javascript" src="../src/domExtend/State.js"></script>
+<script type="text/javascript" src="../src/domExtend/DomExtend.js"></script>
+
+<script type="text/javascript">
+
+    var log = function(m) {
+        var p = EXT.create('p');
+        p.innerHTML = m;
+        EXT.select('#logs').appendChild(p);
+    }
+
+    var list = EXT.select('ul');
+
+    var one = list.ext.select('li:first-child');
+    one.ext.attr('class', 'blue');
+
+    var two = EXT.select('li:nth-of-type(2)');
+    
+    var three = EXT.select('li:nth-of-type(3)');
+    three.innerHTML += '<br>' + three.ext.readCss('color');
+
+    var four = EXT.select('li:nth-of-type(4)');
+    four.ext.css('background-color', 'rgba(0, 127, 0, 1)');
+    four.ext.css('marginTop', '10px');
+
+    var five = EXT.select('li:nth-of-type(5)');
+    // list.removeChild(five);
+    list.insertBefore(five, three);
+
+    var eight = document.ext.select('li:last-child');
+    var eightB = EXT.create('li');
+    eightB.innerHTML = "8b";
+    list.replaceChild(eightB, eight);
+
+    var six = EXT.create('li');
+    six.innerHTML = '6';
+    list.appendChild(six);
+
+    six.ext.css('cursor', 'pointer');
+    six.ext.css('userSelect', 'none');
+    six.ext.css('webkitUserSelect', 'none');
+    six.ext.css('MozUserSelect', 'none');
+    six.ext.css('-moz-user-select', 'none');
+
+    six.ext.on('click', function() {
+        var c = six.ext.attr('class');
+
+        if(c == 'blue') six.ext.attr('class', '');
+        else six.ext.attr('class', 'blue');
+    });
+
+    var seven = EXT.select('#seven');
+    list.removeChild(seven);
+
+    log("[2] style.display before calling hide() = " + two.style.display);
+    log("[2] readCss(display) before calling hide() = " + two.ext.readCss('display'));
+    two.ext.hide();
+    log("[2] ext.visible after hide() = " + two.ext.visible());
+    log("[2] style.display after hide() = " + two.style.display);
+    log("[2] readCss(display) after calling hide() = " + two.ext.readCss('display'));
+
+    log('[1] readCss(color, true): ' + one.ext.readCss('color', true));
+    log('[1] readCss(color): ' + one.ext.readCss('color'));
+    log('[1] style.color: ' + one.style.color);
+
+    log('[5] readCss(color, true): ' + five.ext.readCss('color', true));
+    log('[5] readCss(color): ' + five.ext.readCss('color'));
+    log('[5] style.color: ' + five.style.color);
+
+</script>
+
+<script type="text/javascript">
+    if(location.host.indexOf("localhost") > -1 || location.host.indexOf("192.168") > -1 || location.host.indexOf("127.0") > -1) {
+        document.write('<script src=\"http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1\"></' + 'script>');
+    }
+</script>
+
+</body>
+</html>   
+
+
+
+
+
+
+
+          
