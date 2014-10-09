@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"0.1","build":5,"date":"2014-10-08T02:49:47.771Z"}
+var Framework = {"version":"2","build":6,"date":"2014-10-09T04:59:57.502Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -166,14 +166,15 @@ window.Simplrz = (function() {
 
 /* --- --- [Events] --- --- */
 
-Events = function (obj, blockGlobalRemoval) {
+Events = function (obj) {
 
 	var events = obj || {}; 
 
-	var listeners = {}, contexts = {}, triggerLock = false;
-	var toRemove = [], numToRemove;
-	var toCall = [], numToCall;
-	var REMOVE = "r", CALL = "c";
+	var listeners = {}, contexts = {};
+	var lock = false;
+
+	var lateTriggers = [];
+	var lateRemovals = [];
 
 	events.on = function (event, callback, context) {
 		if(!listeners[event]) listeners[event] = [];
@@ -181,61 +182,50 @@ Events = function (obj, blockGlobalRemoval) {
 		if(context) contexts[callback] = context;
 	};
 
-	events.off = function (event, callback, deffered) {
-		if(!deffered) {
-			if(listeners[event]) {
-				listeners[event].splice(callback, 1);
+	events.off = function (event, callback) {
+		if(listeners[event]) {
+			var i = listeners[event].indexOf(callback);
+
+			if(i == -1) return;
+
+			if(lock) {
+				lateRemovals.push({ event: event, callback: callback });
+				return;
 			}
-		} else {
-			toRemove.push(arguments);
-			numToRemove = toRemove.length;
+
+			listeners[event].splice(i, 1);
 		}
 	};
 
-	if(!blockGlobalRemoval) {
-		events.offAll = function(event, deffered) {
-			var es = listeners[event];
-			var esl = ex.length;
-			for(var i = 0; i < esl; i++) {
-				events.off(event, es[i], deffered);
-			}
-		}
-	}
+	events.offAll = function(event) {
+		if(listeners[event]) listeners[event].length = 0;
+	};
 
-	events.trigger = function (event, data, deffered) {
-
-		if(deffered && triggerLock) {
-			toCall.push(arguments);
-			numToCall = toCall.length;
-			return;
-		}
+	events.trigger = function (event, data) {
 
 		if(listeners[event]) {
-			triggerLock = true;
+
+			if(lock) {
+				lateTriggers.push({ event: event, data: data });
+				return;
+			}
+
+			lock = true;
+
 			var i = 0, nl = listeners[event].length;
 			while(i < nl) {
 				var f = listeners[event][i];
 				f.call(contexts[f], data);
 				i++;
 			}
-			triggerLock = false;
+			
+			lock = false
 		}
 
-		if(numToRemove > 0) {
-			for(var i = 0; i < numToRemove; i++) {
-				var r = toRemove[i];
-				events.off(r[0], r[1], false);
-			}
-			toRemove = [];
-			numToRemove = 0;
-		}
-
-		if(numToCall > 0) {
-			var nc = toCall.shift();
-			numToCall = toCall.length;
-			events.trigger(nc[0], nc[1]);
-		}
-	}
+		var d;
+		while(d = lateTriggers.shift()) events.trigger(d.event, d.data);
+		while(d = lateRemovals.shift()) events.off(d.event, d.callback);
+	};
 
 	return events;
 
@@ -248,10 +238,14 @@ Application = (function(window) {
 	var app = Events({}, true);
 	var router, broadcast;
 
-	app.init = function() {
+	app.init = function(params) {
 
-		router = HistoryRouter(app);
-		router.init();
+		params = params || {};
+
+		if(params.disableHistory) {
+			router = HistoryRouter(app);
+			router.init();
+		}
 
 		window.addEventListener('resize', function(e) {
 			app.trigger(MSG.RESIZE, e);
@@ -261,7 +255,10 @@ Application = (function(window) {
 			app.trigger(MSG.RESIZE, e);
 		});
 
-		if(window.FrameImpulse && window.Anm) FrameImpulse.on(Anm.update);
+		console.log('Malibu v' + 
+			Framework.version + 
+			' b' + Framework.build + 
+			' (history:' + !params.disableHistory + ')');
 	}
 	
 	return app;
@@ -929,8 +926,8 @@ var VirtualScroll = (function(document) {
 	var hasWheelEvent = 'onwheel' in document;
 	var hasMouseWheelEvent = 'onmousewheel' in document;
 	var hasTouch = 'ontouchstart' in document;
-	var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
-	var hasPointer = !!window.navigator.msPointerEnabled;
+	// var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
+	// var hasPointer = !!window.navigator.msPointerEnabled;
 	var hasKeyDown = 'onkeydown' in document;
 
 	var isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
@@ -1047,12 +1044,12 @@ var VirtualScroll = (function(document) {
 			document.addEventListener("touchmove", onTouchMove);
 		}
 		
-		if(hasPointer && hasTouchWin) {
-			bodyTouchAction = document.body.style.msTouchAction;
-			document.body.style.msTouchAction = "none";
-			document.addEventListener("MSPointerDown", onTouchStart, true);
-			document.addEventListener("MSPointerMove", onTouchMove, true);
-		}
+		// if(hasPointer && hasTouchWin) {
+		// 	bodyTouchAction = document.body.style.msTouchAction;
+		// 	document.body.style.msTouchAction = "none";
+		// 	document.addEventListener("MSPointerDown", onTouchStart, true);
+		// 	document.addEventListener("MSPointerMove", onTouchMove, true);
+		// }
 
 		if(hasKeyDown) document.addEventListener("keydown", onKeyDown);
 
@@ -1068,11 +1065,11 @@ var VirtualScroll = (function(document) {
 			document.removeEventListener("touchmove", onTouchMove);
 		}
 		
-		if(hasPointer && hasTouchWin) {
-			document.body.style.msTouchAction = bodyTouchAction;
-			document.removeEventListener("MSPointerDown", onTouchStart, true);
-			document.removeEventListener("MSPointerMove", onTouchMove, true);
-		}
+		// if(hasPointer && hasTouchWin) {
+		// 	document.body.style.msTouchAction = bodyTouchAction;
+		// 	document.removeEventListener("MSPointerDown", onTouchStart, true);
+		// 	document.removeEventListener("MSPointerMove", onTouchMove, true);
+		// }
 
 		if(hasKeyDown) document.removeEventListener("keydown", onKeyDown);
 
@@ -1133,11 +1130,6 @@ Math.clamp01 = function(value) {
 // Point = needs to have x/y property
 Math.pointInRect = function(p, r) {
 	return (p.x >= r.left && p.x <= r.right) && (p.y >= r.top && p.y <= r.bottom);
-};
-
-//Returns random number between minVal and maxVal.
-Math.randomBtwn = function(minVal, maxVal) {
-		return minVal + (Math.random() * (maxVal - minVal));
 };
 
 //Normalizes a number from another range into a value between 0 and 1. 
@@ -1213,35 +1205,10 @@ Util = {
 		return tapHandler;
 	},
 
-	delay: function(func, time, scope) {
-		time = time || 0;
-		setTimeout(function () {
-			func.apply(scope);
-		}, time);
-	},
-
-	debounce: function (func, wait) {
-		var timeout, args, context, timestamp, result;
-		return function () {
-			context = this;
-			args = arguments;
-			timestamp = Date.now();
-			var later = function () {
-				var last = Date.now() - timestamp;
-				if (last < wait) {
-					timeout = setTimeout(later, wait - last);
-				} else {
-					timeout = null;
-				}
-			};
-			if (!timeout) {
-				timeout = setTimeout(later, wait);
-				result = func.apply(context, args);
-				context = args = null;
-			}
-
-			return result;
-		};
+	clearTapHandler: function(element, tapHandler) {
+		element.removeEventListener("touchstart", tapHandler.touchStart);
+		element.removeEventListener("touchend", tapHandler.touchEnd);
+		element.removeEventListener("click", tapHandler.click);
 	},
 
 	cssEase: {
