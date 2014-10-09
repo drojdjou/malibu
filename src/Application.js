@@ -3,10 +3,14 @@ Application = (function(window) {
 	var app = Events({}, true);
 	var router, broadcast;
 
-	app.init = function() {
+	app.init = function(params) {
 
-		router = HistoryRouter(app);
-		router.init();
+		params = params || {};
+
+		if(params.disableHistory) {
+			router = HistoryRouter(app);
+			router.init();
+		}
 
 		window.addEventListener('resize', function(e) {
 			app.trigger(MSG.RESIZE, e);
@@ -16,7 +20,10 @@ Application = (function(window) {
 			app.trigger(MSG.RESIZE, e);
 		});
 
-		if(window.FrameImpulse && window.Anm) FrameImpulse.on(Anm.update);
+		console.log('Malibu v' + 
+			Framework.version + 
+			' b' + Framework.build + 
+			' (history:' + !params.disableHistory + ')');
 	}
 	
 	return app;
