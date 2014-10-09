@@ -7,7 +7,7 @@ Application = (function(window) {
 
 		params = params || {};
 
-		if(params.disableHistory) {
+		if(!params.disableHistory) {
 			router = HistoryRouter(app);
 			router.init();
 		}
