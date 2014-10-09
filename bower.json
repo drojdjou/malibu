@@ -3,9 +3,18 @@
   "version": "0.0.2",
   "main": "malibu.min.js",
   "ignore": [
+
+    "**/.*",
+    "*.md",
+
     "docs",
     "test",
+    "src",
+    "lib",
+
     "version.json",
+    "package.json",
+    "index.html",
     "build",
     "build.js"
   ]
