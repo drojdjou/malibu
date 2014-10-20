@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Virtual scroll demo - simple</title>
+    <title>0.1 Virtual scroll demo - simple</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -19,7 +19,7 @@
 
         section {
             /* the scrollable section needs to be positioned absolute, 
-               otherwise the margins are not taken into account when measuing height (CSS...) */
+               otherwise the margins are not taken into account when measuring height (CSS...) */
             position: absolute;
             width: 100%;
         }
@@ -33,7 +33,7 @@
 
         #box1 {
             z-index: 10;
-            background-color: rgb(200, 0, 0);
+            background-color: rgb(230, 0, 0);
             left: 0%;
         }
 
@@ -63,7 +63,7 @@
 
     </style>
 
-<script type="text/javascript" src="../src/framework/VirtualScroll.js"></script>
+<script type="text/javascript" src="../src/VirtualScroll.js"></script>
 
 </head>
 <body>
@@ -121,7 +121,11 @@
             // currentX += (targetX - currentX) * ease;
 
             // Create the CSS transform string
-            // (alternativly: use WebKitCSSMatrix, though it doesn't see any faster (http://jsperf.com/webkitcssmatrix-vs-translate3d)
+            //
+            // alternativly: use WebKitCSSMatrix, 
+            // though it doesn't seem to be any faster 
+            // http://jsperf.com/webkitcssmatrix-vs-translate3d
+            // 
             var v1 = "translateX(" + currentX + "px) translateY(" + currentY + "px)";// translateZ(0)";
             var v2 = "translateX(" + currentX + "px) translateY(" + currentY + "px)";// translateZ(0)";
 
@@ -135,6 +139,8 @@
         scroll();
 
     </script>
+
+<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
 
 </body>
 </html>

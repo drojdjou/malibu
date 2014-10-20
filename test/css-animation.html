@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CSS Animations test | v0.1</title>
+    <title>CSS Animations test | v0.2</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-    <link rel="stylesheet" type="text/css" href="css/css-animation.css">
+    <link id="css" rel="stylesheet" type="text/css" href="css/css-animation.css">
 
     <script type="text/javascript" src="../src/Simplrz.js"></script>
 
@@ -14,7 +14,7 @@
 
 <section>
 	<div id="b01" class="redbox fade-in">#1</div>
-	<div id="b02" class="redbox">#2</div>
+	<div id="b02" class="redbox">#2<br><span>0</span></div>
 	<div id="b03" class="redbox">#3</div>
 	<div id="b04" class="redbox">#4</div>
 	<div id="b05" class="redbox">#5</div>
@@ -23,7 +23,7 @@
 <section>
 	<ol>
 		<li>#1 fades-in continously</li>
-		<li>#2 dissapears and fades-in 1s after click</li>
+		<li>#2 dissapears and fades-in 1s after click + counter increases</li>
 		<li>#3 rotates 90deg on 1st click and back on 2nd</li>
 		<li>#4 dissapears then rotates/fades back in on click</li>
 		<li>#5 turns to blue and back to red on click</li>
@@ -44,40 +44,46 @@
 <script type="text/javascript">
 
 var events = {
-	'transition': 'animationend',
+	'animation': 'animationend',
 	'Moz': 'animationend',
 	'O': 'oanimationend',
 	'Webkit': 'webkitAnimationEnd',
 	'Ms': 'MSAnimationEnd'
 };
 
-var style = document.createElement("style");
-style.appendChild(document.createTextNode(""));
-document.head.appendChild(style);
-
 // animation: name duration timing-function delay iteration-count direction fill-mode play-state;
 
 var b02 = document.querySelector('#b02');
+var b02span = b02.querySelector('span');
 var b03 = document.querySelector('#b03');
 var b04 = document.querySelector('#b04');
 var b05 = document.querySelector('#b05');
 
 var eventName = events[Simplrz.prefix.js];
 
+console.log('eventName', eventName);
+
 var clearAnimation = function(e) {
 	console.log('animation has ended on', e.target);
 	e.target.style[Simplrz.prefix.js + "Animation"] = '';
 	e.target.style["animation"] = '';
+	e.target.removeEventListener(eventName, clearAnimation);
 };
 
-b02.addEventListener(eventName, clearAnimation);
-b04.addEventListener(eventName, clearAnimation);
-b05.addEventListener(eventName, clearAnimation);
+var b02count = 1;
+
+var clearAnimationB02 = function(e) {
+	console.log('animation has ended on b02', b02span, b02count);
+	b02span.innerHTML = b02count++;
+	clearAnimation(e);
+	e.target.removeEventListener(eventName, clearAnimationB02);
+}
 
 b02.addEventListener('click', function() {
 	var a = 'fade-in 1s ease-out 1s 1 normal backwards';
 	b02.style[Simplrz.prefix.js + "Animation"] = a;
 	b02.style["animation"] = a;
+	b02.addEventListener(eventName, clearAnimationB02);
 });
 
 var b03reverse = false;
@@ -95,19 +101,29 @@ b04.addEventListener('click', function() {
 	var a2 = 'rotate-90-to-0 1s ease-out 0s 1 normal both';
 	b04.style[Simplrz.prefix.js + "Animation"] = a2 + ',' + a1;
 	b04.style["animation"] = a2 + ',' + a1;
+	b04.addEventListener(eventName, clearAnimation);
 });
 
-console.log(Simplrz.prefix);
+
+
+// ---- ---- ---- ---- ----
+
+var style = document.createElement("style");
+document.head.appendChild(style);
 
 var a = 'turn-blue { 0% { background-color: #ff0000; } 50% { background-color: #6d8df5; } 100% { background-color: #ff0000;  }';
-
-style.sheet.insertRule('@-' + Simplrz.prefix.lowercase + '-keyframes ' + a, 0);
+var r = '@-' + Simplrz.prefix.lowercase + '-keyframes ' + a;
+// style.sheet.insertRule('@-' + Simplrz.prefix.lowercase + '-keyframes ' + a, 0);
 // style.sheet.insertRule('@keyframes ' + a, 0);
+style.appendChild(document.createTextNode(r));
+
+// ---- ---- ---- ---- ----
 
 b05.addEventListener('click', function() {
 	var a = 'turn-blue 2s ease-out 0s 1 normal';
 	b05.style[Simplrz.prefix.js + "Animation"] = a;
 	b05.style["animation"] = a;
+	b05.addEventListener(eventName, clearAnimation);
 });
 
 </script>
