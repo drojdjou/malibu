@@ -1,0 +1,92 @@
+@import "nib";
+
+body {
+	margin: 0;
+	background-color: #000;
+	color: #fff;
+	font-family: monospace;
+	font-size: 12px;
+}
+
+* {
+	box-sizing: border-box;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);  
+}
+
+ol {
+	list-style-type: none;
+	padding: 0 0 0 15px;
+
+	li {
+		margin-top: 12px;
+		line-height: 1.2;
+	}
+}
+
+em {
+	padding 10px;
+	margin: 15px;
+	background-color: #404040;
+	display: block;
+}
+
+section {
+	clear: both;
+}
+
+.redbox {
+	background-color: #f00;
+	width: 80px;
+	height: 80px;
+	margin: 15px;
+	padding: 10px;
+	color: #000000;
+	float: left;
+	outline: none;
+
+	&:active {
+		color: #fff;
+		cursor: pointer;
+	}
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes rotate-0-to-90 {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(90deg);
+	}
+}
+
+@keyframes rotate-90-to-0 {
+	from {
+		transform: rotate(90deg);
+	}
+
+	to {
+		transform: rotate(0deg);
+	}
+}
+
+.fade-in {
+	// animation: name duration timing-function delay iteration-count direction fill-mode play-state;
+	
+	// animation-iteration-count: number|infinite|initial|inherit;
+	// animation-direction: normal|reverse|alternate|alternate-reverse|initial|inherit;
+	// animation-fill-mode: none|forwards|backwards|both|initial|inherit;
+	// animation-play-state: paused|running|initial|inherit;
+
+	animation: fade-in 1s ease 0s infinite normal; 
+}
