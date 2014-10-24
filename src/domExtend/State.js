@@ -1,4 +1,4 @@
-State = function(ext, element) {
+var State = function(ext, element) {
 
 	var cc = function(p) {
 		return p.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });

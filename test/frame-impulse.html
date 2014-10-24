@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>0.1 Virtual scroll demo - simple</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<style type="text/css">
+
+    body {
+        background-color: #000;
+        margin: 0;
+        padding: 0;
+        color: #fff;
+        font-family: monospace;
+        /* use this to avoid elastic overscroll on desktop (see below for mobile */
+        overflow: hidden;
+    }
+
+    #box1 {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 250px;
+        height: 250px;
+        background-color: rgb(230, 0, 0);
+        margin: -125px 0 0 -125px;
+    }
+
+</style>
+
+<script type="text/javascript" src="../src/Simplrz.js"></script>
+<script type="text/javascript" src="../src/domExtend/DomExtend.js"></script>
+<script type="text/javascript" src="../src/domExtend/Transform.js"></script>
+<script type="text/javascript" src="../src/FrameImpulse.js"></script>
+
+</head>
+<body>
+
+<div id="box1"></div>
+
+<script type="text/javascript">
+
+    var b = EXT.select('#box1');
+    FrameImpulse.on(function() {
+
+        b.ext.rotZ += 1;
+        b.ext.transform();
+
+    });
+
+</script>
+
+<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

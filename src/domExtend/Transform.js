@@ -1,4 +1,4 @@
-Transform = function(ext, element) {
+var Transform = function(ext, element) {
 
 	var force2d = false;
 
@@ -18,7 +18,7 @@ Transform = function(ext, element) {
 	};
 
 	/**
-	 *	The 'else' below si because IE somehow throws an error 
+	 *	The 'else' below is because IE somehow throws an error 
 	 *	when the value is set and then rect() is called immediately after
 	 */
 	ext.width = function(v) {
@@ -83,21 +83,6 @@ Transform = function(ext, element) {
 		element.style[Simplrz.prefixedProp('transform')] = t;
 		element.style["transform"] = t;
 	};
-
-	// var anim;
-
-	// Used to set frame based animation, created with ../Animation.js
-	// ext.setAnimation = function(anm, delay) {
-	// 	if(anim) anim.cancel();
-
-	// 	anim = anm.applyTo(ext).onUpdate(function(v) { 
-	// 		ext.transform();
-	// 	}).onEnd(function() { 
-	// 		anim = null;
-	// 	}).start(delay);
-
-	// 	return anim;
-	// }
 };
 
 

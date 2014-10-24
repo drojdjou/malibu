@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"2","build":9,"date":"2014-10-09T19:27:38.311Z"}
+var Framework = {"version":"2","build":11,"date":"2014-10-24T07:13:56.555Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -324,6 +324,9 @@ var DomExtend = (function() {
 		// Add Transition related functions (see Transition.js for details)
 		if(window.Transition) Transition(ext, element); 
 
+		// Add Animation related functions (see Transition.js for details)
+		if(window.Animation) Animation(ext, element); 
+
 		ext.element = element;
 		element.ext = ext;
 		return element;
@@ -338,7 +341,7 @@ var DomExtend = (function() {
 
 /* --- --- [domExtend/State] --- --- */
 
-State = function(ext, element) {
+var State = function(ext, element) {
 
 	var cc = function(p) {
 		return p.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
@@ -391,7 +394,7 @@ State = function(ext, element) {
 
 /* --- --- [domExtend/Transform] --- --- */
 
-Transform = function(ext, element) {
+var Transform = function(ext, element) {
 
 	var force2d = false;
 
@@ -411,7 +414,7 @@ Transform = function(ext, element) {
 	};
 
 	/**
-	 *	The 'else' below si because IE somehow throws an error 
+	 *	The 'else' below is because IE somehow throws an error 
 	 *	when the value is set and then rect() is called immediately after
 	 */
 	ext.width = function(v) {
@@ -476,21 +479,6 @@ Transform = function(ext, element) {
 		element.style[Simplrz.prefixedProp('transform')] = t;
 		element.style["transform"] = t;
 	};
-
-	// var anim;
-
-	// Used to set frame based animation, created with ../Animation.js
-	// ext.setAnimation = function(anm, delay) {
-	// 	if(anim) anim.cancel();
-
-	// 	anim = anm.applyTo(ext).onUpdate(function(v) { 
-	// 		ext.transform();
-	// 	}).onEnd(function() { 
-	// 		anim = null;
-	// 	}).start(delay);
-
-	// 	return anim;
-	// }
 };
 
 
@@ -504,7 +492,7 @@ Transform = function(ext, element) {
 
 /* --- --- [domExtend/Transition] --- --- */
 
-Transition = function(ext, element) {
+var Transition = function(ext, element) {
 
 	var events = {
 		'transition': 'transitionEnd',
@@ -643,21 +631,88 @@ Transition = function(ext, element) {
 
 
 
+/* --- --- [domExtend/Animation] --- --- */
+
+var Animation = function(ext, element) {
+
+	var events = {
+		'animation': 'animationend',
+		'Moz': 'animationend',
+		'O': 'oanimationend',
+		'Webkit': 'webkitAnimationEnd',
+		'Ms': 'MSAnimationEnd'
+	};
+
+	var animStrigify = function(anim) {
+		return [
+			anim.name, 
+			anim.duration + 's', 
+			anim.ease, 
+			anim.delay + 's', 
+			anim.count, 
+			anim.direction, 
+			anim.fillMode, 
+			anim.playState
+		].join(' ');
+	}
+
+	// animation: name duration timing-function delay iteration-count direction fill-mode play-state;
+	ext.createAnimation = function(name, duration, ease, delay) {
+		return {
+			name: name,
+			duration: duration || 1,
+			ease: ease || 'ease',
+			delay: delay || 0,
+			count: 1,
+			direction: 'normal',
+			fillMode: 'backwards',
+			playState: 'running'
+		}
+	}
+
+	ext.animate = function(anim, callback, dontClear) {
+
+		var a;
+
+		if(anim instanceof Array) {
+			var aa = [];
+			anim.forEach(function(e) { aa.push(animStrigify(e)); });
+			a = aa.join(', ');
+		} else {
+			a = animStrigify(anim);
+		}
+
+		if(callback) {
+
+			var eventName = events[Simplrz.prefix.js];
+
+			var onEnded = function() {
+				element.removeEventListener(eventName, onEnded);
+
+				if(dontClear == null) {
+					element.style[Simplrz.prefix.js + "Animation"] = '';
+					element.style["animation"] = '';
+				}
+
+				callback();
+			}
+
+			element.addEventListener(eventName, onEnded);
+		}
+
+		element.style[Simplrz.prefix.js + "Animation"] = a;
+		element.style["animation"] = a;
+	}
+};
+
 /* --- --- [FrameImpulse] --- --- */
 
 FrameImpulse = (function() {
 
     var vendors = ['webkit', 'moz'];
 
-    var fpsDiv;// = document.getElementById("fps");
-    var lastTime = 0, frameIndex = 0;
-    var sumFrame = 0, avgFrame = 16, avgFPS = 60;
-    var lowFPS = 60, fpsMeasureTime = 1000;
-
     var r = {};
 	var listeners = [], numListeners = 0, toRemove = [], numToRemove;
-
-	r.fps = 60;
 
     for(var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
         window.requestAnimationFrame = window[vendors[i] + 'RequestAnimationFrame'];
@@ -675,53 +730,11 @@ FrameImpulse = (function() {
         };
     }
 
- //    if(fpsDiv) {
-	// 	document.addEventListener('keydown', function(e) {
-	// 		if(e.keyCode == 32) {
-	// 			fpsDiv.style.display = 'block';
-	// 		}
-	// 	});
-	// }
-
-	var calculateFPS = function(deltaTime) {
-		frameIndex++;
-
-		var frameTime = (deltaTime - lastTime);
-
-		if(isNaN(frameTime)) frameTime = 1000/60;
-		lastTime = deltaTime;
-
-		// if(frameIndex < 10 || frameIndex % 10 == 0) console.log(frameTime);
-		sumFrame += frameTime;
-
-		// avgFrame = sumFrame / frameIndex;
-		avgFrame = (frameTime + avgFrame * (fpsMeasureTime-1)) / fpsMeasureTime;
-
-		avgFPS = 1000 / avgFrame;
-		lowFPS = Math.min(avgFPS, lowFPS);
-		
-		r.fps = (isNaN(avgFPS) || !avgFPS) ? 60 : avgFPS;
-		r.fpsNow = 1000 / frameTime;
-		r.fpsLow = lowFPS;
-
-		if(!fpsDiv) return;
-
-		if(avgFrame > 20) {
-			fpsDiv.innerHTML = '<b>'+(avgFPS|0)+'</b> | ' + (avgFrame|0);
-		} else {
-			fpsDiv.innerHTML = (avgFPS|0) + ' | ' + (avgFrame|0);
-		}
-	}
-
 	var run = function(deltaTime) {
 		requestAnimationFrame(run);
 
-		calculateFPS(deltaTime);
-
 		if(numListeners == 0) return;
-
-		//var i = numListeners;
-		//while(i--) {
+		
 		for(var i = 0; i < numListeners; i++) {
 			listeners[i].call(deltaTime);
 		}
@@ -740,10 +753,7 @@ FrameImpulse = (function() {
 	}
 
 	r.on = function(f) {
-		if(listeners.indexOf(f) > -1) {
-			return;
-		}
-
+		if(listeners.indexOf(f) > -1) { return; }
 		listeners.push(f);
 		numListeners = listeners.length;
 		// console.log("FrameImpulse > new listener > total :", numListeners);
@@ -882,14 +892,7 @@ window.Loader = {
 		Loader.loadText(path, function(text) {
 			onLoadedFunc(JSON.parse(text));
 		});
-	},
-
-	loadImage:function(src, callback){
-		var img = new Image();
-		img.onload = callback(img);
-		img.src = src;
 	}
-
 };
 
 /* --- --- [MSG] --- --- */
@@ -926,9 +929,10 @@ var VirtualScroll = (function(document) {
 	var hasWheelEvent = 'onwheel' in document;
 	var hasMouseWheelEvent = 'onmousewheel' in document;
 	var hasTouch = 'ontouchstart' in document;
-	// var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
-	// var hasPointer = !!window.navigator.msPointerEnabled;
 	var hasKeyDown = 'onkeydown' in document;
+
+	var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
+	var hasPointer = !!window.navigator.msPointerEnabled;
 
 	var isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
 
@@ -1044,12 +1048,12 @@ var VirtualScroll = (function(document) {
 			document.addEventListener("touchmove", onTouchMove);
 		}
 		
-		// if(hasPointer && hasTouchWin) {
-		// 	bodyTouchAction = document.body.style.msTouchAction;
-		// 	document.body.style.msTouchAction = "none";
-		// 	document.addEventListener("MSPointerDown", onTouchStart, true);
-		// 	document.addEventListener("MSPointerMove", onTouchMove, true);
-		// }
+		if(hasPointer && hasTouchWin) {
+			bodyTouchAction = document.body.style.msTouchAction;
+			document.body.style.msTouchAction = "none";
+			document.addEventListener("MSPointerDown", onTouchStart, true);
+			document.addEventListener("MSPointerMove", onTouchMove, true);
+		}
 
 		if(hasKeyDown) document.addEventListener("keydown", onKeyDown);
 
@@ -1065,11 +1069,11 @@ var VirtualScroll = (function(document) {
 			document.removeEventListener("touchmove", onTouchMove);
 		}
 		
-		// if(hasPointer && hasTouchWin) {
-		// 	document.body.style.msTouchAction = bodyTouchAction;
-		// 	document.removeEventListener("MSPointerDown", onTouchStart, true);
-		// 	document.removeEventListener("MSPointerMove", onTouchMove, true);
-		// }
+		if(hasPointer && hasTouchWin) {
+			document.body.style.msTouchAction = bodyTouchAction;
+			document.removeEventListener("MSPointerDown", onTouchStart, true);
+			document.removeEventListener("MSPointerMove", onTouchMove, true);
+		}
 
 		if(hasKeyDown) document.removeEventListener("keydown", onKeyDown);
 
@@ -1085,30 +1089,164 @@ var VirtualScroll = (function(document) {
 
 
 
-/* --- --- [Pointer] --- --- */
+/* --- --- [Timer] --- --- */
 
-Pointer = (function() {
+var Timer = function(autostart, autoupdate) {
 
-	var p = {
-		x: 0, y: 0
+	var that = this;
+	// If frame is longer than 250ms (4 FPS) it will skip it.
+	var MAX_FRAME_TIME = 250;
+
+	var paused = false;
+
+	this.time = 0;
+	this.frame = 0
+
+	var startTime, elapsedTime = 0;
+
+	var tasks = [];
+
+	var trackTask = function(e, i) {
+		if(e._time < that.time) {
+			if(e._repeat != 0) {
+				e.callback(e._time);
+				e._time += e._interval;
+				e._repeat--;
+			} else {
+				setTimeout(that.off, 0, e); // <- is it good?
+			}
+		}
+	};
+
+	var run = function() {
+		requestAnimationFrame(run);
+		that.update();
 	}
 
-	if(Simplrz.touch) {
-		document.addEventListener("touchmove", function(e) {
-        	var t = (e.targetTouches) ? e.targetTouches[0] : e;
-	        p.x = t.pageX;
-	        p.y = t.pageY;
-	    });
-	} else {
-		document.addEventListener("mousemove", function(e) {
-	        p.x = e.pageX;
-	        p.y = e.pageY;
-	    });
+	this.pause = function(p) {
+		paused = p;
 	}
 
-    return p;
+	/**
+	 *	Start the timer manually.
+	 *
+	 *	If autostart was set to false or omitted in the constructor, this function needs to be invoked.	
+	 */
+	this.start = function() {
+		startTime = new Date().getTime(), 
+		elapsedTime = 0, 
+		that.frame = 0;
+		that.time = 0;
 
-})();
+		if(autoupdate) run();
+
+		return that;
+	}
+
+	/**
+	 *	Update the timer.
+	 *
+	 *	If autoupdate was set to false or omitted in the constructor, 
+	 *	this function need to be invoked in a requestAnimationFrame loop or a similar interval.
+	 */
+	this.update = function() {
+		var t = new Date().getTime() - startTime;
+		var d = t - elapsedTime;
+		elapsedTime = t;
+
+		if(d < MAX_FRAME_TIME && !paused) {
+			that.time += d;
+			that.frame++;
+		}
+
+		tasks.forEach(trackTask);
+		return that.time;
+	}
+
+	/**
+	 *	Executes callback after a delay. All time values in ms.
+	 *
+	 *	_time - when to start (i.e. delay counted from 'now' i.e from when this method is called)
+	 *	callback - the callback to be invoked
+	 *
+	 *	returns - an object that can be used to remove the task.
+	 */
+	this.onAt = function(_time, callback) {
+		var so = {
+			callback: callback,
+			_time: that.time + _time,
+			_repeat: 1
+		};
+
+		tasks.push(so);
+		return so;
+	}
+
+	/**
+	 *	Invokes the callback repeatedly overtime. All time values in ms.
+	 * 	
+	 *	_interval - how often to invoked the function
+	 *	_time - when to start (i.e. delay, counted from 'now' i.e from when this method is called)
+	 *	callback - the callback to be invoked
+	 *	_repeat - how many times to repeat. If ommited or -1 will repeat infinitely
+	 *				0 will never invoke the function (in fact it won't even be added)
+	 *
+	 *	returns - an object that can be used to remove the task.
+	 */
+	this.onEvery = function(_interval, _time, callback, _repeat) {
+
+		if(_repeat === 0) return;
+		
+		var so = {
+			callback: callback,
+			_time: that.time + _time,
+			_interval: _interval,
+			_repeat: _repeat || -1
+
+		};
+
+		tasks.push(so);
+		return so;
+	}
+
+	/**
+	 *	Remove a scheduled task.
+	 *
+	 *	DO NOT PASS the original callback to this function (you'll get a warning if you do).
+	 *	Instead you need to pass the object returned from onAt or onEvery. 
+	 */
+	this.off = function(so) {
+
+		if(so instanceof Function) {
+			var m = 'You are probably using the callback directly to remove it.\n';
+			m += 'You should use the object returned from onAt or onEvery instead.';
+			console.warn(m);
+			console.warn(so);
+			return;
+		}
+
+		var i = tasks.indexOf(so);
+		if(i > -1) {
+			tasks.splice(i, 1);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 *	Remove all tasks scheduled using onAt or onEvery
+	 */
+	this.clearTasks = function() {
+		tasks.length = 0;
+	}
+
+	
+
+	if(autostart) {
+		that.start();
+	}
+}
 
 /* --- --- [Util] --- --- */
 

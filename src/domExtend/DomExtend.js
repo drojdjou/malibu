@@ -52,6 +52,9 @@ var DomExtend = (function() {
 		// Add Transition related functions (see Transition.js for details)
 		if(window.Transition) Transition(ext, element); 
 
+		// Add Animation related functions (see Transition.js for details)
+		if(window.Animation) Animation(ext, element); 
+
 		ext.element = element;
 		element.ext = ext;
 		return element;

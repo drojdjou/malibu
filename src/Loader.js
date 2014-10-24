@@ -18,12 +18,5 @@ window.Loader = {
 		Loader.loadText(path, function(text) {
 			onLoadedFunc(JSON.parse(text));
 		});
-	},
-
-	loadImage:function(src, callback){
-		var img = new Image();
-		img.onload = callback(img);
-		img.src = src;
 	}
-
 };
