@@ -1,0 +1,229 @@
+@import url("http://fonts.googleapis.com/css?family=Open+Sans:400,600");
+body {
+  background-color: #eee;
+  margin: 0;
+}
+.wirekit * {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #444;
+  -webkit-font-smoothing: antialiased;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 11pt;
+}
+.wirekit .clear {
+  clear: both;
+}
+.wirekit ul {
+  list-style-type: none;
+  padding: 0;
+}
+.wirekit a {
+  color: inherit;
+}
+.wirekit a:hover {
+  color: #888;
+}
+.wirekit h1 {
+  font-weight: normal;
+  font-size: 50px;
+  margin: 0;
+}
+.wirekit h2 {
+  font-weight: normal;
+  font-size: 25px;
+  margin: 0;
+}
+.wirekit h3 {
+  font-weight: normal;
+  font-size: 20px;
+  margin: 0;
+}
+.wirekit h4 {
+  font-weight: normal;
+  font-size: 16px;
+  margin: 0;
+}
+.wirekit h5 {
+  font-weight: normal;
+  font-size: 13px;
+  margin: 0;
+}
+.wirekit h6 {
+  font-weight: bold;
+  font-size: 11px;
+  margin: 0;
+}
+.wirekit button,
+.wirekit select {
+  border: 0;
+  color: #fff;
+  background-color: #444;
+  padding: 0.45em 2em 0.55em 2em;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  outline: none;
+}
+.wirekit button:hover,
+.wirekit select:hover {
+  cursor: pointer;
+}
+.wirekit button:hover {
+  background-color: #888;
+}
+.wirekit input[type=text] {
+  border: 0;
+  padding: 0.6em;
+  outline: none;
+  border: 1px solid transparent;
+  color: #444;
+}
+.wirekit input[type=text]:focus {
+  border: 1px solid #999;
+}
+.wirekit .menu li {
+  display: block;
+  float: left;
+  color: #fff;
+  background-color: #444;
+  margin: 0;
+  line-height: 50px;
+  border-right: 1px solid #eee;
+  text-align: center;
+}
+.wirekit .menu li:hover {
+  background-color: #888;
+  cursor: pointer;
+}
+.wirekit .menu li.selected {
+  background-color: #222;
+  font-weight: bold;
+}
+.wirekit .text-menu li {
+  padding: 0.1em 0em 0.1em 0em;
+  margin: 0 1em 0 0;
+  display: inline-block;
+  border-bottom: 1px solid transparent;
+}
+.wirekit .text-menu li:hover {
+  border-bottom: 1px solid rgba(68,68,68,0.4);
+  cursor: pointer;
+}
+.wirekit .text-menu li.selected {
+  border-bottom: 1px solid #444;
+}
+.wirekit .graphic {
+  background: -webkit-radial-gradient(#ccc, #999);
+  background: -moz-radial-gradient(#ccc, #999);
+  background: -o-radial-gradient(#ccc, #999);
+  background: -ms-radial-gradient(#ccc, #999);
+  background: radial-gradient(#ccc, #999);
+}
+.wirekit .image,
+.wirekit .video {
+  background: -webkit-radial-gradient(#ccc, #999);
+  background: -moz-radial-gradient(#ccc, #999);
+  background: -o-radial-gradient(#ccc, #999);
+  background: -ms-radial-gradient(#ccc, #999);
+  background: radial-gradient(#ccc, #999);
+}
+.wirekit .image:after,
+.wirekit .video:after {
+  position: relative;
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  -webkit-background-size: 25%;
+  -moz-background-size: 25%;
+  background-size: 25%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.wirekit .image:after {
+  background-image: url("../assets/image.png");
+}
+.wirekit .video:after {
+  background-image: url("../assets/play.png");
+}
+.wirekit .profile {
+  background-color: #999;
+  -webkit-border-radius: 100%;
+  border-radius: 100%;
+  background-image: url("../assets/profile.png");
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  border: 2px solid #999;
+}
+.wirekit .dot {
+  background-color: #444;
+  -webkit-border-radius: 100%;
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+}
+.wirekit .dot:hover {
+  cursor: pointer;
+  background-color: #888;
+}
+.wirekit .external-link:after {
+  display: inline-block;
+  content: '';
+  width: 16px;
+  height: 16px;
+  margin: -4px 0 0 3px;
+  vertical-align: middle;
+  background-image: url("../assets/icons/svg/forward.svg");
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+}
+.wirekit .search {
+  background-image: url("../assets/icons/svg/search-white.svg");
+  background-position: center;
+  -webkit-background-size: 24px 24px;
+  -moz-background-size: 24px 24px;
+  background-size: 24px 24px;
+  background-repeat: no-repeat;
+}
+.wirekit .menu-icon {
+  background-image: url("../assets/icons/svg/list-white.svg");
+  background-position: center;
+  -webkit-background-size: 24px 24px;
+  -moz-background-size: 24px 24px;
+  background-size: 24px 24px;
+  background-repeat: no-repeat;
+}
+.content {
+  margin: 80px 0 0 20px;
+}
+.content > * {
+  margin: 20px;
+}
+.ui-demo .menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  margin: 0;
+}
+.ui-demo .menu li {
+  width: 25%;
+}
+.ui-demo .image {
+  width: 300px;
+  height: 200px;
+}
+.ui-demo .video {
+  width: 320px;
+  height: 180px;
+}
+.ui-demo .profile {
+  width: 80px;
+  height: 80px;
+}
+.ui-demo input {
+  width: 200px;
+}

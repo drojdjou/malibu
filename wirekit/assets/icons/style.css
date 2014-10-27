@@ -1,0 +1,54 @@
+.icon {
+	display: inline-block;
+	color: #444444;
+	fill: currentColor;
+}
+.icon-forward {
+	width: 20px;
+	height: 20px;
+}
+#icon-forward .path1 {
+	fill: currentcolor;
+}
+.icon-location {
+	width: 20px;
+	height: 20px;
+}
+#icon-location .path1 {
+	fill: currentcolor;
+}
+.icon-search {
+	width: 20px;
+	height: 20px;
+}
+#icon-search .path1 {
+	fill: currentcolor;
+}
+.icon-camera {
+	width: 20px;
+	height: 20px;
+}
+#icon-camera .path1 {
+	fill: currentcolor;
+}
+.icon-cross {
+	width: 20px;
+	height: 20px;
+}
+#icon-cross .path1 {
+	fill: currentcolor;
+}
+.icon-list {
+	width: 20px;
+	height: 20px;
+}
+#icon-list .path1 {
+	fill: currentcolor;
+}
+.icon-back {
+	width: 20px;
+	height: 20px;
+}
+#icon-back .path1 {
+	fill: currentcolor;
+}
