@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test of Timer class</title>
+
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, minimal-ui">
+<meta charset="UTF-8">
+
+<style type="text/css">
+
+body {
+	background-color: #000;
+	color: #0f0;
+	font-family: monospace;
+}
+
+</style>
+
+<script type="text/javascript" src="../src/Timer.js"></script>
+
+</head>
+<body>
+
+<div id="ct"></div>
+<div id="fs"></div>
+
+<div id="info"></div>
+
+<script type="text/javascript">
+
+var ct = document.querySelector('#ct');
+var fs = document.querySelector('#fs');
+var info = document.querySelector('#info');
+
+var timer = new Timer().start();
+
+var log = function(m) {
+	info.innerHTML += m + '<br>';
+}
+
+var timeoutFunc = function(scheduledTime) {
+	log("Timeout | S: " + scheduledTime + " | T: " + timer.time);
+}
+
+var anotherTimeoutFunc = function(scheduledTime) {
+	log("Another timeout | S: " + scheduledTime + " | T: " + timer.time);
+}
+
+var makeIntervalFunc = function(name) {
+	var c = 0;
+	return function(scheduledTime) {
+		c++;
+		log("Interval " + name + " #"  + c + " | S: " + scheduledTime + " | T: " + timer.time);
+	}
+}
+
+// All should work even though we are using the same callback twice
+var t1 = timer.onAt(1000, timeoutFunc);
+var t2 = timer.onAt(2000, timeoutFunc);
+var t3 = timer.onAt(3000, anotherTimeoutFunc);
+// This one won't be fired, because below we removed it before it's his time
+var t4 = timer.onAt(4000, timeoutFunc);
+
+// This will result in a warning in the cosole - can't remove the callback directly
+setTimeout(function() {
+	log('Removing callback directly. This will issue a warning in the console');
+	timer.off(timeoutFunc);
+}, 3000);
+
+// This will work ok and remove the timeout which will never be invoked
+setTimeout(function() {
+	var f = timer.off(t4);
+	log('Removing timeout t4 | Found: ' + f);
+}, 3100);
+
+// This wil return false, because this timeout was removed after it was invoked
+setTimeout(function() {
+	var f = timer.off(t1);
+	log('Removing timeout t1 | Found: ' + f);
+}, 3200);
+
+// We will pause it at 2500 and wait for 1000.
+setTimeout(function() { 
+	timer.pause(true); 
+	log('Starting pause');
+}, 3500);
+
+setTimeout(function() { 
+	timer.pause(false); 
+	log('Ending pause');
+},6000);
+
+// This will run 11 times, not 10, because the last (at 15000ms mark) 
+//will be invoked before the timer invokes the callback to remove it
+var interval = timer.onEvery(1000, 5000, makeIntervalFunc('i1'));
+
+timer.onAt(10000, function(scheduledTime) {
+	var r = timer.off(interval);
+	log('Removing interval i1 @ ' + scheduledTime + ', found ' + r);
+});
+
+
+// This should repeat this function only twice (see last argument)
+timer.onEvery(1000, 11000, makeIntervalFunc('i2'), 2);
+
+// This will be ingored because of 0 value for the repeat argument
+timer.onEvery(1000, 14000, makeIntervalFunc('i3'), 0);
+
+var run = function() {
+	requestAnimationFrame(run);
+
+	timer.update();
+
+	ct.innerText = "Time: " + timer.time + "ms";
+	fs.innerText = "Frame: " + timer.frame;
+}
+
+run();
+
+</script>
+
+<script type="text/javascript">
+    if(location.host.indexOf("localhost") > -1 || location.host.indexOf("192.168") > -1 || location.host.indexOf("127.0") > -1) {
+        document.write('<script src=\"http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1\"></' + 'script>');
+    }
+</script>
+
+</body>
+</head>
+</body>

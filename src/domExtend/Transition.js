@@ -1,4 +1,4 @@
-Transition = function(ext, element) {
+var Transition = function(ext, element) {
 
 	var events = {
 		'transition': 'transitionEnd',

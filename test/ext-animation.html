@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Animations test | v0.2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link id="css" rel="stylesheet" type="text/css" href="css/css-animation.css">
+
+    <script type="text/javascript" src="../src/Simplrz.js"></script>
+    <script type="text/javascript" src="../src/domExtend/Animation.js"></script>
+    <script type="text/javascript" src="../src/domExtend/DomExtend.js"></script>
+    <script type="text/javascript" src="../src/Keyframes.js"></script>
+
+</head>
+<body>
+
+<section>
+	<div id="b01" class="redbox fade-in">#1</div>
+	<div id="b02" class="redbox">#2<br><span>0</span></div>
+	<div id="b03" class="redbox">#3</div>
+	<div id="b04" class="redbox">#4</div>
+	<div id="b05" class="redbox">#5</div>
+</section>
+
+<section>
+	<ol>
+		<li>#1 fades-in continously</li>
+		<li>#2 dissapears and fades-in 1s after click + counter increases</li>
+		<li>#3 rotates 90deg on 1st click and back on 2nd</li>
+		<li>#4 dissapears then rotates/fades back in on click</li>
+		<li>#5 turns to blue and back to red on click</li>
+	</ol>
+</section>
+
+<section>
+	<em>
+	<script type="text/javascript">
+
+	document.write(navigator.platform + '<br>');
+	document.write(navigator.userAgent);
+
+	</script>
+	</em>
+</section>
+
+<script type="text/javascript">
+
+// animation: name duration timing-function delay iteration-count direction fill-mode play-state;
+
+var b02 = EXT.select('#b02');
+var b02span = b02.ext.select('span');
+var b03 = EXT.select('#b03');
+var b04 = EXT.select('#b04');
+var b05 = EXT.select('#b05');
+
+b02.addEventListener('click', function() {
+	var a = b02.ext.createAnimation('fade-in', 1, 'ease-out', 1);
+	b02.ext.animate(a, function() { console.log('on #b02 animation end') });
+});
+
+var b03reverse = false;
+
+b03.addEventListener('click', function() {
+	var d = b03reverse ? 'rotate-90-to-0' : 'rotate-0-to-90';
+	var a = b03.ext.createAnimation(d, 0.2, 'ease-out');
+	a.fillMode = 'both';
+	b03.ext.animate(a, function() { console.log('on #b03 animation end') }, true);
+	b03reverse = !b03reverse;
+});
+
+b04.addEventListener('click', function() {
+	var a1 = b04.ext.createAnimation('fade-in', 1, 'ease-in');
+	var a2 = b04.ext.createAnimation('rotate-90-to-0', 1, 'ease-out');
+	b04.ext.animate([a1, a2], function() { console.log('on #b04 animation end') });
+});
+
+
+
+// // ---- ---- ---- ---- ----
+
+
+Keyframes.add('turn-blue', { 
+	'0': 'background-color: #ff0000',
+	'50': 'background-color: #6d8df5',
+	'100': 'background-color: #ff0000'
+});
+
+// // ---- ---- ---- ---- ----
+
+b05.addEventListener('click', function() {
+	var a = b02.ext.createAnimation('turn-blue', 2);
+	b05.ext.animate(a);
+});
+
+</script>
+
+<script type="text/javascript">
+    if(location.host.indexOf("localhost") > -1 || location.host.indexOf("192.168") > -1 || location.host.indexOf("127.0") > -1) {
+        document.write('<script src=\"http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1\"></' + 'script>');
+    }
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

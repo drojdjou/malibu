@@ -19,13 +19,14 @@ var frameworkFiles = {
 		"domExtend/State",
 		"domExtend/Transform",
 		"domExtend/Transition",
+		"domExtend/Animation",
 
 		"FrameImpulse",
 		"HistoryRouter",
 		"Loader",
 		"MSG",
 		"VirtualScroll",
-		"Pointer",
+		"Timer",
 		"Util"
 	]
 };
