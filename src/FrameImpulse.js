@@ -31,11 +31,17 @@ FrameImpulse = (function() {
 		}
 
 		if(numToRemove > 0) {
-			
-			for(var i = 0; i < numToRemove; i++) {
-				listeners.splice(toRemove[i], 1);
-				// console.log("FrameImpulse > removed listener > total :", numListeners);
-			}
+			var indexToRemove = [];
+			for (var i = listeners.length - 1; i >= 0; i--) {
+				for (var j = 0; j < toRemove.length; j++) {
+					if (listeners[i] === toRemove[j])
+						indexToRemove.push(i);
+				};
+			};
+
+			for (var i = 0; i < indexToRemove.length; i++) {
+				listeners.splice(indexToRemove[i], 1);
+			};
 
 			numListeners = listeners.length;
 			toRemove = [];
