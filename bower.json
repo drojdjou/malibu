@@ -12,6 +12,7 @@
     "src",
     "lib",
     "~quarantine",
+    "wirekit",
 
     "version.json",
     "package.json",
