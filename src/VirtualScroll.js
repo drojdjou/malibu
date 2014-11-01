@@ -38,6 +38,10 @@ var VirtualScroll = (function(document) {
 
 	vs.on = function(f) {
 		if(!initialized) initListeners(); 
+
+		var i = listeners.indexOf(f);
+		if(i != -1) return;
+
 		listeners.push(f);
 		numListeners = listeners.length;
 	}
@@ -50,7 +54,10 @@ var VirtualScroll = (function(document) {
 	}
 
 	vs.off = function(f) {
-		listeners.splice(f, 1);
+		var i = listeners.indexOf(f);
+		if(i == -1) return;
+
+		listeners.splice(i, 1);
 		numListeners = listeners.length;
 		if(numListeners <= 0) destroyListeners();
 	}
