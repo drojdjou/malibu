@@ -1,11 +1,11 @@
-//Limits a value between start and end values.
+// Limits a value between start and end values.
 Math.clamp = function(value, start, end) {
 	if(value < start) return start;
 	else if(value > end) return end;
 	else return value;
 };
 
-//Limits a value between 0 and 1 .
+// Limits a value between 0 and 1 .
 Math.clamp01 = function(value) {
 	if(value < 0) return 0;
 	else if(value > 1) return 1;
@@ -18,17 +18,17 @@ Math.pointInRect = function(p, r) {
 	return (p.x >= r.left && p.x <= r.right) && (p.y >= r.top && p.y <= r.bottom);
 };
 
-//Normalizes a number from another range into a value between 0 and 1. 
+// Normalizes a number from another range into a value between 0 and 1. 
 Math.norm = function(value , min, max){
 	return (value - min) / (max - min);
 };
 
-//Re-maps a number from one range to another.
+// Re-maps a number from one range to another.
 Math.map = function(value, min1, max1, min2, max2) {
 	return Math.lerp(min2, max2, Math.norm(value, min1, max1));
 };
 
-//Calculates a number between two numbers at a specific increment.
+// Calculates a number between two numbers at a specific increment.
 Math.lerp = function(min, max, amt){
 	return min + (max - min) * amt;
 };

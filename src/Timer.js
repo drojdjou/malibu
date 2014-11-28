@@ -7,7 +7,8 @@ var Timer = function(autostart, autoupdate) {
 	var paused = false;
 
 	this.time = 0;
-	this.frame = 0
+	this.frame = 0;
+	this.deltatime = 0;
 
 	var startTime, elapsedTime = 0;
 
@@ -17,10 +18,14 @@ var Timer = function(autostart, autoupdate) {
 		if(e._time < that.time) {
 			if(e._repeat != 0) {
 				e.callback(e._time);
-				e._time += e._interval;
+
+				var it = e._interval;
+				if(it instanceof Array) e._time += it[0] + Math.random() * (it[1] - it[0]);
+				else e._time += it;
+
 				e._repeat--;
 			} else {
-				setTimeout(that.off, 0, e); // <- is it good?
+				setTimeout(that.off, 0, e); // <- is it good enough?
 			}
 		}
 	};
@@ -32,6 +37,10 @@ var Timer = function(autostart, autoupdate) {
 
 	this.pause = function(p) {
 		paused = p;
+	}
+
+	this.paused = function() {
+		return paused;
 	}
 
 	/**
@@ -64,6 +73,7 @@ var Timer = function(autostart, autoupdate) {
 		if(d < MAX_FRAME_TIME && !paused) {
 			that.time += d;
 			that.frame++;
+			that.deltatime = d;
 		}
 
 		tasks.forEach(trackTask);
@@ -92,7 +102,7 @@ var Timer = function(autostart, autoupdate) {
 	/**
 	 *	Invokes the callback repeatedly overtime. All time values in ms.
 	 * 	
-	 *	_interval - how often to invoked the function
+	 *	_interval - how often to invoked the function. It can be an array of two elements specyfing a min/max range
 	 *	_time - when to start (i.e. delay, counted from 'now' i.e from when this method is called)
 	 *	callback - the callback to be invoked
 	 *	_repeat - how many times to repeat. If ommited or -1 will repeat infinitely
@@ -129,6 +139,10 @@ var Timer = function(autostart, autoupdate) {
 			m += 'You should use the object returned from onAt or onEvery instead.';
 			console.warn(m);
 			console.warn(so);
+			return;
+		}
+
+		if(so == null) {
 			return;
 		}
 

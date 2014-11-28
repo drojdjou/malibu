@@ -1,8 +1,11 @@
-Application = (function(window) {
+Application = (function() {
 
-	var app = Events({}, true);
+	var app = {};
 	var router, broadcast;
 
+	app.resize = new Trigger();
+	app.route = new Value();
+	
 	app.init = function(params) {
 
 		params = params || {};
@@ -13,11 +16,11 @@ Application = (function(window) {
 		}
 
 		window.addEventListener('resize', function(e) {
-			app.trigger(MSG.RESIZE, e);
+			app.resize.trigger(e);
 		});
 
 		window.addEventListener('orientationchange', function(e) {
-			app.trigger(MSG.RESIZE, e);
+			app.resize.trigger(e);
 		});
 
 		console.log('Malibu v' + 
@@ -28,6 +31,6 @@ Application = (function(window) {
 	
 	return app;
 
-})(window);
+})();
 
 

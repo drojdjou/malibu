@@ -52,7 +52,7 @@
 		<a href="history.html"><li>Main</li></a>
 		<a href="section01.html"><li>01</li></a>
 		<a href="section02.html"><li>02</li></a>
-		<a href="section03.html"><li>03</li></a>
+		<a href="../test/section03.html"><li>03</li></a>
 		<a href="section04.html"><li>04</li></a>
 		<a href="section05.html"><li>05</li></a>
 		<a href="./section06.html"><li>06</li></a>
@@ -66,25 +66,28 @@
 </section>
 
 <script type="text/javascript" src="../src/Simplrz.js"></script>
-<script type="text/javascript" src="../src/Events.js"></script>
+<script type="text/javascript" src="../src/Trigger.js"></script>
+<script type="text/javascript" src="../src/Value.js"></script>
 <script type="text/javascript" src="../src/domExtend/State.js"></script>
 <script type="text/javascript" src="../src/domExtend/DomExtend.js"></script>
-<script type="text/javascript" src="../src/MSG.js"></script>
 <script type="text/javascript" src="../src/Application.js"></script>
 <script type="text/javascript" src="../src/Version.js"></script>
 <script type="text/javascript" src="../src/HistoryRouter.js"></script>
 
 <script type="text/javascript">
 
-	Application.on(MSG.ROUTE, function(e) {
-		var f = e.route.split('/').pop();
+	Application.route.on(function(c, l) {
+        var fc = c.split('/').pop();
+		var fl = (l) ? l.split('/').pop() : 'none';
+
+        console.log("navigating from", fl, "to", fc);
 
 		EXT.selectAll('a[href]').forEach(function(item) {
 			var li = item.ext.select('li');
 			if(li) li.ext.attr('class', '');
 		});
 
-		var cl = EXT.select('a[href*="' + f + '"]');
+		var cl = EXT.select('a[href*="' + fc + '"]');
 		
 		if(cl) {
 			var li = cl.ext.select('li');

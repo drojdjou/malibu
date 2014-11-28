@@ -12,7 +12,9 @@ var frameworkFiles = {
 	include: [
 		"Version",
 		"Simplrz",
-		"Events",
+		"Trigger",
+		"Timer",
+		"Value",
 		"Application",
 
 		"domExtend/DomExtend",
@@ -24,7 +26,6 @@ var frameworkFiles = {
 		"FrameImpulse",
 		"HistoryRouter",
 		"Loader",
-		"MSG",
 		"VirtualScroll",
 		"Timer",
 		"Util"

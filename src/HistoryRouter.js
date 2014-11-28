@@ -1,9 +1,10 @@
-HistoryRouter = function (broadcast) {
+HistoryRouter = function (app) {
 
 	var rootUrl = document.location.protocol + '//' + (document.location.hostname || document.location.host);
 	if(document.location.port) rootUrl += ":" + document.location.port;
 
-	var route, prevRoute;
+	app.navigate = new Trigger();
+	app.hijackLinks = new Trigger();
 
 	var hijackLinks = function () {
 		if (!Simplrz.history) return;
@@ -50,34 +51,22 @@ HistoryRouter = function (broadcast) {
 	// It's mostly for Chrome <33, so in the future this can be removed (maybe).
 	var historyAPIInitiated = false;
 
-	var notify = function() {
-		var r = route.substring(rootUrl.length);
-		var p = r.split("/");
-		p.shift(); // Remove the first empty element
-
-		broadcast.trigger(MSG.ROUTE, {
-			route: r,
-			parts: p,
-			prevRoute: prevRoute
-		});
+	var notify = function(r) {
+		app.route.value = r.substring(rootUrl.length + 1);
 	}
 
 	var pushState = function (href) {
 		if (Simplrz.history) history.pushState(null, null, href);
-		prevRoute = (route) ? route.replace(rootUrl, "") : null;
-		route = document.location.href;
-		notify();
+		notify(document.location.href);
 	};
 
 	window.addEventListener('popstate', function(e) {
 		historyAPIInitiated = true;
-		prevRoute = (route) ? route.replace(rootUrl, "") : null;
-		route = document.location.href;
-		notify();
+		notify(document.location.href);
 	});
 
-	broadcast.on(MSG.HIJACK_LINKS, hijackLinks);
-	broadcast.on(MSG.NAVIGATE, pushState);
+	app.hijackLinks.on(hijackLinks);
+	app.navigate.on(pushState);
 
 	setTimeout(function() {
 		if(!historyAPIInitiated) pushState();

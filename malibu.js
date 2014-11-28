@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"2","build":14,"date":"2014-11-01T14:39:22.934Z"}
+var Framework = {"version":"3","build":3,"date":"2014-11-28T19:51:12.117Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -164,80 +164,340 @@ window.Simplrz = (function() {
 
 })();
 
-/* --- --- [Events] --- --- */
+/* --- --- [Trigger] --- --- */
 
-Events = function (obj) {
+var Trigger = function() {
 
-	var events = obj || {}; 
+	var t = {};
 
-	var listeners = {}, contexts = {};
+	var listeners = [];
 	var lock = false;
 
 	var lateTriggers = [];
 	var lateRemovals = [];
 
-	events.on = function (event, callback, context) {
-		if(!listeners[event]) listeners[event] = [];
-		listeners[event].push(callback);
-		if(context) contexts[callback] = context;
+	t.on = function (callback) {
+		listeners.push(callback);
 	};
 
-	events.off = function (event, callback) {
-		if(listeners[event]) {
-			var i = listeners[event].indexOf(callback);
+	t.off = function (callback) {
+		var i = listeners.indexOf(callback);
 
-			if(i == -1) return;
+		if(i == -1) return;
 
-			if(lock) {
-				lateRemovals.push({ event: event, callback: callback });
-				return;
-			}
-
-			listeners[event].splice(i, 1);
+		if(lock) {
+			lateRemovals.push({ callback: callback });
+			return;
 		}
+
+		listeners.splice(i, 1);
 	};
 
-	events.offAll = function(event) {
-		if(listeners[event]) listeners[event].length = 0;
-	};
+	t.trigger = function (data) {
 
-	events.trigger = function (event, data) {
-
-		if(listeners[event]) {
-
-			if(lock) {
-				lateTriggers.push({ event: event, data: data });
-				return;
-			}
-
-			lock = true;
-
-			var i = 0, nl = listeners[event].length;
-			while(i < nl) {
-				var f = listeners[event][i];
-				f.call(contexts[f], data);
-				i++;
-			}
-			
-			lock = false
+		if(lock) {
+			lateTriggers.push({ data: data });
+			return;
 		}
+
+		lock = true;
+
+		var i = 0, nl = listeners.length;
+		while(i < nl) {
+			var f = listeners[i];
+			f(data);
+			i++;
+		}
+		
+		lock = false;
 
 		var d;
-		while(d = lateTriggers.shift()) events.trigger(d.event, d.data);
-		while(d = lateRemovals.shift()) events.off(d.event, d.callback);
+		while(d = lateTriggers.shift()) t.trigger(d.data);
+		while(d = lateRemovals.shift()) t.off(d.callback);
 	};
 
-	return events;
+	return t;
 
 };
 
+/* --- --- [Timer] --- --- */
+
+var Timer = function(autostart, autoupdate) {
+
+	var that = this;
+	// If frame is longer than 250ms (4 FPS) it will skip it.
+	var MAX_FRAME_TIME = 250;
+
+	var paused = false;
+
+	this.time = 0;
+	this.frame = 0;
+	this.deltatime = 0;
+
+	var startTime, elapsedTime = 0;
+
+	var tasks = [];
+
+	var trackTask = function(e, i) {
+		if(e._time < that.time) {
+			if(e._repeat != 0) {
+				e.callback(e._time);
+
+				var it = e._interval;
+				if(it instanceof Array) e._time += it[0] + Math.random() * (it[1] - it[0]);
+				else e._time += it;
+
+				e._repeat--;
+			} else {
+				setTimeout(that.off, 0, e); // <- is it good enough?
+			}
+		}
+	};
+
+	var run = function() {
+		requestAnimationFrame(run);
+		that.update();
+	}
+
+	this.pause = function(p) {
+		paused = p;
+	}
+
+	this.paused = function() {
+		return paused;
+	}
+
+	/**
+	 *	Start the timer manually.
+	 *
+	 *	If autostart was set to false or omitted in the constructor, this function needs to be invoked.	
+	 */
+	this.start = function() {
+		startTime = new Date().getTime(), 
+		elapsedTime = 0, 
+		that.frame = 0;
+		that.time = 0;
+
+		if(autoupdate) run();
+
+		return that;
+	}
+
+	/**
+	 *	Update the timer.
+	 *
+	 *	If autoupdate was set to false or omitted in the constructor, 
+	 *	this function need to be invoked in a requestAnimationFrame loop or a similar interval.
+	 */
+	this.update = function() {
+		var t = new Date().getTime() - startTime;
+		var d = t - elapsedTime;
+		elapsedTime = t;
+
+		if(d < MAX_FRAME_TIME && !paused) {
+			that.time += d;
+			that.frame++;
+			that.deltatime = d;
+		}
+
+		tasks.forEach(trackTask);
+		return that.time;
+	}
+
+	/**
+	 *	Executes callback after a delay. All time values in ms.
+	 *
+	 *	_time - when to start (i.e. delay counted from 'now' i.e from when this method is called)
+	 *	callback - the callback to be invoked
+	 *
+	 *	returns - an object that can be used to remove the task.
+	 */
+	this.onAt = function(_time, callback) {
+		var so = {
+			callback: callback,
+			_time: that.time + _time,
+			_repeat: 1
+		};
+
+		tasks.push(so);
+		return so;
+	}
+
+	/**
+	 *	Invokes the callback repeatedly overtime. All time values in ms.
+	 * 	
+	 *	_interval - how often to invoked the function. It can be an array of two elements specyfing a min/max range
+	 *	_time - when to start (i.e. delay, counted from 'now' i.e from when this method is called)
+	 *	callback - the callback to be invoked
+	 *	_repeat - how many times to repeat. If ommited or -1 will repeat infinitely
+	 *				0 will never invoke the function (in fact it won't even be added)
+	 *
+	 *	returns - an object that can be used to remove the task.
+	 */
+	this.onEvery = function(_interval, _time, callback, _repeat) {
+
+		if(_repeat === 0) return;
+		
+		var so = {
+			callback: callback,
+			_time: that.time + _time,
+			_interval: _interval,
+			_repeat: _repeat || -1
+
+		};
+
+		tasks.push(so);
+		return so;
+	}
+
+	/**
+	 *	Remove a scheduled task.
+	 *
+	 *	DO NOT PASS the original callback to this function (you'll get a warning if you do).
+	 *	Instead you need to pass the object returned from onAt or onEvery. 
+	 */
+	this.off = function(so) {
+
+		if(so instanceof Function) {
+			var m = 'You are probably using the callback directly to remove it.\n';
+			m += 'You should use the object returned from onAt or onEvery instead.';
+			console.warn(m);
+			console.warn(so);
+			return;
+		}
+
+		if(so == null) {
+			return;
+		}
+
+		var i = tasks.indexOf(so);
+		if(i > -1) {
+			tasks.splice(i, 1);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 *	Remove all tasks scheduled using onAt or onEvery
+	 */
+	this.clearTasks = function() {
+		tasks.length = 0;
+	}
+
+	
+
+	if(autostart) {
+		that.start();
+	}
+}
+
+
+/* --- --- [Value] --- --- */
+
+/*
+ *	Also read this http://www.html5rocks.com/en/tutorials/es7/observe/
+ */
+var Value = function(_value) {
+
+	var that = this, 
+		value = _value, 
+		last = null;
+	
+	var min = null, max = null, wrap = false;
+
+	var observers = [];
+
+	that.observers = function() {
+		return observers;
+	}
+
+
+	that.on = function(callback, test, param) {
+		callback.test = test;
+		callback.param = param;
+		observers.push(callback);
+		return callback;
+	}
+
+	that.off = function(callback) {
+		var i = observers.indexOf(callback);
+		if(i > -1) observers.splice(i, 1);
+	}
+
+	that.range = function(_min, _max, _wrap) {
+		min = _min;
+		max = _max;
+		wrap = _wrap;
+		return that;
+	}
+
+	// For chaining
+	that.set = function(v) {
+		that.value = v;
+		return that;
+	}
+
+	var changed = function() {
+		var o;
+		for(var i = 0, n = observers.length; i < n; i++) {
+			o = observers[i];
+			if(!o.test || o.test(value, last)) {
+				o(value, last, o.param);
+			}
+		}
+	}
+
+	Object.defineProperty(this, 'value', {
+
+		get: function() { 
+			return value; 
+		},
+
+		set: function(n) { 
+			if(min != null && max != null) {
+				if(n < min) {
+					wrap ? n = n % (max+1) : n = min;
+					if(wrap) while(n < min) n += (max+1);
+				}
+
+				if(n > max) {
+					wrap ? n = n % (max+1) : n = max;
+					if(wrap) while(n < min) n += (max+1);
+				}
+			}
+
+			if(n == value) return;
+
+			last = value;
+			value = n; 
+			changed();
+			// setTimeout(changed, 0);
+		}
+
+	});
+
+	Object.defineProperty(this, 'last', {
+		get: function() { 
+			return last; 
+		},
+	});
+
+}
+
+
+
 /* --- --- [Application] --- --- */
 
-Application = (function(window) {
+Application = (function() {
 
-	var app = Events({}, true);
+	var app = {};
 	var router, broadcast;
 
+	app.resize = new Trigger();
+	app.route = new Value();
+	
 	app.init = function(params) {
 
 		params = params || {};
@@ -248,11 +508,11 @@ Application = (function(window) {
 		}
 
 		window.addEventListener('resize', function(e) {
-			app.trigger(MSG.RESIZE, e);
+			app.resize.trigger(e);
 		});
 
 		window.addEventListener('orientationchange', function(e) {
-			app.trigger(MSG.RESIZE, e);
+			app.resize.trigger(e);
 		});
 
 		console.log('Malibu v' + 
@@ -263,7 +523,7 @@ Application = (function(window) {
 	
 	return app;
 
-})(window);
+})();
 
 
 
@@ -783,12 +1043,13 @@ FrameImpulse = (function() {
 
 /* --- --- [HistoryRouter] --- --- */
 
-HistoryRouter = function (broadcast) {
+HistoryRouter = function (app) {
 
 	var rootUrl = document.location.protocol + '//' + (document.location.hostname || document.location.host);
 	if(document.location.port) rootUrl += ":" + document.location.port;
 
-	var route, prevRoute;
+	app.navigate = new Trigger();
+	app.hijackLinks = new Trigger();
 
 	var hijackLinks = function () {
 		if (!Simplrz.history) return;
@@ -835,34 +1096,22 @@ HistoryRouter = function (broadcast) {
 	// It's mostly for Chrome <33, so in the future this can be removed (maybe).
 	var historyAPIInitiated = false;
 
-	var notify = function() {
-		var r = route.substring(rootUrl.length);
-		var p = r.split("/");
-		p.shift(); // Remove the first empty element
-
-		broadcast.trigger(MSG.ROUTE, {
-			route: r,
-			parts: p,
-			prevRoute: prevRoute
-		});
+	var notify = function(r) {
+		app.route.value = r.substring(rootUrl.length + 1);
 	}
 
 	var pushState = function (href) {
 		if (Simplrz.history) history.pushState(null, null, href);
-		prevRoute = (route) ? route.replace(rootUrl, "") : null;
-		route = document.location.href;
-		notify();
+		notify(document.location.href);
 	};
 
 	window.addEventListener('popstate', function(e) {
 		historyAPIInitiated = true;
-		prevRoute = (route) ? route.replace(rootUrl, "") : null;
-		route = document.location.href;
-		notify();
+		notify(document.location.href);
 	});
 
-	broadcast.on(MSG.HIJACK_LINKS, hijackLinks);
-	broadcast.on(MSG.NAVIGATE, pushState);
+	app.hijackLinks.on(hijackLinks);
+	app.navigate.on(pushState);
 
 	setTimeout(function() {
 		if(!historyAPIInitiated) pushState();
@@ -900,15 +1149,6 @@ window.Loader = {
 		});
 	}
 };
-
-/* --- --- [MSG] --- --- */
-
-MSG = {
-	ROUTE: "route",
-	RESIZE: "resize",
-	HIJACK_LINKS: "hijack-links",
-	NAVIGATE: "navigate",
-}
 
 /* --- --- [VirtualScroll] --- --- */
 
@@ -1113,7 +1353,8 @@ var Timer = function(autostart, autoupdate) {
 	var paused = false;
 
 	this.time = 0;
-	this.frame = 0
+	this.frame = 0;
+	this.deltatime = 0;
 
 	var startTime, elapsedTime = 0;
 
@@ -1123,10 +1364,14 @@ var Timer = function(autostart, autoupdate) {
 		if(e._time < that.time) {
 			if(e._repeat != 0) {
 				e.callback(e._time);
-				e._time += e._interval;
+
+				var it = e._interval;
+				if(it instanceof Array) e._time += it[0] + Math.random() * (it[1] - it[0]);
+				else e._time += it;
+
 				e._repeat--;
 			} else {
-				setTimeout(that.off, 0, e); // <- is it good?
+				setTimeout(that.off, 0, e); // <- is it good enough?
 			}
 		}
 	};
@@ -1138,6 +1383,10 @@ var Timer = function(autostart, autoupdate) {
 
 	this.pause = function(p) {
 		paused = p;
+	}
+
+	this.paused = function() {
+		return paused;
 	}
 
 	/**
@@ -1170,6 +1419,7 @@ var Timer = function(autostart, autoupdate) {
 		if(d < MAX_FRAME_TIME && !paused) {
 			that.time += d;
 			that.frame++;
+			that.deltatime = d;
 		}
 
 		tasks.forEach(trackTask);
@@ -1198,7 +1448,7 @@ var Timer = function(autostart, autoupdate) {
 	/**
 	 *	Invokes the callback repeatedly overtime. All time values in ms.
 	 * 	
-	 *	_interval - how often to invoked the function
+	 *	_interval - how often to invoked the function. It can be an array of two elements specyfing a min/max range
 	 *	_time - when to start (i.e. delay, counted from 'now' i.e from when this method is called)
 	 *	callback - the callback to be invoked
 	 *	_repeat - how many times to repeat. If ommited or -1 will repeat infinitely
@@ -1238,6 +1488,10 @@ var Timer = function(autostart, autoupdate) {
 			return;
 		}
 
+		if(so == null) {
+			return;
+		}
+
 		var i = tasks.indexOf(so);
 		if(i > -1) {
 			tasks.splice(i, 1);
@@ -1261,16 +1515,17 @@ var Timer = function(autostart, autoupdate) {
 	}
 }
 
+
 /* --- --- [Util] --- --- */
 
-//Limits a value between start and end values.
+// Limits a value between start and end values.
 Math.clamp = function(value, start, end) {
 	if(value < start) return start;
 	else if(value > end) return end;
 	else return value;
 };
 
-//Limits a value between 0 and 1 .
+// Limits a value between 0 and 1 .
 Math.clamp01 = function(value) {
 	if(value < 0) return 0;
 	else if(value > 1) return 1;
@@ -1283,17 +1538,17 @@ Math.pointInRect = function(p, r) {
 	return (p.x >= r.left && p.x <= r.right) && (p.y >= r.top && p.y <= r.bottom);
 };
 
-//Normalizes a number from another range into a value between 0 and 1. 
+// Normalizes a number from another range into a value between 0 and 1. 
 Math.norm = function(value , min, max){
 	return (value - min) / (max - min);
 };
 
-//Re-maps a number from one range to another.
+// Re-maps a number from one range to another.
 Math.map = function(value, min1, max1, min2, max2) {
 	return Math.lerp(min2, max2, Math.norm(value, min1, max1));
 };
 
-//Calculates a number between two numbers at a specific increment.
+// Calculates a number between two numbers at a specific increment.
 Math.lerp = function(min, max, amt){
 	return min + (max - min) * amt;
 };

@@ -16,7 +16,7 @@
 
     </style>
 
-    <script type="text/javascript" src="../src/Events.js"></script>
+    <script type="text/javascript" src="../src/Trigger.js"></script>
 
 </head>
 <body>
@@ -35,11 +35,11 @@
 
     })();
  
-    var E1 = "event-1";
-    var E2 = "event-2";
-    var E3 = "event-3";
-
-    var broadcast = new Events();
+    var broadcast = {
+        e1: new Trigger('e1'),
+        e2: new Trigger('e2'),
+        e3: new Trigger('e3')
+    }
 
     var event1callback = function(data) {
         info('+ event 1 callback');
@@ -51,12 +51,12 @@
 
     var event2callbackB = function(data) {
         info('+ event 2 callback B');
-        broadcast.off(E2, event2callbackB);
+        broadcast.e2.off(event2callbackB);
     }
 
     var event2callbackC = function(data) {
         info('+ event 2 callback C');
-        broadcast.off(E2, event2callbackD);
+        broadcast.e2.off(event2callbackD);
     }
 
     var event2callbackD = function(data) {
@@ -77,20 +77,20 @@
 
     var event3callbackX = function(data) {
         info('+ event 3 callback X triggers E1');
-        broadcast.trigger(E1);
+        broadcast.e1.trigger();
     }
 
     //
 
     info('---- add E1 listener then trigger');
-    broadcast.on(E1, event1callback);
-    broadcast.trigger(E1);
+    broadcast.e1.on(event1callback);
+    broadcast.e1.trigger();
     info('');
 
     info('---- remove E1 listener then trigger E1. Add listener again');
-    broadcast.off(E1, event1callback);
-    broadcast.trigger(E1);
-    broadcast.on(E1, event1callback);
+    broadcast.e1.off(event1callback);
+    broadcast.e1.trigger();
+    broadcast.e1.on(event1callback);
     info('[ callback should not be invoked ]');
     info('');
 
@@ -98,32 +98,32 @@
     info('---- add 3 x E2 listener then trigger E2 twice');
     info('[ E2 listener B removes itself, so second time it should not fire ]');
     info('[ E2 listener C removes D, so second time D should not fire ]');
-    broadcast.on(E2, event2callbackA);
-    broadcast.on(E2, event2callbackB);
-    broadcast.on(E2, event2callbackC);
-    broadcast.on(E2, event2callbackD);
-    broadcast.trigger(E2);
+    broadcast.e2.on(event2callbackA);
+    broadcast.e2.on(event2callbackB);
+    broadcast.e2.on(event2callbackC);
+    broadcast.e2.on(event2callbackD);
+    broadcast.e2.trigger();
     info('');
-    broadcast.trigger(E2);
+    broadcast.e2.trigger();
     info('');
 
     info('---- add 3 x E3 listener then trigger E3');
-    broadcast.on(E3, event3callbackA);
-    broadcast.on(E3, event3callbackB);
-    broadcast.on(E3, event3callbackC);
-    broadcast.trigger(E3);
-    broadcast.off(E3, event3callbackA);
-    broadcast.off(E3, event3callbackB);
-    broadcast.off(E3, event3callbackC);
+    broadcast.e3.on(event3callbackA);
+    broadcast.e3.on(event3callbackB);
+    broadcast.e3.on(event3callbackC);
+    broadcast.e3.trigger();
+    broadcast.e3.off(event3callbackA);
+    broadcast.e3.off(event3callbackB);
+    broadcast.e3.off(event3callbackC);
     info('');
 
     info('---- add 4 x E3 listeners, first of them triggers E1. Trigger E3');
-    info('[ E1 should still be invoked at the end ]');
-    broadcast.on(E3, event3callbackX);
-    broadcast.on(E3, event3callbackA);
-    broadcast.on(E3, event3callbackB);
-    broadcast.on(E3, event3callbackC);
-    broadcast.trigger(E3);
+    info('[ E1 should be invoked after E3 X ]');
+    broadcast.e3.on(event3callbackX);
+    broadcast.e3.on(event3callbackA);
+    broadcast.e3.on(event3callbackB);
+    broadcast.e3.on(event3callbackC);
+    broadcast.e3.trigger();
     info('');
 
 
