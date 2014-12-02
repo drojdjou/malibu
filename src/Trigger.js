@@ -8,7 +8,8 @@ var Trigger = function() {
 	var lateTriggers = [];
 	var lateRemovals = [];
 
-	t.on = function (callback) {
+	t.on = function (callback, context) {
+		callback.context = context;
 		listeners.push(callback);
 	};
 
@@ -37,7 +38,7 @@ var Trigger = function() {
 		var i = 0, nl = listeners.length;
 		while(i < nl) {
 			var f = listeners[i];
-			f(data);
+			f.call(f.context, data);
 			i++;
 		}
 		

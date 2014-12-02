@@ -34,7 +34,19 @@
         }
 
     })();
- 
+
+    var someContext = new (function() {
+        var privVar = "private in someContext";
+        this.publicVar = "public in someContext";
+    })(); 
+
+    var event1Contextcallback = function(data) {
+        info('+ event 1 callback in someContext');
+        // console.log(this);
+        // console.log(this.publicVar);
+        // console.log(privVar); // This will fail
+    }
+
     var broadcast = {
         e1: new Trigger('e1'),
         e2: new Trigger('e2'),
@@ -84,7 +96,9 @@
 
     info('---- add E1 listener then trigger');
     broadcast.e1.on(event1callback);
+    broadcast.e1.on(event1Contextcallback, someContext);
     broadcast.e1.trigger();
+    broadcast.e1.off(event1Contextcallback);
     info('');
 
     info('---- remove E1 listener then trigger E1. Add listener again');
