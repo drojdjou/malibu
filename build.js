@@ -40,6 +40,8 @@ var updateVersion = function() {
 
 	fs.writeFileSync("./version.json", JSON.stringify(version));
 	fs.writeFileSync(baseUrl  + "Version.js", jsHeader + JSON.stringify(version));
+
+	
 }
 
 var minify = function(set) {
