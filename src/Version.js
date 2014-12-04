@@ -1,2 +1,2 @@
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"3","build":9,"date":"2014-12-04T16:52:20.168Z"}
+var Framework = {"version":"3","build":10,"date":"2014-12-04T17:08:14.568Z"}

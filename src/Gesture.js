@@ -24,6 +24,8 @@ var Gesture = function(tolerance) {
 		e = isTouch ? e.targetTouches[0] : e;
 		start.x = e.pageX;
 		start.y = e.pageY;
+		delta.x = 0;
+		delta.y = 0;
 		startTime = new Date().getTime();
 	}
 
