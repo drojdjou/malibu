@@ -27,6 +27,7 @@ var frameworkFiles = {
 		"HistoryRouter",
 		"Loader",
 		"VirtualScroll",
+		"Gesture",
 		"Timer",
 		"Util"
 	]
