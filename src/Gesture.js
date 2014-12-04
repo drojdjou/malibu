@@ -18,7 +18,7 @@ var Gesture = function(tolerance) {
 	var start = { x:0, y:0 }, 
 		delta = { x: 0, y: 0 },
 		startTime = 0,
-		maxTime = 300;
+		maxTime = 300, minDistance = 30*30; // it's squared
 
 	var onStart = function(e) {
 		e = isTouch ? e.targetTouches[0] : e;
@@ -34,10 +34,12 @@ var Gesture = function(tolerance) {
 	}
 
 	var onStop = function(e) {
+		var ds = delta.x * delta.x + delta.y * delta.y;
 		var dt = new Date().getTime() - startTime;
 		var t = tolerance;
 
 		if(dt > maxTime) return;
+		if(ds < minDistance) return;
 
 		var a = Math.atan2(delta.y, delta.x) / Math.PI;
 		// up = -0.5, down = 0.5, left = 1, right = 0
