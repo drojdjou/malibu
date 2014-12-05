@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"3","build":10,"date":"2014-12-04T17:08:14.568Z"}
+var Framework = {"version":"3","build":11,"date":"2014-12-05T03:35:59.700Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -1398,16 +1398,37 @@ var Gesture = function(tolerance) {
 		if(a < -1.0 + t || a >  1.0 - t) that.swipeLeft.trigger();
 	}
 
+	var onKeyDown = function(e) {
+		// 37 left arrow, 38 up arrow, 39 right arrow, 40 down arrow
+		event.deltaX = event.deltaY = 0;
+		switch(e.keyCode) {
+			case 37:
+				that.swipeLeft.trigger();
+				break;
+			case 39:
+				that.swipeRight.trigger();
+				break;
+			case 38:
+				that.swipeUp.trigger();
+				break;
+			case 40:
+				that.swipeDown.trigger();
+				break;
+		}
+	}
+
 	this.create = function() {
 		document.addEventListener(downEvent, onStart);
 		document.addEventListener(moveEvent, onMove);
 		document.addEventListener(upEvent, onStop);
+		document.addEventListener("keydown", onKeyDown);
 	}
 
 	this.destroy = function() {
 		document.removeEventListener(downEvent, onStart);
 		document.removeEventListener(moveEvent, onMove);
 		document.removeEventListener(upEvent, onStop);
+		document.removeEventListener("keydown", onKeyDown);
 	}
 
 	this.create();
