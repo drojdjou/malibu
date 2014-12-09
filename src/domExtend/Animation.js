@@ -41,7 +41,7 @@ var Animation = function(ext, element, globalExt) {
 
 		a.setDelay = function(t) {
 			a.delay = t;
-			return t;
+			return a;
 		}
 
 		return a;

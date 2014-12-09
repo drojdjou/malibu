@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"3","build":13,"date":"2014-12-09T20:59:47.381Z"}
+var Framework = {"version":"3","build":14,"date":"2014-12-09T21:02:03.876Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -937,7 +937,7 @@ var Animation = function(ext, element, globalExt) {
 
 		a.setDelay = function(t) {
 			a.delay = t;
-			return t;
+			return a;
 		}
 
 		return a;
