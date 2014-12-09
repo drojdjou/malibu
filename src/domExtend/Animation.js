@@ -1,4 +1,4 @@
-var Animation = function(ext, element) {
+var Animation = function(ext, element, globalExt) {
 
 	var events = {
 		'animation': 'animationend',
@@ -22,7 +22,7 @@ var Animation = function(ext, element) {
 	}
 
 	// animation: name duration timing-function delay iteration-count direction fill-mode play-state;
-	ext.createAnimation = function(name, duration, ease, delay) {
+	var createAnimation = function(name, duration, ease, delay) {
 		var a = {
 			name: name,
 			duration: duration || 1,
@@ -46,6 +46,9 @@ var Animation = function(ext, element) {
 
 		return a;
 	}
+
+	globalExt.createAnimation = createAnimation;
+	ext.createAnimation = createAnimation;
 
 	ext.animate = function(anim, callback, dontClear) {
 

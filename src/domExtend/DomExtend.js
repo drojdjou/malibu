@@ -53,7 +53,7 @@ var DomExtend = (function() {
 		if(window.Transition) Transition(ext, element); 
 
 		// Add Animation related functions (see Transition.js for details)
-		if(window.Animation) Animation(ext, element); 
+		if(window.Animation) Animation(ext, element, that); 
 
 		ext.element = element;
 		element.ext = ext;

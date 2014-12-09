@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"3","build":12,"date":"2014-12-09T20:55:22.989Z"}
+var Framework = {"version":"3","build":13,"date":"2014-12-09T20:59:47.381Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -586,7 +586,7 @@ var DomExtend = (function() {
 		if(window.Transition) Transition(ext, element); 
 
 		// Add Animation related functions (see Transition.js for details)
-		if(window.Animation) Animation(ext, element); 
+		if(window.Animation) Animation(ext, element, that); 
 
 		ext.element = element;
 		element.ext = ext;
@@ -894,7 +894,7 @@ var Transition = function(ext, element) {
 
 /* --- --- [domExtend/Animation] --- --- */
 
-var Animation = function(ext, element) {
+var Animation = function(ext, element, globalExt) {
 
 	var events = {
 		'animation': 'animationend',
@@ -918,7 +918,7 @@ var Animation = function(ext, element) {
 	}
 
 	// animation: name duration timing-function delay iteration-count direction fill-mode play-state;
-	ext.createAnimation = function(name, duration, ease, delay) {
+	var createAnimation = function(name, duration, ease, delay) {
 		var a = {
 			name: name,
 			duration: duration || 1,
@@ -942,6 +942,9 @@ var Animation = function(ext, element) {
 
 		return a;
 	}
+
+	globalExt.createAnimation = createAnimation;
+	ext.createAnimation = createAnimation;
 
 	ext.animate = function(anim, callback, dontClear) {
 
