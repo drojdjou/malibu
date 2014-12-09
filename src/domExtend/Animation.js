@@ -16,12 +16,12 @@ var Animation = function(ext, element, globalExt) {
 			anim.delay + 's', 
 			anim.count, 
 			anim.direction, 
-			anim.fillMode, 
-			anim.playState
+			anim.fillMode//, 
+			// anim.playState // doesn't work on Safari 8.0, but it's not very useful anyway
 		].join(' ');
 	}
 
-	// animation: name duration timing-function delay iteration-count direction fill-mode play-state;
+	// animation: name duration timing-function delay iteration-count direction fill-mode (play-state - not-inplemented);
 	var createAnimation = function(name, duration, ease, delay) {
 		var a = {
 			name: name,
@@ -30,8 +30,8 @@ var Animation = function(ext, element, globalExt) {
 			delay: delay || 0,
 			count: 1,
 			direction: 'normal',
-			fillMode: 'backwards',
-			playState: 'running'
+			fillMode: 'backwards'//,
+			// playState: 'running'
 		};
 
 		a.setTime = function(t) {
@@ -52,7 +52,7 @@ var Animation = function(ext, element, globalExt) {
 
 	ext.animate = function(anim, callback, dontClear) {
 
-		ext.show();
+		if(ext.show) ext.show();
 
 		var a;
 
@@ -84,5 +84,6 @@ var Animation = function(ext, element, globalExt) {
 
 		element.style[Simplrz.prefix.js + "Animation"] = a;
 		element.style["animation"] = a;
+		console.log('Setting animation', element, a);
 	}
 };
