@@ -23,7 +23,7 @@ var Animation = function(ext, element) {
 
 	// animation: name duration timing-function delay iteration-count direction fill-mode play-state;
 	ext.createAnimation = function(name, duration, ease, delay) {
-		return {
+		var a = {
 			name: name,
 			duration: duration || 1,
 			ease: ease || 'ease',
@@ -32,10 +32,24 @@ var Animation = function(ext, element) {
 			direction: 'normal',
 			fillMode: 'backwards',
 			playState: 'running'
+		};
+
+		a.setTime = function(t) {
+			a.time = t;
+			return a;
 		}
+
+		a.setDelay = function(t) {
+			a.delay = t;
+			return t;
+		}
+
+		return a;
 	}
 
 	ext.animate = function(anim, callback, dontClear) {
+
+		ext.show();
 
 		var a;
 

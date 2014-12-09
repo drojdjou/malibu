@@ -28,7 +28,6 @@ var frameworkFiles = {
 		"Loader",
 		"VirtualScroll",
 		"Gesture",
-		"Timer",
 		"Util"
 	]
 };
