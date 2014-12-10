@@ -84,6 +84,5 @@ var Animation = function(ext, element, globalExt) {
 
 		element.style[Simplrz.prefix.js + "Animation"] = a;
 		element.style["animation"] = a;
-		console.log('Setting animation', element, a);
 	}
 };
