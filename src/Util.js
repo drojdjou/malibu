@@ -1,48 +1,49 @@
-// Limits a value between start and end values.
-Math.clamp = function(value, start, end) {
-	if(value < start) return start;
-	else if(value > end) return end;
-	else return value;
-};
-
-// Limits a value between 0 and 1 .
-Math.clamp01 = function(value) {
-	if(value < 0) return 0;
-	else if(value > 1) return 1;
-	else return value;
-};
-
-// Rect = top/left/right/bottom - can be the object returned by element.getBoundingClientRect()
-// Point = needs to have x/y property
-Math.pointInRect = function(p, r) {
-	return (p.x >= r.left && p.x <= r.right) && (p.y >= r.top && p.y <= r.bottom);
-};
-
-// Normalizes a number from another range into a value between 0 and 1. 
-Math.norm = function(value , min, max){
-	return (value - min) / (max - min);
-};
-
-// Re-maps a number from one range to another.
-Math.map = function(value, min1, max1, min2, max2) {
-	return Math.lerp(min2, max2, Math.norm(value, min1, max1));
-};
-
-// Calculates a number between two numbers at a specific increment.
-Math.lerp = function(min, max, amt){
-	return min + (max - min) * amt;
-};
-
-Math.hexToRgb = function(hex) {
-	var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-	return result ? {
-			r: parseInt(result[1], 16),
-			g: parseInt(result[2], 16),
-			b: parseInt(result[3], 16)
-	} : null;
-};
-
 Util = {
+
+	fullbleed: function(element) {
+		var isVideo = element.videoWidth > 0;
+
+
+
+		var sw = window.innerWidth,
+			sh = window.innerHeight,
+			vw = isVideo ? element.videoWidth : element.width,
+			vh = isVideo ? element.videoHeight : element.height;
+
+		var sa = sw / sh;
+		var va = vw / vh;
+
+		var vx, vy, vcw, vch;
+
+		// large aspect = wide screen, small aspect = tall screen
+		// element aspect < screen aspect = height needs overflow
+		// element apsect > screen aspect = width needs overflow
+
+		if(va < sa) {
+			vx = 0;
+			vcw = sw;
+			vch = vh / vw * sw;
+			vy = (vch - sh) * -0.5;
+		} else if(va > sa) {
+			vy = 0;
+			vch = sh;
+			vcw = vw / vh * sh;
+			vx = (vcw - sw) * -0.5;
+		} else {
+			vx = vy = 0, vcw = sw, vch = sh;
+		}
+
+		return [vx, vy, vcw, vch];
+	},
+
+	hexToRgb: function(hex) {
+		var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+		return result ? {
+				r: parseInt(result[1], 16),
+				g: parseInt(result[2], 16),
+				b: parseInt(result[3], 16)
+		} : null;
+	},
 
 	handleTap: function(element, callback) {
 
