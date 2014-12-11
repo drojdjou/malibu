@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"3","build":18,"date":"2014-12-11T02:52:17.995Z"}
+var Framework = {"version":"3","build":19,"date":"2014-12-11T02:58:43.357Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -962,8 +962,10 @@ var Animation = function(ext, element, globalExt) {
 
 		var eventName = events[Simplrz.prefix.js];
 
-		var onEnded = function() {
-			element.removeEventListener(eventName, onEnded);
+		if(element._onEnded) element.removeEventListener(eventName, element._onEnded);
+
+		element._onEnded = function() {
+			element.removeEventListener(eventName, element._onEnded);
 
 			if(dontClear == null) {
 				element.style[Simplrz.prefix.js + "Animation"] = '';
@@ -973,9 +975,15 @@ var Animation = function(ext, element, globalExt) {
 			if(callback) callback();
 		}
 
-		element.addEventListener(eventName, onEnded);
-		element.style[Simplrz.prefix.js + "Animation"] = a;
-		element.style["animation"] = a;
+
+		element.style[Simplrz.prefix.js + "Animation"] = "";
+		element.style["animation"] = "";
+
+		setTimeout(function() {
+			element.addEventListener(eventName, element._onEnded);
+			element.style[Simplrz.prefix.js + "Animation"] = a;
+			element.style["animation"] = a;
+		}, 0);
 	}
 };
 
