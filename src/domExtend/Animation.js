@@ -64,24 +64,20 @@ var Animation = function(ext, element, globalExt) {
 			a = animStrigify(anim);
 		}
 
-		if(callback) {
+		var eventName = events[Simplrz.prefix.js];
 
-			var eventName = events[Simplrz.prefix.js];
+		var onEnded = function() {
+			element.removeEventListener(eventName, onEnded);
 
-			var onEnded = function() {
-				element.removeEventListener(eventName, onEnded);
-
-				if(dontClear == null) {
-					element.style[Simplrz.prefix.js + "Animation"] = '';
-					element.style["animation"] = '';
-				}
-
-				callback();
+			if(dontClear == null) {
+				element.style[Simplrz.prefix.js + "Animation"] = '';
+				element.style["animation"] = '';
 			}
 
-			element.addEventListener(eventName, onEnded);
+			if(callback) callback();
 		}
 
+		element.addEventListener(eventName, onEnded);
 		element.style[Simplrz.prefix.js + "Animation"] = a;
 		element.style["animation"] = a;
 	}
