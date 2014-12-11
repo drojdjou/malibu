@@ -55,16 +55,16 @@ var Gesture = function(tolerance) {
 		// 37 left arrow, 38 up arrow, 39 right arrow, 40 down arrow
 		event.deltaX = event.deltaY = 0;
 		switch(e.keyCode) {
-			case 37:
+			case 39:
 				that.swipeLeft.trigger();
 				break;
-			case 39:
+			case 37:
 				that.swipeRight.trigger();
 				break;
-			case 38:
+			case 40:
 				that.swipeUp.trigger();
 				break;
-			case 40:
+			case 38:
 				that.swipeDown.trigger();
 				break;
 		}
