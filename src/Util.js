@@ -36,6 +36,35 @@ Util = {
 		return [vx, vy, vcw, vch];
 	},
 
+	fullContain = function (img) {
+		var isVideo = img.videoWidth > 0;
+
+		var w = window.innerWidth;
+		var h = window.innerHeight;
+		var iw = isVideo ? img.videoWidth : img.width;
+		var ih = isVideo ? img.videoHeight : img.height;
+		var scrRatio = w / h;
+		var imgRatio = iw / ih;
+		var sx, sy, sw, sh;
+
+		// contain
+		if(scrRatio > imgRatio){
+			sy = 0;
+			sh = h;
+			sw = (h / ih ) * iw;
+			sx = (w - sw) /2;
+		}else if(scrRatio < imgRatio){
+			sx = 0;
+			sw = w;
+			sh = (w / iw ) * ih;
+			sy = (h - sh) /2;
+		}else{
+			sx = 0, sy = 0, sw = w , sh = h;
+		}
+
+		return[sx, sy, sw , sh];
+	},
+
 	hexToRgb: function(hex) {
 		var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 		return result ? {
