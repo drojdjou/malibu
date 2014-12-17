@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"3","build":20,"date":"2014-12-11T04:53:03.220Z"}
+var Framework = {"version":"3","build":21,"date":"2014-12-17T04:16:57.363Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -623,11 +623,22 @@ var State = function(ext, element) {
 	};
 
 	ext.on = function(event, callback, useCapture) {
-		return element.addEventListener(event, callback, useCapture);
+		if(Simplrz.touch && event == 'click') {
+			callback.___thProxy = Util.handleTap(element, callback);
+			return callback.___thProxy;
+		} else {
+			return element.addEventListener(event, callback, useCapture);
+		}
 	};
 
 	ext.off = function(event, callback, useCapture) {
-		return element.removeEventListener(event, callback, useCapture);
+		if(callback.___thProxy) {
+			Util.clearTapHandler(element, callback.___thProxy);
+			callback.___thProxy = null;
+		} else {
+			return element.removeEventListener(event, callback, useCapture);	
+		}
+		
 	};
 
 	ext.css = function(property, value) {
@@ -1495,6 +1506,35 @@ Util = {
 		return [vx, vy, vcw, vch];
 	},
 
+	fullContain: function(img) {
+		var isVideo = img.videoWidth > 0;
+
+		var w = window.innerWidth;
+		var h = window.innerHeight;
+		var iw = isVideo ? img.videoWidth : img.width;
+		var ih = isVideo ? img.videoHeight : img.height;
+		var scrRatio = w / h;
+		var imgRatio = iw / ih;
+		var sx, sy, sw, sh;
+
+		// contain
+		if(scrRatio > imgRatio){
+			sy = 0;
+			sh = h;
+			sw = (h / ih ) * iw;
+			sx = (w - sw) * 0.5;
+		}else if(scrRatio < imgRatio){
+			sx = 0;
+			sw = w;
+			sh = (w / iw ) * ih;
+			sy = (h - sh) * 0.5;
+		}else{
+			sx = 0, sy = 0, sw = w , sh = h;
+		}
+
+		return[sx, sy, sw , sh];
+	},
+
 	hexToRgb: function(hex) {
 		var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 		return result ? {
@@ -1506,7 +1546,7 @@ Util = {
 
 	handleTap: function(element, callback) {
 
-		var tapHandler = (function() {
+		var tapHandler = callback.___thProxy || (function() {
 
 			var th = {};
 			var minTime = 20000;
