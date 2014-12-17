@@ -52,12 +52,12 @@ Util = {
 			sy = 0;
 			sh = h;
 			sw = (h / ih ) * iw;
-			sx = (w - sw) /2;
+			sx = (w - sw) * 0.5;
 		}else if(scrRatio < imgRatio){
 			sx = 0;
 			sw = w;
 			sh = (w / iw ) * ih;
-			sy = (h - sh) /2;
+			sy = (h - sh) * 0.5;
 		}else{
 			sx = 0, sy = 0, sw = w , sh = h;
 		}
