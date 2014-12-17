@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tap handling on mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <style type="text/css">
+
+        body {
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            font-family: Arial;
+            font-size: 13px;
+        }
+
+        section {
+            padding: 20px;
+            position: absolute;
+            width: 100%;
+        }
+
+        button {
+            background-color: #000;
+            border: 1px solid white;
+            text-transform: uppercase;
+            display: block;
+            margin: 0 0 20px 0;
+            padding: 10px;
+            color: white;
+            font-size: 1em;
+        }
+
+        div {
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        
+
+    </style>
+
+<script type="text/javascript" src="../src/Util.js"></script>
+<script type="text/javascript" src="../src/Simplrz.js"></script>
+<script type="text/javascript" src="../src/domExtend/DomExtend.js"></script>
+<script type="text/javascript" src="../src/domExtend/State.js"></script>
+
+</head>
+<body>
+
+    <section>
+        <button id='register'>Register handler</button>
+        <button id='fire'>Fire handler</button>
+        <button id='remove'>Remove handler</button>
+
+        <div id="log"></div>
+    </section>
+
+    <script type="text/javascript">
+
+        // Let's make use of this ugly feature where each #id has a 'id' variable in JS by default
+
+        EXT.extend(register);
+        EXT.extend(fire);
+        EXT.extend(remove);
+
+        var clickHandler = function() {
+            var hasProxy = clickHandler.___thProxy != null;
+            log.innerHTML += 'event fired, proxy: ' + hasProxy + '<br>';
+        }
+
+        register.ext.on('click', function() {
+            log.innerHTML += 'event registered<br>';
+            fire.ext.on('click', clickHandler);
+        });
+
+        remove.ext.on('click', function() {
+            log.innerHTML += 'event unregistered<br>';
+            fire.ext.off('click', clickHandler);
+        });
+
+    </script>
+
+<script type="text/javascript">
+    if(location.host.indexOf("localhost") > -1 || location.host.indexOf("192.168") > -1 || location.host.indexOf("127.0") > -1) {
+        document.write('<script src=\"http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1\"></' + 'script>');
+    }
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

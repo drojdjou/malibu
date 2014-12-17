@@ -36,7 +36,7 @@ Util = {
 		return [vx, vy, vcw, vch];
 	},
 
-	fullContain = function (img) {
+	fullContain: function(img) {
 		var isVideo = img.videoWidth > 0;
 
 		var w = window.innerWidth;

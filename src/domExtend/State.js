@@ -19,11 +19,22 @@ var State = function(ext, element) {
 	};
 
 	ext.on = function(event, callback, useCapture) {
-		return element.addEventListener(event, callback, useCapture);
+		if(Simplrz.touch && event == 'click') {
+			callback.___thProxy = Util.handleTap(element, callback);
+			return callback.___thProxy;
+		} else {
+			return element.addEventListener(event, callback, useCapture);
+		}
 	};
 
 	ext.off = function(event, callback, useCapture) {
-		return element.removeEventListener(event, callback, useCapture);
+		if(callback.___thProxy) {
+			Util.clearTapHandler(element, callback.___thProxy);
+			callback.___thProxy = null;
+		} else {
+			return element.removeEventListener(event, callback, useCapture);	
+		}
+		
 	};
 
 	ext.css = function(property, value) {
