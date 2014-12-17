@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"3","build":21,"date":"2014-12-17T04:16:57.363Z"}
+var Framework = {"version":"3","build":24,"date":"2014-12-17T19:06:08.258Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -959,8 +959,6 @@ var Animation = function(ext, element, globalExt) {
 
 	ext.animate = function(anim, callback, dontClear) {
 
-		if(ext.show) ext.show();
-
 		var a;
 
 		if(anim instanceof Array) {
@@ -991,6 +989,7 @@ var Animation = function(ext, element, globalExt) {
 		element.style["animation"] = "";
 
 		setTimeout(function() {
+			if(ext.show) ext.show();
 			element.addEventListener(eventName, element._onEnded);
 			element.style[Simplrz.prefix.js + "Animation"] = a;
 			element.style["animation"] = a;
@@ -1059,6 +1058,7 @@ FrameImpulse = (function() {
 	}
 
 	r.off = function(f) {
+		if(listeners.indexOf(f) == -1) { return; }
 		toRemove.push(f);
 		numToRemove = toRemove.length;
 		// console.log("FrameImpulse > scheduled removal > total :", numListeners);

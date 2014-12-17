@@ -72,7 +72,7 @@ var concat = function(set) {
 
 updateVersion();
 
-console.log("Compressing javascript. Framework " + version.version + " build " + version.build);
+console.log("\033[31mFramework " + version.version + " build " + version.build + "\033[0m");
 
 var minifiedFramework = minify(frameworkFiles, false);
 var concatenatedFramework = concat(frameworkFiles, false);

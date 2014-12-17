@@ -52,8 +52,6 @@ var Animation = function(ext, element, globalExt) {
 
 	ext.animate = function(anim, callback, dontClear) {
 
-		if(ext.show) ext.show();
-
 		var a;
 
 		if(anim instanceof Array) {
@@ -84,6 +82,7 @@ var Animation = function(ext, element, globalExt) {
 		element.style["animation"] = "";
 
 		setTimeout(function() {
+			if(ext.show) ext.show();
 			element.addEventListener(eventName, element._onEnded);
 			element.style[Simplrz.prefix.js + "Animation"] = a;
 			element.style["animation"] = a;
