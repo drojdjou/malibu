@@ -76,7 +76,7 @@ Util = {
 
 	handleTap: function(element, callback) {
 
-		var tapHandler = (function() {
+		var tapHandler = callback.___thProxy || (function() {
 
 			var th = {};
 			var minTime = 20000;
