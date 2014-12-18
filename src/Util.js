@@ -107,7 +107,7 @@ Util = {
 				var dy = e.changedTouches[0].pageY - sy;
 				var dsq = (dx*dx + dy*dy);
 
-				if(t < minTime && dsq < minDistSq) cb.apply(el);
+				if(t < minTime && dsq < minDistSq) cb.call(el, e);
 			}
 
 			return th;

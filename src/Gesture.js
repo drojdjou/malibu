@@ -4,7 +4,7 @@
  *	maxTime - how long before swipe is not considered a swipe (default 300ms)
  *	minDistance - how much must the user move to consider this a swipe (default 30px)
  *	tolerance - in radians, how far off vertical or horizontal axis is considered as swipe 
- *				(default: 0.1, don't make it larger than (Math.PI/4) i.e. 45deg)
+ *				default: 0.1, don't make it larger than 0.25 (i.e. 45deg)
  */
 var Gesture = function(options) {
 

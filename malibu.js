@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"3","build":25,"date":"2014-12-18T20:48:58.305Z"}
+var Framework = {"version":"3","build":26,"date":"2014-12-18T21:43:24.363Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -1383,7 +1383,7 @@ var VirtualScroll = (function(document) {
  *	maxTime - how long before swipe is not considered a swipe (default 300ms)
  *	minDistance - how much must the user move to consider this a swipe (default 30px)
  *	tolerance - in radians, how far off vertical or horizontal axis is considered as swipe 
- *				(default: 0.1, don't make it larger than (Math.PI/4) i.e. 45deg)
+ *				default: 0.1, don't make it larger than 0.25 (i.e. 45deg)
  */
 var Gesture = function(options) {
 
@@ -1588,7 +1588,7 @@ Util = {
 				var dy = e.changedTouches[0].pageY - sy;
 				var dsq = (dx*dx + dy*dy);
 
-				if(t < minTime && dsq < minDistSq) cb.apply(el);
+				if(t < minTime && dsq < minDistSq) cb.call(el, e);
 			}
 
 			return th;
