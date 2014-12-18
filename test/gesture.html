@@ -41,7 +41,7 @@
 
     var s = document.querySelector('div');
 
-    var g = new Gesture();
+    var g = new Gesture({ maxTime: 3000, tolerance: 0.3 });
 
     var reset = function() {
         setTimeout(function() {

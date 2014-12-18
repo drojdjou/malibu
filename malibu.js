@@ -1,7 +1,7 @@
 /* --- --- [Version] --- --- */
 
 /** DO NOT EDIT. Updated from version.json **/
-var Framework = {"version":"3","build":24,"date":"2014-12-17T19:06:08.258Z"}
+var Framework = {"version":"3","build":25,"date":"2014-12-18T20:48:58.305Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -1377,7 +1377,17 @@ var VirtualScroll = (function(document) {
 
 /* --- --- [Gesture] --- --- */
 
-var Gesture = function(tolerance) {
+/**
+ * 	Possible options are:
+ *
+ *	maxTime - how long before swipe is not considered a swipe (default 300ms)
+ *	minDistance - how much must the user move to consider this a swipe (default 30px)
+ *	tolerance - in radians, how far off vertical or horizontal axis is considered as swipe 
+ *				(default: 0.1, don't make it larger than (Math.PI/4) i.e. 45deg)
+ */
+var Gesture = function(options) {
+
+	options = options || {};
 
 	var that = this;
 	var cl;
@@ -1392,12 +1402,13 @@ var Gesture = function(tolerance) {
 	this.swipeLeft = new Trigger();
 	this.swipeRight = new Trigger();
 
-	tolerance = tolerance || 0.1;
+	tolerance = options.tolerance || 0.1;
 
 	var start = { x:0, y:0 }, 
 		delta = { x: 0, y: 0 },
 		startTime = 0,
-		maxTime = 300, minDistance = 30*30; // it's squared
+		maxTime = options.maxTime || 300, minDistance = options.minDistance || 30; 
+		minDistance = minDistance * minDistance; // square it for faster math
 
 	var onStart = function(e) {
 		e = isTouch ? e.targetTouches[0] : e;
