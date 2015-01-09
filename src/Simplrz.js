@@ -42,6 +42,9 @@ window.Simplrz = (function() {
 		}
 	} 
 
+	// -- BROWSER HACKS BEGIN -- 
+	// These properties are for browser specific hack (yes, they are sometimes necessary)
+
 	/**
 	 *	Note on detecting some CSS features:
 	 *
@@ -72,8 +75,6 @@ window.Simplrz = (function() {
 		ie = (m && m.length > 1) ? parseInt(m[1]) : null;
 	}
 
-
-	// These properties are for browser specific hack (yes, they are sometimes necessary)
 	s.ie = ie || false;
 	classes.push((ie) ? "ie-" + ie : "no-ie");
 
@@ -83,8 +84,13 @@ window.Simplrz = (function() {
 	s.safariDesktop = navigator.userAgent.match(/Safari/) && !navigator.userAgent.match(/Chrome/) && !('ontouchstart' in document);
 	classes.push(s.safariDesktop ? "safari-desktop" : "no-safari-desktop");
 
-	s.ipad7 = navigator.userAgent.match(/iPad;.*CPU.*OS 7_\d/i) || false;
-	classes.push(s.ipad7 ? "ipad7" : "no-ipad7");
+	// s.ipad7 = navigator.userAgent.match(/iPad;.*CPU.*OS 7_\d/i) || false;
+	// classes.push(s.ipad7 ? "ipad7" : "no-ipad7");
+
+	s.iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+	classes.push(s.iOS ? "ios" : "no-ios");
+
+	// -- BROWSER HACKS END -- 
 
 	check("css3d", function() {
 
