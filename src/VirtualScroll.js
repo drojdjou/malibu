@@ -62,6 +62,12 @@ var VirtualScroll = (function(document) {
 		if(numListeners <= 0) destroyListeners();
 	}
 
+	vs.lockTouch = function() {
+		document.addEventListener('touchmove', function(e) {
+			e.preventDefault();
+		});
+	}
+
 	var notify = function(e) {
 		event.x += event.deltaX;
 		event.y += event.deltaY;

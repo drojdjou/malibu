@@ -27,7 +27,7 @@ var DomExtend = (function() {
 
 	that.extend = function(element) {
 
-		if(element.ext) return;
+		if(element.ext) return element;
 
 		var ext = {};
 
@@ -44,16 +44,16 @@ var DomExtend = (function() {
 		};
 
 		// Add State related functions (see State.js for details)
-		if(window.State) State(ext, element);
+		if(window.ExtState) ExtState(ext, element);
 
 		// Add Transform related functions (see Transform.js for details)
-		if(window.Transform) Transform(ext, element);
+		if(window.ExtTransform) ExtTransform(ext, element);
 
 		// Add Transition related functions (see Transition.js for details)
-		if(window.Transition) Transition(ext, element); 
+		if(window.ExtTransition) ExtTransition(ext, element); 
 
 		// Add Animation related functions (see Transition.js for details)
-		if(window.Animation) Animation(ext, element, that); 
+		if(window.ExtAnimation) ExtAnimation(ext, element, that); 
 
 		ext.element = element;
 		element.ext = ext;

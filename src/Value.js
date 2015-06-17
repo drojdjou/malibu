@@ -16,11 +16,16 @@ var Value = function(_value) {
 	}
 
 
-	that.on = function(callback, test, param) {
-		callback.test = test;
-		callback.param = param;
-		observers.push(callback);
-		return callback;
+	that.on = function(callback, test, param, noInitCallback) {
+		var o = callback;
+		o.test = test;
+		o.param = param;
+
+		// Fire the callback initially so that all values/flags of the subscriber can be adjusted at startup
+		if(!noInitCallback && (!o.test || o.test(value, last))) o(value, last, param);
+
+		observers.push(o);
+		return o;
 	}
 
 	that.off = function(callback) {

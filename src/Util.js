@@ -1,12 +1,10 @@
-Util = {
+var Util = {
 
-	fullbleed: function(element) {
+	fullbleed: function(element, w, h) {
 		var isVideo = element.videoWidth > 0;
 
-
-
-		var sw = window.innerWidth,
-			sh = window.innerHeight,
+		var sw = w || window.innerWidth,
+			sh = h || window.innerHeight,
 			vw = isVideo ? element.videoWidth : element.width,
 			vh = isVideo ? element.videoHeight : element.height;
 
@@ -48,18 +46,18 @@ Util = {
 		var sx, sy, sw, sh;
 
 		// contain
-		if(scrRatio > imgRatio){
+		if(scrRatio > imgRatio) {
 			sy = 0;
 			sh = h;
-			sw = (h / ih ) * iw;
+			sw = (h / ih) * iw;
 			sx = (w - sw) * 0.5;
-		}else if(scrRatio < imgRatio){
+		} else if(scrRatio < imgRatio) {
 			sx = 0;
 			sw = w;
-			sh = (w / iw ) * ih;
+			sh = (w / iw) * ih;
 			sy = (h - sh) * 0.5;
-		}else{
-			sx = 0, sy = 0, sw = w , sh = h;
+		} else {
+			sx = 0, sy = 0, sw = w, sh = h;
 		}
 
 		return[sx, sy, sw , sh];

@@ -1,4 +1,4 @@
-var Transform = function(ext, element) {
+var ExtTransform = function(ext, element) {
 
 	var force2d = false;
 
@@ -50,6 +50,10 @@ var Transform = function(ext, element) {
 	ext.scaleX = 1;
 	ext.scaleY = 1;
 	ext.scaleZ = 1;
+
+	ext.setX = function(v) { ext.x = v; return ext; };
+	ext.setY = function(v) { ext.y = v; return ext; };
+	ext.setZ = function(v) { ext.z = v; return ext; };
 
 	ext.transformToString = function(values) {
 		values = values || ext;

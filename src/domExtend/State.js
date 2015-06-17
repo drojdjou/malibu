@@ -1,4 +1,4 @@
-var State = function(ext, element) {
+var ExtState = function(ext, element) {
 
 	var cc = function(p) {
 		return p.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
@@ -37,25 +37,7 @@ var State = function(ext, element) {
 		
 	};
 
-	ext.css = function(property, value) {
-		if(typeof property == "string") {
-			element.style[cc(property)] = value;
-		} else {
-		// assume property arg is object
-			for(var p in property){
-				element.style[cc(property)] = property[p];
-			}
-		}
-	};
-
 	ext.readCss = function(property, notCalculated) {
 		return (notCalculated) ? element.style[property] : getComputedStyle(element).getPropertyValue(property);
-	}
-
-	ext.attr = function(name, value) {
-		if(value != undefined) {
-			element.setAttribute(name, value);
-		}
-		return element.getAttribute(name);
 	}
 };

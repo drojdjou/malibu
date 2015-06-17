@@ -8,7 +8,7 @@
  * @property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"3","build":28,"date":"2015-01-09T01:47:52.078Z"}
+var Framework = {"version":"3","build":35,"date":"2015-06-01T18:06:53.697Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -442,11 +442,16 @@ var Value = function(_value) {
 	}
 
 
-	that.on = function(callback, test, param) {
-		callback.test = test;
-		callback.param = param;
-		observers.push(callback);
-		return callback;
+	that.on = function(callback, test, param, noInitCallback) {
+		var o = callback;
+		o.test = test;
+		o.param = param;
+
+		// Fire the callback initially so that all values/flags of the subscriber can be adjusted at startup
+		if(!noInitCallback && (!o.test || o.test(value, last))) o(value, last, param);
+
+		observers.push(o);
+		return o;
 	}
 
 	that.off = function(callback) {
@@ -587,7 +592,7 @@ var DomExtend = (function() {
 
 	that.extend = function(element) {
 
-		if(element.ext) return;
+		if(element.ext) return element;
 
 		var ext = {};
 
@@ -604,16 +609,16 @@ var DomExtend = (function() {
 		};
 
 		// Add State related functions (see State.js for details)
-		if(window.State) State(ext, element);
+		if(window.ExtState) ExtState(ext, element);
 
 		// Add Transform related functions (see Transform.js for details)
-		if(window.Transform) Transform(ext, element);
+		if(window.ExtTransform) ExtTransform(ext, element);
 
 		// Add Transition related functions (see Transition.js for details)
-		if(window.Transition) Transition(ext, element); 
+		if(window.ExtTransition) ExtTransition(ext, element); 
 
 		// Add Animation related functions (see Transition.js for details)
-		if(window.Animation) Animation(ext, element, that); 
+		if(window.ExtAnimation) ExtAnimation(ext, element, that); 
 
 		ext.element = element;
 		element.ext = ext;
@@ -629,7 +634,7 @@ var DomExtend = (function() {
 
 /* --- --- [domExtend/State] --- --- */
 
-var State = function(ext, element) {
+var ExtState = function(ext, element) {
 
 	var cc = function(p) {
 		return p.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
@@ -668,32 +673,14 @@ var State = function(ext, element) {
 		
 	};
 
-	ext.css = function(property, value) {
-		if(typeof property == "string") {
-			element.style[cc(property)] = value;
-		} else {
-		// assume property arg is object
-			for(var p in property){
-				element.style[cc(property)] = property[p];
-			}
-		}
-	};
-
 	ext.readCss = function(property, notCalculated) {
 		return (notCalculated) ? element.style[property] : getComputedStyle(element).getPropertyValue(property);
-	}
-
-	ext.attr = function(name, value) {
-		if(value != undefined) {
-			element.setAttribute(name, value);
-		}
-		return element.getAttribute(name);
 	}
 };
 
 /* --- --- [domExtend/Transform] --- --- */
 
-var Transform = function(ext, element) {
+var ExtTransform = function(ext, element) {
 
 	var force2d = false;
 
@@ -746,6 +733,10 @@ var Transform = function(ext, element) {
 	ext.scaleY = 1;
 	ext.scaleZ = 1;
 
+	ext.setX = function(v) { ext.x = v; return ext; };
+	ext.setY = function(v) { ext.y = v; return ext; };
+	ext.setZ = function(v) { ext.z = v; return ext; };
+
 	ext.transformToString = function(values) {
 		values = values || ext;
 
@@ -791,7 +782,7 @@ var Transform = function(ext, element) {
 
 /* --- --- [domExtend/Transition] --- --- */
 
-var Transition = function(ext, element) {
+var ExtTransition = function(ext, element) {
 
 	var events = {
 		'transition': 'transitionEnd',
@@ -932,7 +923,7 @@ var Transition = function(ext, element) {
 
 /* --- --- [domExtend/Animation] --- --- */
 
-var Animation = function(ext, element, globalExt) {
+var ExtAnimation = function(ext, element, globalExt) {
 
 	var events = {
 		'animation': 'animationend',
@@ -1276,6 +1267,12 @@ var VirtualScroll = (function(document) {
 		if(numListeners <= 0) destroyListeners();
 	}
 
+	vs.lockTouch = function() {
+		document.addEventListener('touchmove', function(e) {
+			e.preventDefault();
+		});
+	}
+
 	var notify = function(e) {
 		event.x += event.deltaX;
 		event.y += event.deltaY;
@@ -1523,15 +1520,13 @@ var Gesture = function(options) {
 
 /* --- --- [Util] --- --- */
 
-Util = {
+var Util = {
 
-	fullbleed: function(element) {
+	fullbleed: function(element, w, h) {
 		var isVideo = element.videoWidth > 0;
 
-
-
-		var sw = window.innerWidth,
-			sh = window.innerHeight,
+		var sw = w || window.innerWidth,
+			sh = h || window.innerHeight,
 			vw = isVideo ? element.videoWidth : element.width,
 			vh = isVideo ? element.videoHeight : element.height;
 
@@ -1573,18 +1568,18 @@ Util = {
 		var sx, sy, sw, sh;
 
 		// contain
-		if(scrRatio > imgRatio){
+		if(scrRatio > imgRatio) {
 			sy = 0;
 			sh = h;
-			sw = (h / ih ) * iw;
+			sw = (h / ih) * iw;
 			sx = (w - sw) * 0.5;
-		}else if(scrRatio < imgRatio){
+		} else if(scrRatio < imgRatio) {
 			sx = 0;
 			sw = w;
-			sh = (w / iw ) * ih;
+			sh = (w / iw) * ih;
 			sy = (h - sh) * 0.5;
-		}else{
-			sx = 0, sy = 0, sw = w , sh = h;
+		} else {
+			sx = 0, sy = 0, sw = w, sh = h;
 		}
 
 		return[sx, sy, sw , sh];

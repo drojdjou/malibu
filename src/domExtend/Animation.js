@@ -1,4 +1,4 @@
-var Animation = function(ext, element, globalExt) {
+var ExtAnimation = function(ext, element, globalExt) {
 
 	var events = {
 		'animation': 'animationend',
