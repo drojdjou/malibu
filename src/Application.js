@@ -11,7 +11,7 @@ Application = (function() {
 		params = params || {};
 
 		if(!params.disableHistory) {
-			router = HistoryRouter(app);
+			router = HistoryRouter(app, params.disableHistory);
 			router.init();
 		}
 

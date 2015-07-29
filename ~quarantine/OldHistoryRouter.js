@@ -1,4 +1,8 @@
-HistoryRouter = function (app) {
+import Trigger from "./Trigger";
+import Simplrz from "./Simplrz";
+import Util from "./Util";
+
+export default function (app) {
 
 	var rootUrl = document.location.protocol + '//' + (document.location.hostname || document.location.host);
 	if(document.location.port) rootUrl += ":" + document.location.port;
@@ -76,8 +80,15 @@ HistoryRouter = function (app) {
 		while(r.parts[0] == '') r.parts.shift();
 		while(r.parts[r.parts.length - 1] == '') r.parts.pop();
 
+		r.parts.forEach((p, i) => {
+			r.parts[i] = Util.dealias(p);
+		});
+
+		if(r.parts.length == 0) r.parts.push('home');
+
 		r.lastPart = r.parts[r.parts.length - 1];
 		r.route = r.parts.join('/');
+
 
 		routeHistory.push(r);
 		app.route.value = r;
@@ -94,9 +105,17 @@ HistoryRouter = function (app) {
 
 	app.hijackLinks.on(hijackLinks);
 	app.navigate.on(pushState);
+	app.historyBack.on(function(defaultHref) {
+		var h = defaultHref;
 
-	app.historyBack.on(function() {
-		// console.log(arguments)
+		var rl = routeHistory.length;
+		if(rl >= 2) {
+			var p = routeHistory[routeHistory.length - 2];
+			if(p.route.indexOf('explore') > -1) pushState(p.route);
+			else pushState(h);
+		} else {
+			pushState(h);
+		}
 	})
 
 	return {

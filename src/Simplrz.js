@@ -90,6 +90,9 @@ window.Simplrz = (function() {
 	s.iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
 	classes.push(s.iOS ? "ios" : "no-ios");
 
+	s.iPad = (navigator.platform == 'iPad');
+	classes.push(s.iPad ? "ipad" : "no-ipad");
+
 	// -- BROWSER HACKS END -- 
 
 	check("css3d", function() {

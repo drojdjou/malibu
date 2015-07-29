@@ -8,7 +8,7 @@
  * @property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"3","build":35,"date":"2015-06-01T18:06:53.697Z"}
+var Framework = {"version":"4","build":44,"date":"2015-07-27T09:41:27.895Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -104,6 +104,9 @@ window.Simplrz = (function() {
 	s.iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
 	classes.push(s.iOS ? "ios" : "no-ios");
 
+	s.iPad = (navigator.platform == 'iPad');
+	classes.push(s.iPad ? "ipad" : "no-ipad");
+
 	// -- BROWSER HACKS END -- 
 
 	check("css3d", function() {
@@ -179,6 +182,16 @@ window.Simplrz = (function() {
 
 /* --- --- [Trigger] --- --- */
 
+/**
+ *	@class Trigger
+ *
+ *	@description Trigger is a simple utility used to create events. It is similar to signals. 
+ *	Triggers do not keep state, they should be therefore used for events that occur 
+ *	at different time intervals but do not alter the state of the object.
+ *	It can only send on type of event and it will always notify all it's listeners. 
+ * 	In order to build a more robust event system, use multiple 
+ *	Trigger objects as properties.
+ */
 var Trigger = function() {
 
 	var t = {};
@@ -189,11 +202,25 @@ var Trigger = function() {
 	var lateTriggers = [];
 	var lateRemovals = [];
 
+	/**
+	 *	@method on
+	 *	@memberof Trigger.prototype
+	 *	@description Adds a listener to this trigger
+	 */
 	t.on = function (callback, context) {
 		callback.context = context;
 		listeners.push(callback);
 	};
 
+	/**
+	 *	@method off
+	 *	@memberof Trigger.prototype
+	 *	@description Removes a listener from this trigger. 
+	 *	If the passed callback is not a listener of this trigger, 
+	 *	this function will not throw any warnings, it will just return. 
+	 *	If this function is called from within a function that is a listener, 
+	 *	the callback will not be removed until all other listeners are called.
+	 */
 	t.off = function (callback) {
 		var i = listeners.indexOf(callback);
 
@@ -207,6 +234,14 @@ var Trigger = function() {
 		listeners.splice(i, 1);
 	};
 
+	/**
+	 *	@method trigger
+	 *	@memberof Trigger.prototype
+	 *	@description Fires this trigger passing data as srgument to all listeners.
+	 *	If this function is called from within a function that is a listener, 
+	 *	the trigger will not be fired until all other listeners 
+	 *	are called for the previous one.
+	 */
 	t.trigger = function (data) {
 
 		if(lock) {
@@ -424,6 +459,26 @@ var Timer = function(autostart, autoupdate) {
 
 /* --- --- [Value] --- --- */
 
+/**
+ *	@class Value
+ *
+ *	@description <p>Value is an extension of a simple property. 
+ *	Properties are great to keep track of the state of on object. 
+ *	For example "how many times the spaceship has been hit" or 
+ *	"what is the current section on a website" or a lot of other things.
+ *	A simple property can do the job well, example: "spaceship.numHits" is a number
+ *	that increases each time the spacehip has been hit by enemy lasers. 
+ *	Usually there will be several objects in each application that will need 
+ *	to do something whenever this value chnages. To make this possible each of those
+ *	objects would need to implement some sort of loop or timer and check the value of
+ *	this property at regular intervals.
+ *
+ *	<p>This is where the Value object comes in handy. It keeps the value of the property
+ *	in it's own proerty field (called 'value') but, using the object observer pattern, 
+ *	each time this value chnages, it will send out a notification to every
+ *	registered listener.
+ */
+
 /*
  *	Also read this http://www.html5rocks.com/en/tutorials/es7/observe/
  */
@@ -536,7 +591,7 @@ Application = (function() {
 		params = params || {};
 
 		if(!params.disableHistory) {
-			router = HistoryRouter(app);
+			router = HistoryRouter(app, params.disableHistory);
 			router.init();
 		}
 
@@ -607,6 +662,17 @@ var DomExtend = (function() {
 		ext.selectAll = function(sel) {
 			return that.selectAll(sel, element);
 		};
+
+		ext.detach = function() {
+			var p = element.parentNode;
+			if(!p) return;
+			p.removeChild(element);
+		};
+
+		ext.attachTo = function(parent) {
+			if(element.parentNode == parent) return;
+			else parent.appendChild(element);
+		}
 
 		// Add State related functions (see State.js for details)
 		if(window.ExtState) ExtState(ext, element);
@@ -1023,6 +1089,7 @@ FrameImpulse = (function() {
 
     var r = {};
 	var listeners = [], numListeners = 0, toRemove = [], numToRemove;
+	var lastTime = 0;
 
     for(var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
         window.requestAnimationFrame = window[vendors[i] + 'RequestAnimationFrame'];
@@ -1098,22 +1165,36 @@ HistoryRouter = function (app) {
 
 	var rootUrl = document.location.protocol + '//' + (document.location.hostname || document.location.host);
 	if(document.location.port) rootUrl += ":" + document.location.port;
-
 	app.navigate = new Trigger();
 	app.hijackLinks = new Trigger();
 
-	var hijackLinks = function () {
+	var routeHistory = [];
+	app.historyBack = new Trigger();
+
+	var hijackLinks = function (element) {
 		if (!Simplrz.history) return;
 
+		var base = document.querySelector('base');
+		base = (base && base.getAttribute('href')) ? base.getAttribute('href') : '/';
+
+		window.TMR_BASE_URL = base;
+
+		if(base == '/') base = '';
+		if(base[base.length-1] == '/') base = base.substring(0, base.length - 1);
+
+		app.baseUrl = base;
+
 		var allLinksSelector = 'a[href]';
-		var allLinks = EXT.selectAll(allLinksSelector);
+		var allLinks = (element || document).querySelectorAll(allLinksSelector);
+		// Why, oh why do we need to do this :)
+		allLinks = Array.prototype.slice.call(allLinks);
 
 		for (var i = 0; i < allLinks.length; i++) {
 			var link = allLinks[i];
 
-			var url = link.ext.attr('href');
-			var target = link.ext.attr('target');
-			var hj = link.ext.attr('data-hj');
+			var url = link.getAttribute('href');
+			var target = link.getAttribute('target');
+			var hj = link.getAttribute('data-hj');
 
 			if(url.indexOf(':') > -1 || target == '_blank' || hj == "no") {
 				// Skip absolute URLs, those that have a _blank target 
@@ -1126,10 +1207,13 @@ HistoryRouter = function (app) {
 			
 			if (!link.hijacked) {
 				link.hijacked = true;
+				// link.href = base + link.href;
+
+				link.hijackedHref = base + link.getAttribute('href');
 
 				var cb = function (e) {
 					if(e) e.preventDefault();
-					pushState(this.href);
+					pushState(this.hijackedHref);
 				}
 
 				if(Simplrz.touch) {
@@ -1141,37 +1225,48 @@ HistoryRouter = function (app) {
 		}
 	};
 
-	// Some browser fire the popstate event on start others don't.
-	// Those who don't need help, and this is what the setTimeout below is for.
-	// but it can't be called twice, so we also need this flag./
-	// It's mostly for Chrome <33, so in the future this can be removed (maybe).
-	var historyAPIInitiated = false;
+	var notify = function() {
+		var qs = document.location.href.indexOf('?');
+		var route = document.location.href;
+		if(qs > -1) route = route.substring(0, qs);
 
-	var notify = function(r) {
-		app.route.value = r.substring(rootUrl.length + 1);
+		var r = {};
+
+		r.route = route.substring(rootUrl.length + 1 + app.baseUrl.length);
+		r.parts = r.route.split('/');
+
+		// Get rid of all trailing stuff
+		while(r.parts[0] == '') r.parts.shift();
+		while(r.parts[r.parts.length - 1] == '') r.parts.pop();
+
+		r.lastPart = r.parts[r.parts.length - 1];
+		r.route = r.parts.join('/');
+
+		routeHistory.push(r);
+		app.route.value = r;
 	}
 
 	var pushState = function (href) {
 		if (Simplrz.history) history.pushState(null, null, href);
-		notify(document.location.href);
+		notify();
 	};
 
 	window.addEventListener('popstate', function(e) {
-		historyAPIInitiated = true;
-		notify(document.location.href);
+		notify();
 	});
 
 	app.hijackLinks.on(hijackLinks);
 	app.navigate.on(pushState);
 
-	setTimeout(function() {
-		if(!historyAPIInitiated) pushState();
-		else console.log("History initiated, no manual push.")
-	}, 20, document.location.href);
+	app.historyBack.on(function() {
+		// console.log(arguments)
+	})
 
 	return {
+
 		init: function () {
 			hijackLinks();
+			notify();
 		}
 	}
 };

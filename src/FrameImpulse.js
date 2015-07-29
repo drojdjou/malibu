@@ -4,6 +4,7 @@ FrameImpulse = (function() {
 
     var r = {};
 	var listeners = [], numListeners = 0, toRemove = [], numToRemove;
+	var lastTime = 0;
 
     for(var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
         window.requestAnimationFrame = window[vendors[i] + 'RequestAnimationFrame'];

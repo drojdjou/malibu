@@ -43,6 +43,17 @@ var DomExtend = (function() {
 			return that.selectAll(sel, element);
 		};
 
+		ext.detach = function() {
+			var p = element.parentNode;
+			if(!p) return;
+			p.removeChild(element);
+		};
+
+		ext.attachTo = function(parent) {
+			if(element.parentNode == parent) return;
+			else parent.appendChild(element);
+		}
+
 		// Add State related functions (see State.js for details)
 		if(window.ExtState) ExtState(ext, element);
 
