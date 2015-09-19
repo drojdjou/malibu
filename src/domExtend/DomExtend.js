@@ -1,13 +1,34 @@
+/**
+ *	@namespace DomExtend
+ */
 var DomExtend = (function() {
 
 	var that = {};
 
+	/**
+	 *	@method create
+	 *	@memberof DomExtend
+	 *	@static
+	 *	@param {string} tag - the name of the tag to create
+	 *	@description Created a HTMLElement of type defined by the tag. It first calls <code>document.createElement(tag)</code> 
+	 *	and the extends this element with DomExtend functionality.
+	 */
 	that.create = function(tag) {
 		var e = document.createElement(tag);
 		that.extend(e);
 		return e;
 	};
 
+	/**
+	 *	The equivalent of <code>document.querySelector</code>. It extends the object
+	 *	with DomExtend functionality before returning the result.
+	 *
+	 *	@method select
+	 *	@memberof DomExtend
+	 *	@static
+	 *	@param {string} sel - the CSS selector to query
+	 *	@param {HTMLElement=} element - the HTML element to query on, defaults to document 
+	 */
 	that.select = function(sel, element) {
 		var e = (element || document).querySelector(sel);
 		if(e && !e.ext) that.extend(e);

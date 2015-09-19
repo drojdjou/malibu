@@ -3,13 +3,30 @@
  *
  *	@param {Object=} options - object holding settings (see above)
  *
- *	@description Possible optins include:
+ *	@description 
+ *
+ *	<p>A simple touch (or click/drag) gesture recognition class.</p>
+ *
+ *	<p>Works with touch gesture, mouse clik/drag gestures and key press (cursor keys), detects swipes in 4 directions.</p>
+ *
+ *	<p>For advanced scenarios <a href='http://hammerjs.github.io/'>Hammer.js</a> can be used instead.</p>
+ *
+ *	<p>Options include:
  *	<ul>
  *		<li>maxTime - how long before swipe is not considered a swipe (default 300ms)</li>
  *		<li>minDistance - how much must the user move to consider this a swipe (default 30px)</li>
- *		<li>tolerance - in radians, how far off vertical or horizontal axis is considered as swipe 
+ *		<li>tolerance - how far off vertical or horizontal axis is considered as swipe 
  *				default: 0.1, don't make it larger than 0.25 (i.e. 45deg)</li>
+ *		<li>noKeyboard - if set tu true, key listeners will not be activated 
+ *				(use if cursor keys are used for something else and there's a conflict)</li>
  *	</ul>
+ *	</p>
+ *
+ *	@example
+var g = new Gesture();
+g.swipeUp.on(function() {
+  console.log("User swiped up!");
+});
  */
 var Gesture = function(options) {
 
@@ -23,9 +40,36 @@ var Gesture = function(options) {
 	var moveEvent = isTouch ? 'touchmove' : 'mousemove';
 	var upEvent =   isTouch ? 'touchend' : 'mouseup';
 
+	/**
+	 *	@member {Trigger} swipeUp
+	 *	@memberof Gesture.prototype
+	 *
+	 *	@description Triggered when a "swipe up" gesture is detected
+	 */	
 	this.swipeUp = new Trigger();
+
+	/**
+	 *	@member {Trigger} swipeDown
+	 *	@memberof Gesture.prototype
+	 *
+	 *	@description Triggered when a "swipe down" gesture is detected
+	 */	
 	this.swipeDown = new Trigger();
+
+	/**
+	 *	@member {Trigger} swipeLeft
+	 *	@memberof Gesture.prototype
+	 *
+	 *	@description Triggered when a "swipe left" gesture is detected
+	 */	
 	this.swipeLeft = new Trigger();
+
+	/**
+	 *	@member {Trigger} swipeRight
+	 *	@memberof Gesture.prototype
+	 *
+	 *	@description Triggered when a "swipe right" gesture is detected
+	 */	
 	this.swipeRight = new Trigger();
 
 	tolerance = options.tolerance || 0.1;
@@ -90,13 +134,16 @@ var Gesture = function(options) {
 	 *	@method create
 	 *	@memberof Gesture.prototype
 	 *
-	 *	@description registers all necessary listeners. This is done automatically in the constructor.
+	 *	@description registers all necessary listeners. 
+	 *	This is done automatically in the constructor, 
+	 *	so it doesn't need to be called, unless destroy()
+	 *	was called before and we want to reuse the object.
 	 */	
 	this.create = function() {
 		document.addEventListener(downEvent, onStart);
 		document.addEventListener(moveEvent, onMove);
 		document.addEventListener(upEvent, onStop);
-		document.addEventListener("keydown", onKeyDown);
+		if(!options.noKeyboard) document.addEventListener("keydown", onKeyDown);
 	}
 
 	/**
@@ -109,7 +156,7 @@ var Gesture = function(options) {
 		document.removeEventListener(downEvent, onStart);
 		document.removeEventListener(moveEvent, onMove);
 		document.removeEventListener(upEvent, onStop);
-		document.removeEventListener("keydown", onKeyDown);
+		if(!options.noKeyboard) document.removeEventListener("keydown", onKeyDown);
 	}
 
 	this.create();

@@ -1,10 +1,17 @@
 /**
  *	@class Timer
+ *
+ *	@description A timer utility used to invoke function once or repeatedly in time.
+ *
+ *	@param {Boolean} autostart - if true the Timer will start counting time immediately. Otherwise start() needs to be called manually later.
+ *	@param {Boolean} autoupdate - if true the Timer will be updating on every frame. Otherwise, update() needs to be called on every frame.
  */
 var Timer = function(autostart, autoupdate) {
 
 	var that = this;
+
 	// If frame is longer than 250ms (4 FPS) it will skip it.
+	// TODO: what is the logic behind this?
 	var MAX_FRAME_TIME = 250;
 
 	var paused = false;
@@ -38,10 +45,23 @@ var Timer = function(autostart, autoupdate) {
 		that.update();
 	}
 
+	/**
+	 *	@method pause
+	 *	@memberof Timer.prototype
+	 *	@description Pauses/resumes the execution of the timer.
+	 *	@param {Boolean} p - true to pause, false to resume
+	 *	@return {Timer} self, for chaining.
+	 */
 	this.pause = function(p) {
 		paused = p;
+		return this;
 	}
 
+	/**
+	 *	@method paused
+	 *	@memberof Timer.prototype
+	 *	@description Returns true is timer is paused, false otherwise.
+	 */
 	this.paused = function() {
 		return paused;
 	}
@@ -50,7 +70,7 @@ var Timer = function(autostart, autoupdate) {
 	 *	@method start
 	 *	@memberof Timer.prototype
 	 *	@description Start the timer manually.
-	 *	If autostart was set to false or omitted in the constructor, this function needs to be invoked.	
+	 *	<p>If autostart was set to false or omitted in the constructor, this function needs to be invoked.	
 	 */
 	this.start = function() {
 		startTime = new Date().getTime(), 
@@ -66,9 +86,9 @@ var Timer = function(autostart, autoupdate) {
 	/**
 	 *	@method update
 	 *	@memberof Timer.prototype
-	 *	@description Update the timer.
+	 *	@description Updates the timer.
 	 *
-	 *	If autoupdate was set to false or omitted in the constructor, 
+	 *	<p>If autoupdate was set to false or omitted in the constructor, 
 	 *	this function need to be invoked in a requestAnimationFrame loop or a similar interval.
 	 */
 	this.update = function() {
@@ -89,12 +109,12 @@ var Timer = function(autostart, autoupdate) {
 	/**
 	 *	@method onAt
 	 *	@memberof Timer.prototype
-	 *	@description Executes callback after a delay. All time values in ms.
+	 *	@description Executes callback after a delay. All time values in milliseconds.
 	 *
-	 *	_time - when to start (i.e. delay counted from 'now' i.e from when this method is called)
-	 *	callback - the callback to be invoked
+	 *	@param {Number} time - when to start (i.e. delay counted from 'now' i.e from when this method is called)
+	 *	@param {Function} callback - the callback to be invoked
 	 *
-	 *	returns - an object that can be used to remove the task.
+	 *	@returns {Object} - an special object that can be used to remove the task later.
 	 */
 	this.onAt = function(_time, callback) {
 		var so = {
@@ -112,13 +132,13 @@ var Timer = function(autostart, autoupdate) {
 	 *	@memberof Timer.prototype
 	 *	@description Invokes the callback repeatedly overtime. All time values in ms.
 	 * 	
-	 *	_interval - how often to invoked the function. It can be an array of two elements specyfing a min/max range
-	 *	_time - when to start (i.e. delay, counted from 'now' i.e from when this method is called)
-	 *	callback - the callback to be invoked
-	 *	_repeat - how many times to repeat. If ommited or -1 will repeat infinitely
+	 *	@param {Number} interval - how often to invoked the function. It can be an array of two elements specyfing a min/max range
+	 *	@param {Number} time - when to start (i.e. delay, counted from 'now' i.e from when this method is called)
+	 *	@param {Number} callback - the callback to be invoked
+	 *	@param {Number} repeat - how many times to repeat. If ommited or -1 will repeat infinitely
 	 *				0 will never invoke the function (in fact it won't even be added)
 	 *
-	 *	returns - an object that can be used to remove the task.
+	 *	@returns {Object} an object that can be later used to remove the task.
 	 */
 	this.onEvery = function(_interval, _time, callback, _repeat) {
 
@@ -141,7 +161,8 @@ var Timer = function(autostart, autoupdate) {
 	 *	@memberof Timer.prototype
 	 *	@description Remove a scheduled task.
 	 *
-	 *	DO NOT PASS the original callback to this function (you'll get a warning if you do).
+	 *	@param {Object} so - Object referencing the callback. 
+	 *	<p>DO NOT PASS the original callback to this function (you'll get a warning if you do).
 	 *	Instead you need to pass the object returned from onAt or onEvery. 
 	 */
 	this.off = function(so) {
@@ -176,9 +197,16 @@ var Timer = function(autostart, autoupdate) {
 		tasks.length = 0;
 	}
 
-	
-
 	if(autostart) {
 		that.start();
 	}
 }
+
+/** 
+ *	@member global
+ *	@memberof Timer
+ *	@static
+ *
+ *	@description A global static instance of a Timer for simple use cases.
+ */
+Timer.global = new Timer(true, true);

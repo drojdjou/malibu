@@ -44,28 +44,34 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="Value"><span class="type-signature"></span>new Value<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Value"><span class="type-signature"></span>new Value<span class="signature">(v)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Value is an extension of a simple property. 
-	Properties are great to keep track of the state of on object. 
+    <p>Value is an object that hold a property. 
+
+	<p>Properties are great to keep track of the state of on object. 
 	For example "how many times the spaceship has been hit" or 
 	"what is the current section on a website" or a lot of other things.
-	A simple property can do the job well, example: "spaceship.numHits" is a number
+
+	<p>A simple property can do the job well, example: "spaceship.numHits" is a number
 	that increases each time the spacehip has been hit by enemy lasers. 
-	Usually there will be several objects in each application that will need 
-	to do something whenever this value chnages. To make this possible each of those
+	
+	<p>Usually there will be several objects in each application that will need 
+	to do something whenever this value changes. To make this possible each of those
 	objects would need to implement some sort of loop or timer and check the value of
 	this property at regular intervals.
 
 	<p>This is where the Value object comes in handy. It keeps the value of the property
-	in it's own proerty field (called 'value') but, using the object observer pattern, 
-	each time this value chnages, it will send out a notification to every
+	in it's own property (called 'value') but, using the object observer pattern, 
+	each time this value changes, it will send out a notification to every
 	registered listener.
+
+	<p>The Value object works best with primitive values, especially Numbers. 
+	But it can hold any object as value.
 </div>
 
 
@@ -75,6 +81,54 @@
 
 
 
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the initial value to set</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -134,6 +188,24 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// sets the value to 1
+var health = new Value(1);
+
+health.on(function(current, last) {
+	console.log('The value of health is', current);
+	console.log('The previous value was', last);
+	console.log('Current value can also be accessed from', health.value);
+});
+
+// value changed, the listener will be invoked
+health.value = 2;
+
+// value stays the same, the listener won't be invoked
+health.value = 2;</code></pre>
+
+
 
     
     </div>
@@ -151,6 +223,513 @@
     
 
     
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="off"><span class="type-signature"></span>off<span class="signature">(callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Removes the callback from the list of listeners for this value.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the callback that was originally passed to <code>on</code>.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Value.js.html">Value.js</a>, <a href="Value.js.html#line97">line 97</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="on"><span class="type-signature"></span>on<span class="signature">(callback, test, param, noInitCallback<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    sets the value property of thie Value to whatever is passed as parameter. 
+	Same as saying <code>someValue.value = v;</code> but this method can be useful when chaining.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the callback to invoke whenever the value changes. 
+	The callback function will receive up to 3 arguments. First is the current value, 
+	second is the last value (if there was any, null otherwise). Third is a custom param (see below).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>test</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">a test function to check if value changed. If the value is a Object, 
+	some of it's properties might chnage and this function allows to inject the logic that will
+	decide whether the entire value should be considered "chnaged" or not. See example below.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>param</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">a parameter to pass to the callback on each change. It will be passed as 3rd parameter.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>noInitCallback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">if this is set explicitely to true, the callback will not be invoked immediately
+	on registration. Otherwise the callback is always called immediately, so that any state can be adjusted to the current
+	value.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Value.js.html">Value.js</a>, <a href="Value.js.html#line64">line 64</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="set"><span class="type-signature"></span>set<span class="signature">(v)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    sets the value property of thie Value to whatever is passed as parameter. 
+	Same as saying <code>someValue.value = v;</code> but this method can be useful when chaining.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Value.js.html">Value.js</a>, <a href="Value.js.html#line115">line 115</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
 
     
 
@@ -165,13 +744,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Gesture.html">Gesture</a></li><li><a href="Timer.html">Timer</a></li><li><a href="Trigger.html">Trigger</a></li><li><a href="Value.html">Value</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Framework">Framework</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Gesture.html">Gesture</a></li><li><a href="HistoryRouter.html">HistoryRouter</a></li><li><a href="Timer.html">Timer</a></li><li><a href="Trigger.html">Trigger</a></li><li><a href="Value.html">Value</a></li></ul><h3>Namespaces</h3><ul><li><a href="Application.html">Application</a></li><li><a href="DomExtend.html">DomExtend</a></li><li><a href="FrameImpulse.html">FrameImpulse</a></li><li><a href="Loader.html">Loader</a></li><li><a href="Simplrz.html">Simplrz</a></li><li><a href="Util.html">Util</a></li><li><a href="VirtualScroll.html">VirtualScroll</a></li></ul><h3>Tutorials</h3><ul><li>website</li></ul><h3>Global</h3><ul><li><a href="global.html#Framework">Framework</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha13</a> on Wed Jul 01 2015 15:02:47 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha13</a> on Sat Sep 19 2015 14:59:17 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

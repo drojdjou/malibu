@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Simplrz</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: Simplrz</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        Simplrz
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Feature detection utility.
+
+	<p><h2>Using Simplrz</h2>
+
+	<p>Simplr is initialized at startup and all test are done immediately. 
+	The results of the tests are stored in boolean variables listed below. 
+	Overtime new features are added and some old ones can be discarded, 
+	so be sure to check the docs from time to time.
+
+	<blockquote>
+	<h5>Note on detecting some CSS features</h5>
+
+	<p>After reading this (https://github.com/zamiang/detect-css3-3d-transform)
+	I realized detecting css3d transforms is unreliable. But also - we don't really need it
+	because typically the only browser we need to support that doesn't do css 3d transforms
+	is IE9 and IE8 so why not do some good old browser sniffing?
+
+	<p>As a reminder: IE9 - only 2d transforms, no transitions, no animations, IE8 - not even 2d.
+	</blockquote>
+
+	<p>Using Simplrz is very simple in JS, please refer to the first example below. 
+	Simplrz also sets the names of the properties as classes to the <html> element of the document.
+	Each class follows the same naming pattern:
+
+	<p><code>webgl</code> - if feature is supported the class name is simply the name of the feature.
+	<p><code>no-webgl</code> - if feature is not supported the class name is  the name of the feature with a <code>no-</code> prefix.
+
+	<p>CSS stylesheets can use those classes to use conditiojnal logic. 
+	Especially handy for example to define hover effects for non-touch only (see example below).
+
+	<p>Example that runs the cod in your browser and prints out all the results <a href='http://work.bartekdrozdz.com/malibu/test/simplrz.html'>is here</a>.</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+            <h3>Examples</h3>
+            
+    <pre class="prettyprint"><code>if(Simplrz.touch) {
+	document.addEventListener('touchstart', onDown);
+} else {
+	document.addEventListener('mousedown', onDown);
+}
+
+	</code></pre>
+
+    <pre class="prettyprint"><code>// Assuming we use LESS
+
+// This will only work on non-touch screens
+.no-touch a:hover {
+  text-decoration: underline;
+}
+
+#app {
+  .webgl-warning {
+    display: none;
+  }
+
+  // If webgl is not supported, show the warning
+  .no-webgl &amp; .webgl-warning {
+    display: block;
+  } 
+}</code></pre>
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id=".canvas"><span class="type-signature">(static) </span>canvas<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if canvas 2d API is supported.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line257">line 257</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".classes"><span class="type-signature">(static) </span>classes<span class="type-signature"> :Array</span></h4>
+
+
+
+
+<div class="description">
+    An array containing all the classes that have been added to the <html> element.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Array</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line312">line 312</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".css2d"><span class="type-signature">(static) </span>css2d<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if CSS 2d transforms are supported.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line228">line 228</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".css3d"><span class="type-signature">(static) </span>css3d<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if CSS 3d transforms are supported.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line194">line 194</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".cssanimations"><span class="type-signature">(static) </span>cssanimations<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if CSS Animations are supported.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line221">line 221</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".csstransitions"><span class="type-signature">(static) </span>csstransitions<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if CSS Transitions are supported.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line214">line 214</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".firefox"><span class="type-signature">(static) </span>firefox<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if the device is an iPad.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line155">line 155</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".history"><span class="type-signature">(static) </span>history<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if the history API is supported.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line271">line 271</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".ie"><span class="type-signature">(static) </span>ie<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    false if browser is not IE, otherwise the version number (8, 9, 10...)
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line147">line 147</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".iOS"><span class="type-signature">(static) </span>iOS<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if the device runs on iOS.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line174">line 174</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".iPad"><span class="type-signature">(static) </span>iPad<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if the device is an iPad.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line182">line 182</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".pixelRatio"><span class="type-signature">(static) </span>pixelRatio<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Same vallue as <code>window.devicePixelRatio</code>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line74">line 74</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".pointer"><span class="type-signature">(static) </span>pointer<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if pointer API (sort of like touch but different spec, used mostly by MS) is supported.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line248">line 248</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".prefix"><span class="type-signature">(static) </span>prefix<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    whar is the browser vendor prefix (-ms, -webkit, -moz...)
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line99">line 99</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>{
+	dom: "Webkit",
+	lowercase: "webkit,
+	css: "-webkit-",
+	js: "Webkit"
+}</code></pre>
+
+
+
+        
+            
+<h4 class="name" id=".safariDesktop"><span class="type-signature">(static) </span>safariDesktop<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if the the browser is a Safari on desktop Mac.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line163">line 163</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".touch"><span class="type-signature">(static) </span>touch<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if touch events are supported.
+	<p>Experimental: some laptop PCs runnig Windows have a touch screen. 
+	Chrome on such PCs will report true for the 'ontouchstart' event, 
+	however the touch events are not supported well in such case. So this test
+	will report `false` if we are on Win32 platform, even if touch screen is detected.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line235">line 235</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".webgl"><span class="type-signature">(static) </span>webgl<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if webgl is supported.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line289">line 289</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".webrtc"><span class="type-signature">(static) </span>webrtc<span class="type-signature"> :Boolean</span></h4>
+
+
+
+
+<div class="description">
+    True if webrtc is supported.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Simplrz.js.html">Simplrz.js</a>, <a href="Simplrz.js.html#line280">line 280</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Gesture.html">Gesture</a></li><li><a href="HistoryRouter.html">HistoryRouter</a></li><li><a href="Timer.html">Timer</a></li><li><a href="Trigger.html">Trigger</a></li><li><a href="Value.html">Value</a></li></ul><h3>Namespaces</h3><ul><li><a href="Application.html">Application</a></li><li><a href="DomExtend.html">DomExtend</a></li><li><a href="FrameImpulse.html">FrameImpulse</a></li><li><a href="Loader.html">Loader</a></li><li><a href="Simplrz.html">Simplrz</a></li><li><a href="Util.html">Util</a></li><li><a href="VirtualScroll.html">VirtualScroll</a></li></ul><h3>Tutorials</h3><ul><li>website</li></ul><h3>Global</h3><ul><li><a href="global.html#Framework">Framework</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha13</a> on Sat Sep 19 2015 14:59:17 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

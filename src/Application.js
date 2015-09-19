@@ -1,19 +1,36 @@
-Application = (function() {
+/**
+ *	@namespace Application
+ */
+var Application = (function() {
 
 	var app = {};
-	var router, broadcast;
+	var router;
 
+	/**
+	 *	@member {Trigger} resize
+	 *	@memberof Application
+	 *	@static
+	 */
 	app.resize = new Trigger();
+
+	/**
+	 *	@member {Value} route
+	 *	@memberof Application
+	 *	@static
+	 */
 	app.route = new Value();
 	
+	/**
+	 *	@function init
+	 *	@memberof Application
+	 *	@static
+	 */
 	app.init = function(params) {
 
 		params = params || {};
 
-		if(!params.disableHistory) {
-			router = HistoryRouter(app, params.disableHistory);
-			router.init();
-		}
+		router = HistoryRouter(app, params);
+		router.init();
 
 		window.addEventListener('resize', function(e) {
 			app.resize.trigger(e);
@@ -26,7 +43,7 @@ Application = (function() {
 		console.log('Malibu v' + 
 			Framework.version + 
 			' b' + Framework.build + 
-			' (history:' + !params.disableHistory + ')');
+			' (history:' + !params.disableHistoryAPI + ')');
 	}
 	
 	return app;

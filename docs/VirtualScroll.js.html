@@ -1,9 +1,37 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: VirtualScroll.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: VirtualScroll.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  *	@namespace VirtualScroll
  *
- *	@description World Famous VirtualScroll &copy;
+ *	@description World Famous VirtualScroll &amp;copy;
  *
- *	<p><a href='http://www.everyday3d.com/blog/index.php/2014/08/18/smooth-scrolling-with-virtualscroll/'>How to use</a>.
+ *	&lt;p>&lt;a href='http://www.everyday3d.com/blog/index.php/2014/08/18/smooth-scrolling-with-virtualscroll/'>How to use&lt;/a>.
  *
  *	@example
 var onSroll = function(e) {
@@ -41,7 +69,7 @@ var VirtualScroll = (function(document) {
 	var hasTouch = 'ontouchstart' in document;
 	var hasKeyDown = 'onkeydown' in document;
 
-	var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
+	var hasTouchWin = navigator.msMaxTouchPoints &amp;&amp; navigator.msMaxTouchPoints > 1;
 	var hasPointer = !!window.navigator.msPointerEnabled;
 
 	var isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
@@ -73,12 +101,12 @@ var VirtualScroll = (function(document) {
 	 *
 	 *	@description Sets custom parameters to the VirtualScroll (globally). The following options are supported:
 	 *
-	 *	<ul>
-	 *	<li>touchMult (default: 2) - mutiply the touch action to make the scroll a faster/slower than finger movement</li>
-	 *	<li>firefoxMult (defailt: 15)- Firefox on Windows needs a boost, since scrolling is very slow</li>
-	 *	<li>keyStep (default: 120) - specified how many pixels to move with each key press</li>
-	 *	<li>mouseMult (default: 1) - general multiplier for all mousehweel events including FF</li>
-	 *	</ul>
+	 *	&lt;ul>
+	 *	&lt;li>touchMult (default: 2) - mutiply the touch action to make the scroll a faster/slower than finger movement&lt;/li>
+	 *	&lt;li>firefoxMult (defailt: 15)- Firefox on Windows needs a boost, since scrolling is very slow&lt;/li>
+	 *	&lt;li>keyStep (default: 120) - specified how many pixels to move with each key press&lt;/li>
+	 *	&lt;li>mouseMult (default: 1) - general multiplier for all mousehweel events including FF&lt;/li>
+	 *	&lt;/ul>
 	 */
 	vs.options = function(opt) {
 		keyStep = opt.keyStep || 120;
@@ -93,7 +121,7 @@ var VirtualScroll = (function(document) {
 
 		listeners.splice(i, 1);
 		numListeners = listeners.length;
-		if(numListeners <= 0) destroyListeners();
+		if(numListeners &lt;= 0) destroyListeners();
 	}
 
 	/**
@@ -115,7 +143,7 @@ var VirtualScroll = (function(document) {
 		event.y += event.deltaY;
 		event.originalEvent = e;
 
-		for(var i = 0; i < numListeners; i++) {
+		for(var i = 0; i &lt; numListeners; i++) {
 			listeners[i](event);
 		}
 	}
@@ -127,7 +155,7 @@ var VirtualScroll = (function(document) {
 
 		// for our purpose deltamode = 1 means user is on a wheel mouse, not touch pad 
 		// real meaning: https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent#Delta_modes
-		if(isFirefox && e.deltaMode == 1) {
+		if(isFirefox &amp;&amp; e.deltaMode == 1) {
 			event.deltaX *= firefoxMult;
 			event.deltaY *= firefoxMult;
 		} 
@@ -153,7 +181,7 @@ var VirtualScroll = (function(document) {
 	}
 
 	var onTouchMove = function(e) {
-		// e.preventDefault(); // < This needs to be managed externally
+		// e.preventDefault(); // &lt; This needs to be managed externally
 		var t = (e.targetTouches) ? e.targetTouches[0] : e;
 
 		event.deltaX = (t.pageX - touchStartX) * touchMult;
@@ -195,7 +223,7 @@ var VirtualScroll = (function(document) {
 			document.addEventListener("touchmove", onTouchMove);
 		}
 		
-		if(hasPointer && hasTouchWin) {
+		if(hasPointer &amp;&amp; hasTouchWin) {
 			bodyTouchAction = document.body.style.msTouchAction;
 			document.body.style.msTouchAction = "none";
 			document.addEventListener("MSPointerDown", onTouchStart, true);
@@ -216,7 +244,7 @@ var VirtualScroll = (function(document) {
 			document.removeEventListener("touchmove", onTouchMove);
 		}
 		
-		if(hasPointer && hasTouchWin) {
+		if(hasPointer &amp;&amp; hasTouchWin) {
 			document.body.style.msTouchAction = bodyTouchAction;
 			document.removeEventListener("MSPointerDown", onTouchStart, true);
 			document.removeEventListener("MSPointerMove", onTouchMove, true);
@@ -234,3 +262,26 @@ var VirtualScroll = (function(document) {
 
 
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Gesture.html">Gesture</a></li><li><a href="HistoryRouter.html">HistoryRouter</a></li><li><a href="Timer.html">Timer</a></li><li><a href="Trigger.html">Trigger</a></li><li><a href="Value.html">Value</a></li></ul><h3>Namespaces</h3><ul><li><a href="Application.html">Application</a></li><li><a href="DomExtend.html">DomExtend</a></li><li><a href="FrameImpulse.html">FrameImpulse</a></li><li><a href="Loader.html">Loader</a></li><li><a href="Simplrz.html">Simplrz</a></li><li><a href="Util.html">Util</a></li><li><a href="VirtualScroll.html">VirtualScroll</a></li></ul><h3>Tutorials</h3><ul><li>website</li></ul><h3>Global</h3><ul><li><a href="global.html#Framework">Framework</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha13</a> on Sat Sep 19 2015 14:59:17 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

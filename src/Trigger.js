@@ -1,12 +1,37 @@
 /**
  *	@class Trigger
  *
- *	@description Trigger is a simple utility used to create events. It is similar to signals. 
- *	Triggers do not keep state, they should be therefore used for events that occur 
- *	at different time intervals but do not alter the state of the object.
- *	It can only send on type of event and it will always notify all it's listeners. 
- * 	In order to build a more robust event system, use multiple 
+ *	@description Trigger is a simple utility used to create events. 
+ *	<p>A Trigger can only send one type of event and it will always notify all of its listeners. 
+ * 	<p>In order to build a more robust event system, use multiple 
  *	Trigger objects as properties.
+ *
+ *	@example
+// Simple usage for a single type of event
+var menuPress = new Trigger();
+
+var menuPressListener = function(params) {
+  console.log("menuPress trigger fired");
+  // params = whatever was passed to the trigger method (see below)
+  console.log(params);
+}
+
+menuPress.on(menuPressListener);
+
+// ... then somewhere in the code:
+menuPress.trigger({ id: 5 });
+
+// ... and eventually
+menuPress.off(menuPressListener);
+ *
+ *	@example
+// If there are multiple events to handle, 
+// simply create multiple triggers
+var car = {
+  engineStarted: new Trigger(),
+  brakeApplied: new Trigger(),
+  gearChanged: new Trigger()
+}
  */
 var Trigger = function() {
 
@@ -21,6 +46,8 @@ var Trigger = function() {
 	/**
 	 *	@method on
 	 *	@memberof Trigger.prototype
+	 *	@param {Function} callback - the function used as callback for the listener
+	 *	@param {Object=} context - the context in which to invoke the function
 	 *	@description Adds a listener to this trigger
 	 */
 	t.on = function (callback, context) {
@@ -31,10 +58,12 @@ var Trigger = function() {
 	/**
 	 *	@method off
 	 *	@memberof Trigger.prototype
+	 *	@param {Function} callback - the function used as callback for the listener. 
+	 *	Needs to be the same function as passed to the <code>on()</code> when it was being registered.
 	 *	@description Removes a listener from this trigger. 
-	 *	If the passed callback is not a listener of this trigger, 
+	 *	<p>If the passed callback is not a listener of this trigger, 
 	 *	this function will not throw any warnings, it will just return. 
-	 *	If this function is called from within a function that is a listener, 
+	 *	<p>If this function is called from within a function that is a listener for that trigger, 
 	 *	the callback will not be removed until all other listeners are called.
 	 */
 	t.off = function (callback) {
@@ -53,8 +82,9 @@ var Trigger = function() {
 	/**
 	 *	@method trigger
 	 *	@memberof Trigger.prototype
+	 *	@param {Object=} data - An object specifying the events parameters. All listeners will receive this object as argument.
 	 *	@description Fires this trigger passing data as srgument to all listeners.
-	 *	If this function is called from within a function that is a listener, 
+	 *	<p>If this function is called from within a function that is a listener for that trigger, 
 	 *	the trigger will not be fired until all other listeners 
 	 *	are called for the previous one.
 	 */

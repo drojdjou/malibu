@@ -89,16 +89,15 @@ var ExtTransition = function(ext, element) {
 			cb = callback;
 			numTrans = ts.length;
 
-			element.addEventListener(trEvent, onEnded);
+			// force repaint
+			element.offsetWidth = element.offsetWidth;
 
-			// have to wait for properties to settle before applying the transition
-			setTimeout(function() {
-				startTime = now();
-				finalized = false;
-				element.style[Simplrz.prefix.js + "Transition"] = tr;
-				element.style["transition"] = tr;
-				setValues(ts);
-			}, 0);
+			element.addEventListener(trEvent, onEnded);
+			startTime = now();
+			finalized = false;
+			element.style[Simplrz.prefix.js + "Transition"] = tr;
+			element.style["transition"] = tr;
+			setValues(ts);
 
 			return transition;
 		};

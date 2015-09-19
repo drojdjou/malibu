@@ -77,32 +77,30 @@
 <script type="text/javascript">
 
 	Application.route.on(function(c, l) {
-        var fc = c.split('/').pop();
-		var fl = (l) ? l.split('/').pop() : 'none';
+
+        if(!c) return;
+
+        var fc = c.lastPart;
+		var fl = (l) ? l.lastPart : 'no last';
 
         console.log("navigating from", fl, "to", fc);
 
 		EXT.selectAll('a[href]').forEach(function(item) {
 			var li = item.ext.select('li');
-			if(li) li.ext.attr('class', '');
+			if(li) li.setAttribute('class', '');
 		});
 
 		var cl = EXT.select('a[href*="' + fc + '"]');
 		
 		if(cl) {
 			var li = cl.ext.select('li');
-			if(li) li.ext.attr('class', 'active');
+			if(li) li.setAttribute('class', 'active');
 		}
 	});
 
+    Simplrz.history = false;
 	Application.init();
   
-</script>
-
-<script type="text/javascript">
-    if(location.host.indexOf("localhost") > -1 || location.host.indexOf("192.168") > -1 || location.host.indexOf("127.0") > -1) {
-        document.write('<script src=\"http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1\"></' + 'script>');
-    }
 </script>
 
 </body>

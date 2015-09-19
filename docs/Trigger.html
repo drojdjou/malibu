@@ -51,11 +51,9 @@
 
 
 <div class="description">
-    Trigger is a simple utility used to create events. It is similar to signals. 
-	Triggers do not keep state, they should be therefore used for events that occur 
-	at different time intervals but do not alter the state of the object.
-	It can only send on type of event and it will always notify all it's listeners. 
-	In order to build a more robust event system, use multiple 
+    Trigger is a simple utility used to create events. 
+	<p>A Trigger can only send one type of event and it will always notify all of its listeners. 
+	<p>In order to build a more robust event system, use multiple 
 	Trigger objects as properties.
 </div>
 
@@ -125,6 +123,36 @@
 
 
 
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>// Simple usage for a single type of event
+var menuPress = new Trigger();
+
+var menuPressListener = function(params) {
+  console.log("menuPress trigger fired");
+  // params = whatever was passed to the trigger method (see below)
+  console.log(params);
+}
+
+menuPress.on(menuPressListener);
+
+// ... then somewhere in the code:
+menuPress.trigger({ id: 5 });
+
+// ... and eventually
+menuPress.off(menuPressListener);
+
+	</code></pre>
+
+    <pre class="prettyprint"><code>// If there are multiple events to handle, 
+// simply create multiple triggers
+var car = {
+  engineStarted: new Trigger(),
+  brakeApplied: new Trigger(),
+  gearChanged: new Trigger()
+}</code></pre>
+
+
 
     
     </div>
@@ -149,7 +177,7 @@
 
     
 
-    <h4 class="name" id="off"><span class="type-signature"></span>off<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="off"><span class="type-signature"></span>off<span class="signature">(callback)</span><span class="type-signature"></span></h4>
 
     
 
@@ -157,9 +185,9 @@
 
 <div class="description">
     Removes a listener from this trigger. 
-	If the passed callback is not a listener of this trigger, 
+	<p>If the passed callback is not a listener of this trigger, 
 	this function will not throw any warnings, it will just return. 
-	If this function is called from within a function that is a listener, 
+	<p>If this function is called from within a function that is a listener for that trigger, 
 	the callback will not be removed until all other listeners are called.
 </div>
 
@@ -170,6 +198,55 @@
 
 
 
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the function used as callback for the listener. 
+	Needs to be the same function as passed to the <code>on()</code> when it was being registered.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -204,7 +281,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Trigger.js.html">Trigger.js</a>, <a href="Trigger.js.html#line31">line 31</a>
+        <a href="Trigger.js.html">Trigger.js</a>, <a href="Trigger.js.html#line58">line 58</a>
     </li></ul></dd>
     
 
@@ -235,7 +312,7 @@
 
     
 
-    <h4 class="name" id="on"><span class="type-signature"></span>on<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="on"><span class="type-signature"></span>on<span class="signature">(callback, context<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -253,6 +330,97 @@
 
 
 
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the function used as callback for the listener</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>context</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">the context in which to invoke the function</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
 
 
 
@@ -286,7 +454,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Trigger.js.html">Trigger.js</a>, <a href="Trigger.js.html#line21">line 21</a>
+        <a href="Trigger.js.html">Trigger.js</a>, <a href="Trigger.js.html#line46">line 46</a>
     </li></ul></dd>
     
 
@@ -317,7 +485,7 @@
 
     
 
-    <h4 class="name" id="trigger"><span class="type-signature"></span>trigger<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="trigger"><span class="type-signature"></span>trigger<span class="signature">(data<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -325,7 +493,7 @@
 
 <div class="description">
     Fires this trigger passing data as srgument to all listeners.
-	If this function is called from within a function that is a listener, 
+	<p>If this function is called from within a function that is a listener for that trigger, 
 	the trigger will not be fired until all other listeners 
 	are called for the previous one.
 </div>
@@ -337,6 +505,66 @@
 
 
 
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">An object specifying the events parameters. All listeners will receive this object as argument.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -371,7 +599,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Trigger.js.html">Trigger.js</a>, <a href="Trigger.js.html#line53">line 53</a>
+        <a href="Trigger.js.html">Trigger.js</a>, <a href="Trigger.js.html#line82">line 82</a>
     </li></ul></dd>
     
 
@@ -413,13 +641,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Gesture.html">Gesture</a></li><li><a href="Timer.html">Timer</a></li><li><a href="Trigger.html">Trigger</a></li><li><a href="Value.html">Value</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Framework">Framework</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Gesture.html">Gesture</a></li><li><a href="HistoryRouter.html">HistoryRouter</a></li><li><a href="Timer.html">Timer</a></li><li><a href="Trigger.html">Trigger</a></li><li><a href="Value.html">Value</a></li></ul><h3>Namespaces</h3><ul><li><a href="Application.html">Application</a></li><li><a href="DomExtend.html">DomExtend</a></li><li><a href="FrameImpulse.html">FrameImpulse</a></li><li><a href="Loader.html">Loader</a></li><li><a href="Simplrz.html">Simplrz</a></li><li><a href="Util.html">Util</a></li><li><a href="VirtualScroll.html">VirtualScroll</a></li></ul><h3>Tutorials</h3><ul><li>website</li></ul><h3>Global</h3><ul><li><a href="global.html#Framework">Framework</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha13</a> on Wed Jul 01 2015 15:02:47 GMT+0200 (CEST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha13</a> on Sat Sep 19 2015 14:59:17 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>
