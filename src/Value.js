@@ -94,6 +94,36 @@ var Value = function(_value) {
 		return o;
 	}
 
+
+	/**
+	 *	@method threshold
+	 *	@memberof Value.prototype
+	 *
+	 *	@param {Number} min - the low value of the range of the threshold. It can be null, in this case there won't be a low value to the threshold.
+	 *	@param {Number} max - the high value of the range of the threshold. It can be null, in this case there won't be a high value to the threshold.
+	 *
+	 *	@description Similar to on, but the callback will only be invoked when the value crosses a certain threshold and it's value is within a range.
+	 */
+	that.threshold = function(callback, min, max, param, noInitCallback) {
+	
+		var test;
+
+		if(min != null && max != null) {
+			test = function(c, l) { return (c >= min && l < min) || (c < max && l >= max); }
+			if(_value >= min && _value < max && !noInitCallback) callback(_value);
+		} else if(min != null && max == null) {
+			test = function(c, l) { return (c >= min && l < min); }
+			if(_value >= min && !noInitCallback) callback(_value);
+		} else if(min == null && max != null) {
+			test = function(c, l) { return (c < max && l >= max); }
+			if(_value < max && !noInitCallback) callback(_value);
+		}
+
+		
+
+		return that.on(callback, test, param, true);
+	}
+
 	/**
 	 *	@method off
 	 *	@memberof Value.prototype
@@ -105,6 +135,16 @@ var Value = function(_value) {
 		if(i > -1) observers.splice(i, 1);
 	}
 
+	/**
+	 *	@method range
+	 *	@memberof Value.prototype
+	 *	@param {Number} _min - minimum value (inclusive)
+	 *	@param {Number} _max - minimum value (inclusive)
+	 *	@param {Number} _wrap - if true if value goes over max or below min it will be wrapped, otherwise it will clamped to min, max.
+	 *
+	 *	@description This method allows to add minumim and maximum allowed value to the Value object. Mostly useful for numbers, if
+	 *	we need to make sure the value will not go over a certain threshold.
+	 */
 	that.range = function(_min, _max, _wrap) {
 		min = _min;
 		max = _max;
