@@ -7,6 +7,19 @@ var Application = (function() {
 	var router;
 
 	/**
+	 *	@member {Object} flags
+	 *	@memberof Application
+	 *	@static
+	 */	
+	app.flags = {};
+
+	var fs = document.location.search.substring(1).split('&');
+	fs.forEach(function(f) {
+		var ff = f.split('=');
+		app.flags[ff[0]] = parseFloat(ff[1]);
+	});
+
+	/**
 	 *	@member {Trigger} resize
 	 *	@memberof Application
 	 *	@static

@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":57,"date":"2015-09-01T19:00:26.757Z"}
+var Framework = {"version":"4","build":59,"date":"2015-10-01T03:58:58.099Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -767,6 +767,36 @@ var Value = function(_value) {
 		return o;
 	}
 
+
+	/**
+	 *	@method threshold
+	 *	@memberof Value.prototype
+	 *
+	 *	@param {Number} min - the low value of the range of the threshold. It can be null, in this case there won't be a low value to the threshold.
+	 *	@param {Number} max - the high value of the range of the threshold. It can be null, in this case there won't be a high value to the threshold.
+	 *
+	 *	@description Similar to on, but the callback will only be invoked when the value crosses a certain threshold and it's value is within a range.
+	 */
+	that.threshold = function(callback, min, max, param, noInitCallback) {
+	
+		var test;
+
+		if(min != null && max != null) {
+			test = function(c, l) { return (c >= min && l < min) || (c < max && l >= max); }
+			if(_value >= min && _value < max && !noInitCallback) callback(_value);
+		} else if(min != null && max == null) {
+			test = function(c, l) { return (c >= min && l < min); }
+			if(_value >= min && !noInitCallback) callback(_value);
+		} else if(min == null && max != null) {
+			test = function(c, l) { return (c < max && l >= max); }
+			if(_value < max && !noInitCallback) callback(_value);
+		}
+
+		
+
+		return that.on(callback, test, param, true);
+	}
+
 	/**
 	 *	@method off
 	 *	@memberof Value.prototype
@@ -778,6 +808,16 @@ var Value = function(_value) {
 		if(i > -1) observers.splice(i, 1);
 	}
 
+	/**
+	 *	@method range
+	 *	@memberof Value.prototype
+	 *	@param {Number} _min - minimum value (inclusive)
+	 *	@param {Number} _max - minimum value (inclusive)
+	 *	@param {Number} _wrap - if true if value goes over max or below min it will be wrapped, otherwise it will clamped to min, max.
+	 *
+	 *	@description This method allows to add minumim and maximum allowed value to the Value object. Mostly useful for numbers, if
+	 *	we need to make sure the value will not go over a certain threshold.
+	 */
 	that.range = function(_min, _max, _wrap) {
 		min = _min;
 		max = _max;
@@ -857,6 +897,19 @@ var Application = (function() {
 	var router;
 
 	/**
+	 *	@member {Object} flags
+	 *	@memberof Application
+	 *	@static
+	 */	
+	app.flags = {};
+
+	var fs = document.location.search.substring(1).split('&');
+	fs.forEach(function(f) {
+		var ff = f.split('=');
+		app.flags[ff[0]] = parseFloat(ff[1]);
+	});
+
+	/**
 	 *	@member {Trigger} resize
 	 *	@memberof Application
 	 *	@static
@@ -926,6 +979,16 @@ var DomExtend = (function() {
 		return e;
 	};
 
+	/**
+	 *	The equivalent of <code>document.querySelector</code>. It extends the object
+	 *	with DomExtend functionality before returning the result.
+	 *
+	 *	@method select
+	 *	@memberof DomExtend
+	 *	@static
+	 *	@param {string} sel - the CSS selector to query
+	 *	@param {HTMLElement=} element - the HTML element to query on, defaults to document 
+	 */
 	that.select = function(sel, element) {
 		var e = (element || document).querySelector(sel);
 		if(e && !e.ext) that.extend(e);
@@ -2126,10 +2189,43 @@ var Gesture = function(options) {
 /* --- --- [Util] --- --- */
 
 /**
- *	@class Util
+ *	@namespace Util
  */
 var Util = {
 
+	/**
+	 *	@method fullbleed
+	 *	@memberof Util
+	 *	@static
+	 *	@param {HTMLElement} element - the node to scale to fullbleed 
+	 *	conserving the aspect ratio. It should be either image or video. 
+	 *	
+	 *	@description <p>This function calculates the size and position of the element
+	 *	so that it cover the entire area of it's container (or the whole viewport).
+	 *	It does a similar thing to what <code>background-size: cover;</code> does for 
+	 *	background images in CSS. Most useful with videos, but can be used with 
+	 *	img tags as well.
+	 *
+	 *	<p>This function does not transform the element, 
+	 *	it only returns an array of values to use. 
+	 *	To actually resize/reposition the element, use {@link Util.resizeTo}.
+	 *
+	 *	@param {Number=} w - the width of the container, defaults to window.innerWidth
+	 *	@param {Number=} h - the height of the container, defaults to window.innerHeight
+	 *
+	 *	@returns {Array} values to use to scale fullscreen in that order: 
+	 *	left, top, width, height.
+	 *
+	 *	@example
+var video = EXT.create('video'); 
+// same as document.createElement('video');
+
+var f = Util.fullbleed(video);
+Util.resizeTo(video, f);
+
+// ..or in shorthand form:
+Util.resizeTo(video, Util.fullbleed(video));
+	 */
 	fullbleed: function(element, w, h) {
 		var isVideo = element.videoWidth > 0;
 
@@ -2165,14 +2261,48 @@ var Util = {
 		return [vx, vy, vcw, vch];
 	},
 
-	fullContain: function(img) {
-		var isVideo = img.videoWidth > 0;
+	/**
+	 *	@method fullContain
+	 *	@memberof Util
+	 *	@static
+	 *	@param {HTMLElement} element - the node to scale to fullContain 
+	 *	conserving the aspect ratio. It should be either image or video. 
+	 *	
+	 *	@description <p>This function calculates the size and position of the element
+	 *	so that it cover the maximum area of it's container (or the whole viewport)
+	 *	without cropping the image/video itself. It does a similar thing to what 
+	 *	<code>background-size: contain;</code> does for 
+	 *	background images in CSS. Most useful with videos, but can be used with 
+	 *	img tags as well.
+	 *
+	 *	<p>This function does not transform the element, 
+	 *	it only returns an array of values to use. 
+	 *	To actually resize/reposition the element, use {@link Util.resizeTo}.
+	 *
+	 *	@param {Number=} w - the width of the container, defaults to window.innerWidth
+	 *	@param {Number=} h - the height of the container, defaults to window.innerHeight
+	 *
+	 *	@returns {Array} values to use to scale fullscreen in that order: 
+	 *	left, top, width, height.
+	 *
+	 *	@example
+var video = EXT.create('video'); 
+// same as document.createElement('video');
+
+var f = Util.fullContain(video);
+Util.resizeTo(video, f);
+
+// ..or in shorthand form:
+Util.resizeTo(video, Util.fullContain(video));
+	 */
+	fullContain: function(element, w, h) {
+		var isVideo = element.videoWidth > 0;
 
 		var w = window.innerWidth;
 		var h = window.innerHeight;
-		var iw = isVideo ? img.videoWidth : img.width;
-		var ih = isVideo ? img.videoHeight : img.height;
-		var scrRatio = w / h;
+		var iw = isVideo ? element.videoWidth :  element.width;
+		var ih = isVideo ? element.videoHeight : element.height;
+		var scrRatio = w  / h;
 		var imgRatio = iw / ih;
 		var sx, sy, sw, sh;
 
@@ -2194,6 +2324,34 @@ var Util = {
 		return[sx, sy, sw , sh];
 	},
 
+	/**
+	 *	@method resizeTo
+	 *	@memberof Util
+	 *	@static
+	 *
+	 *	@description resizes and moves the element to a give size and position, 
+	 *	by applying values to it's CSS top/left/width and height properties. Assumes
+	 *	the element has a block display mode (or any other mode that works). 
+	 *	Works best when the element has position absolute.
+	 *
+	 *	@param {HTMLElement} element - the element to resize
+	 *	@param {Array} dimensions - the dimensions to use, typically as returned from
+	 *	{@link Util.fullbleed} or {@link Util.fullContain}
+	 */
+	resizeTo: function(element, dimensions) {
+		element.style.left = 	dimensions[0] + 'px';
+		element.style.top = 	dimensions[1] + 'px';
+		element.style.width = 	dimensions[2] + 'px';
+		element.style.height = 	dimensions[3] + 'px';
+	},
+
+	/**
+	 *	@method hexToRgb
+	 *	@memberof Util
+	 *	@static
+	 *	@param {String} hex - the hex representation of the color (ex. #a2e5d9)
+	 *	@returns {Object} and object with values r, g and b in 0-255 range
+	 */
 	hexToRgb: function(hex) {
 		var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 		return result ? {
@@ -2256,8 +2414,19 @@ var Util = {
 		element.removeEventListener("click", tapHandler.click);
 	},
 
+	/**
+	 *	@readonly
+	 *	@enum {String}
+	 *	@description A collection of easing curves to be used with 
+	 *	CSS transitions or animations
+	 *	@example
+// Using easing with CSS transitions in EXT
+var e = EXT.select('.someElement');
+e.ext.transition({ opacity: 0 }, 300, Util.cssEase.easeInQuint);
+	 */
 	cssEase: {
 		'ease': 'ease',
+		/** Alias for 'ease' */
 		'smoothstep': 'ease',
 		'in': 'ease-in',
 		'out': 'ease-out',
