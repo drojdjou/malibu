@@ -45,6 +45,9 @@ var onFrame = function() {
 	// Apply the scroll value
 	element.ext.transform({ y: -scroll });
 }
+
+VirtualScroll.on(onScroll);
+FrameImpulse.on(onFrame);
  */
 var VirtualScroll = (function(document) {
 
