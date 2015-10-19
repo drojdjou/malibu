@@ -47,7 +47,7 @@ health.value = 2;
 /*
  *	Also read this http://www.html5rocks.com/en/tutorials/es7/observe/
  */
-var Value = function(_value) {
+var Value = function(_value, noInitCallback) {
 
 	var that = this, 
 		value = _value, 
@@ -82,7 +82,7 @@ var Value = function(_value) {
 	 *	@description sets the value property of thie Value to whatever is passed as parameter. 
 	 *	Same as saying <code>someValue.value = v;</code> but this method can be useful when chaining. 
 	 */
-	that.on = function(callback, test, param, noInitCallback) {
+	that.on = function(callback, test, param) {
 		var o = callback;
 		o.test = test;
 		o.param = param;

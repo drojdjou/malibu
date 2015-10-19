@@ -35,6 +35,16 @@ var DomExtend = (function() {
 		return e;
 	};
 
+	/**
+	 *	The equivalent of <code>document.querySelectorAll</code>. It extends the objects
+	 *	with DomExtend functionality before returning the result and it returns them as regular Array (yay!)
+	 *
+	 *	@method select
+	 *	@memberof DomExtend
+	 *	@static
+	 *	@param {string} sel - the CSS selector to query
+	 *	@param {HTMLElement=} element - the HTML element to query on, defaults to document 
+	 */
 	that.selectAll = function(sel, element) {
 		var es = (element || document).querySelectorAll(sel);
 		var nes = es.length, r = [];
@@ -46,30 +56,63 @@ var DomExtend = (function() {
 		return r;
 	};
 
+	/**
+	 *	@method extend
+	 *	@memberof DomExtend
+	 *	@static
+	 *	@param {HTMLElement} element - the tag to extend
+	 *	@description adds the .ext property to the element, with all the DomExtend functionality. This method should be rarely used and if you 
+	 *	find yourself using it a lot, you need to rethink the code. All element selected with EXT.select or element.ext.select 
+	 *	or created with EXT.create will be already extended.
+	 */
 	that.extend = function(element) {
 
 		if(element.ext) return element;
 
 		var ext = {};
 
-		ext.create = function(tag) {
-			return that.create(tag);
-		};
-
+		/**
+		 *	The equivalent of <code>element.querySelector</code>. It extends the object
+		 *	with DomExtend functionality before returning the result.
+		 *
+		 *	@method select
+		 *	@memberof DomExtend.prototype
+		 *	@param {string} sel - the CSS selector to query
+		 */
 		ext.select = function(sel) {
 			return that.select(sel, element);
 		};
 
+		/**
+		 *	The equivalent of <code>element.querySelectorAll</code>. It extends the objects
+		 *	with DomExtend functionality before returning the result and it returns them as regular Array (yay!)
+		 *
+		 *	@method select
+		 *	@memberof DomExtend.prototype
+		 *	@param {string} sel - the CSS selector to query
+		 */
 		ext.selectAll = function(sel) {
 			return that.selectAll(sel, element);
 		};
 
+		/**
+		 *	@method detach
+		 *	@memberof DomExtend.prototype
+		 *	@description Safely removes the element from it's parent node. It is the same as saying 
+		 *	element.parentNode.removeChild(element) but will not throw an error if parentNode is null.
+		 */
 		ext.detach = function() {
 			var p = element.parentNode;
 			if(!p) return;
 			p.removeChild(element);
 		};
 
+		/**
+		 *	@method attachTo
+		 *	@memberof DomExtend.prototype
+		 *	@description Safely attaches the element to a parent node. It is the same as saying 
+		 *	parent.appednChild(element) but will not throw an error if child is already added to parent.
+		 */
 		ext.attachTo = function(parent) {
 			if(element.parentNode == parent) return;
 			else parent.appendChild(element);

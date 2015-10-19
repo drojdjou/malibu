@@ -34,6 +34,11 @@ var ExtState = function(ext, element) {
 		return ext.readCss('display') != "none";
 	};
 
+	/**
+	 *	@method on
+	 *	@memberof DomExtend.prototype
+	 *	@description Equivalent of element.addEventListener but shorter and has a special touch handler for 'click' events.
+	 */	
 	ext.on = function(event, callback, useCapture) {
 		if(Simplrz.touch && event == 'click') {
 			callback.___thProxy = Util.handleTap(element, callback);
@@ -43,6 +48,11 @@ var ExtState = function(ext, element) {
 		}
 	};
 
+	/**
+	 *	@method off
+	 *	@memberof DomExtend.prototype
+	 *	@description Equivalent of element.removeEventListener but shorter and works witht the special touch handler for 'click' events.
+	 */	
 	ext.off = function(event, callback, useCapture) {
 		if(callback.___thProxy) {
 			Util.clearTapHandler(element, callback.___thProxy);
@@ -69,4 +79,38 @@ var ExtState = function(ext, element) {
 	ext.readCss = function(property, notCalculated) {
 		return (notCalculated) ? element.style[property] : getComputedStyle(element).getPropertyValue(property);
 	}
+
+	/**
+	 *	@method bg
+	 *	@memberof DomExtend.prototype
+	 *	@description Loads and sets a backgroung image for the element. Passing the onLoad function allows to make 
+	 *	animated transitions (ex. fade in) when the background images are loaded. 
+	 *
+	 *	@param {string} path - the path to the image
+	 *	@param {Function} onLoad - the load callback to be exectued. It is called after the image was loaded but before
+	 *	it has been set as background image.
+	 */
+	ext.bg = function(path, onLoad) {
+
+		if(onLoad) {
+			var i = new Image();
+			i.addEventListener('load', function() {
+				onLoad(element, i);
+				element.style.backgroundImage = 'url(' + path + ')';
+			});
+			i.src = path;
+		} else {
+			element.style.backgroundImage = 'url(' + path + ')';
+		}
+	}
 };
+
+
+
+
+
+
+
+
+
+

@@ -31,7 +31,9 @@ var Application = (function() {
 	 *	@memberof Application
 	 *	@static
 	 */
-	app.route = new Value();
+	app.route = new Value({
+		parts: []
+	}, true);
 	
 	/**
 	 *	@function init

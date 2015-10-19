@@ -329,7 +329,7 @@ health.value = 2;</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Value.js.html">Value.js</a>, <a href="Value.js.html#line97">line 97</a>
+        <a href="Value.js.html">Value.js</a>, <a href="Value.js.html#line127">line 127</a>
     </li></ul></dd>
     
 
@@ -602,6 +602,183 @@ health.value = 2;</code></pre>
 
     
 
+    <h4 class="name" id="range"><span class="type-signature"></span>range<span class="signature">(_min, _max, _wrap)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    This method allows to add minumim and maximum allowed value to the Value object. Mostly useful for numbers, if
+	we need to make sure the value will not go over a certain threshold.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>_min</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">minimum value (inclusive)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>_max</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">minimum value (inclusive)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>_wrap</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">if true if value goes over max or below min it will be wrapped, otherwise it will clamped to min, max.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Value.js.html">Value.js</a>, <a href="Value.js.html#line138">line 138</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="set"><span class="type-signature"></span>set<span class="signature">(v)</span><span class="type-signature"></span></h4>
 
     
@@ -702,7 +879,160 @@ health.value = 2;</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Value.js.html">Value.js</a>, <a href="Value.js.html#line115">line 115</a>
+        <a href="Value.js.html">Value.js</a>, <a href="Value.js.html#line155">line 155</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="threshold"><span class="type-signature"></span>threshold<span class="signature">(min, max)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Similar to on, but the callback will only be invoked when the value crosses a certain threshold and it's value is within a range.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>min</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the low value of the range of the threshold. It can be null, in this case there won't be a low value to the threshold.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>max</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the high value of the range of the threshold. It can be null, in this case there won't be a high value to the threshold.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Value.js.html">Value.js</a>, <a href="Value.js.html#line98">line 98</a>
     </li></ul></dd>
     
 
@@ -750,7 +1080,7 @@ health.value = 2;</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha13</a> on Sat Sep 19 2015 14:59:17 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha13</a> on Sun Oct 18 2015 23:36:44 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

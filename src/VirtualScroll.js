@@ -3,7 +3,13 @@
  *
  *	@description World Famous VirtualScroll &copy;
  *
- *	<p><a href='http://www.everyday3d.com/blog/index.php/2014/08/18/smooth-scrolling-with-virtualscroll/'>How to use</a>.
+ *	<p>
+ *	<a href='http://www.everyday3d.com/blog/index.php/2014/08/18/smooth-scrolling-with-virtualscroll/'>How to use</a><br>
+ *	<a href='http://work.bartekdrozdz.com/malibu/test/wheel-simple.html'>Simple example</a><br>
+ *	<a href='http://work.bartekdrozdz.com/malibu/test/wheel-multi.html'>Paralax example</a>
+ *	</p>
+ *
+ *	<p>Within the context of the DomExtend functionality, VirtualScroll works best with the element.ext.transform() function.</p>
  *
  *	@example
 var onSroll = function(e) {
@@ -15,6 +21,30 @@ VirtualScroll.on(onScroll);
 
 // ...and when it needs to stop
 VirtualScroll.off(onScroll);
+ *
+ *	@example
+// Using VS with DomExtend
+
+var scroll = 0, targetScroll = 0;
+
+// typically the limit of scrolling will be defined by the height of the object minus the height of the window
+var MAX_SCROLL = element.ext.height() - window.innerHeight;
+
+var onScroll = function(e) {
+	targetScroll += e.deltaY;
+
+	// Clamp the scroll to limit values
+	targetScroll = Math.max(0, targetScroll);
+	targetScroll = Math.min(MAX_SCROLL, targetScroll);
+}
+
+var onFrame = function() {
+	// Add some easing
+	scroll += (targetScroll - scrol) * 0.1; 
+
+	// Apply the scroll value
+	element.ext.transform({ y: -scroll });
+}
  */
 var VirtualScroll = (function(document) {
 

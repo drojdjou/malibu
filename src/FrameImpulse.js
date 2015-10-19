@@ -91,10 +91,18 @@ var FrameImpulse = (function() {
 	 *	@description Removes a listener to be called on every frame
 	 */
 	r.off = function(f) {
-		if(listeners.indexOf(f) == -1) { return; }
-		toRemove.push(f);
-		numToRemove = toRemove.length;
-		// console.log("FrameImpulse > scheduled removal > total :", numListeners);
+		
+
+		// At this point we think the "late" removal patttern was more harmful than helpful, so it's gone.
+
+		// if(listeners.indexOf(f) == -1) { return; }
+		// toRemove.push(f);
+		// numToRemove = toRemove.length;
+
+		var i = listeners.indexOf(f);
+		if(i == -1) return;
+		listeners.splice(i, 1);
+		numListeners = listeners.length;
 	}
 
 	r.getListeners = function() {

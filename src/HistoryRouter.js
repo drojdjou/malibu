@@ -15,7 +15,6 @@ var HistoryRouter = function (app, params) {
 	app.hijackLinks = new Trigger();
 
 	var routeHistory = [];
-	app.historyBack = new Trigger();
 
 	var hijackLinks = function (element) {
 
@@ -55,7 +54,7 @@ var HistoryRouter = function (app, params) {
 
 				var cb = function (e) {
 					if(e) e.preventDefault();
-					pushState(this.hijackedHref);
+					app.navigate.trigger(this.hijackedHref);
 				}
 
 				if(Simplrz.touch) {
@@ -68,20 +67,24 @@ var HistoryRouter = function (app, params) {
 	};
 
 	var notify = function(href) {
-		var qs = document.location.href.indexOf('?');
-		var hs = document.location.href.indexOf('#');
-
-		var route = document.location.href;
-
-		if(qs > -1) route = route.substring(0, qs);
-		if(hs > -1) route = route.substring(0, hs);
 
 		var r = {};
 
-		if(!disableHistoryAPI)  {
-			r.route = route.substring(rootUrl.length + 1 + app.baseUrl.length);
-		} else {
+		if(disableHistoryAPI)  {
+
 			r.route = href || '';
+			
+		} else {
+
+			var qs = document.location.href.indexOf('?');
+			var hs = document.location.href.indexOf('#');
+
+			var route = document.location.href;
+
+			if(qs > -1) route = route.substring(0, qs);
+			if(hs > -1) route = route.substring(0, hs);
+			r.route = route.substring(rootUrl.length + 1 + app.baseUrl.length);			
+
 		}
 
 		r.parts = r.route.split('/');
@@ -91,16 +94,11 @@ var HistoryRouter = function (app, params) {
 		while(r.parts[r.parts.length - 1] == '') r.parts.pop();
 
 		r.lastPart = r.parts[r.parts.length - 1];
-		r.route = r.parts.join('/');
 
+		if(r.route == app.route.value.route) return;
 		routeHistory.push(r);
 		app.route.value = r;
 	}
-
-	var pushState = function (href) {
-		if (!disableHistoryAPI) history.pushState(null, null, href);
-		notify(href);
-	};
 
 	if(!disableHistoryAPI) {
 		window.addEventListener('popstate', function(e) {
@@ -109,11 +107,10 @@ var HistoryRouter = function (app, params) {
 	}
 
 	app.hijackLinks.on(hijackLinks);
-	app.navigate.on(pushState);
-
-	// app.historyBack.on(function() {
-	// 	console.log(arguments)
-	// });
+	app.navigate.on(function(href) {
+		history.pushState(null, null, href);
+		notify();
+	});
 
 	return {
 
@@ -124,7 +121,7 @@ var HistoryRouter = function (app, params) {
 			} else {
 				var home, qs = document.location.search;
 
-				if(params || params.home) home = params.home;
+				if(params && params.home) home = params.home;
 
 				if(qs.indexOf('=') > -1) {
 					var aq = qs.substring(1).split('&');
