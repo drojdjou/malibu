@@ -161,22 +161,24 @@ var ExtTransform = function(ext, element) {
 	/**
 	 *	@method transform
 	 *	@memberof DomExtend.prototype
-	 *	@description Applies the transformation values to the elements CSS transform property. The values can either be set via
+	 *	@description <p>Applies the transformation values to the elements CSS transform property. The values can either be set via
 	 *	the member variables: x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ or canbe passed as parameter to this function. Please see
-	 *	the documentation for the indivdual properties above to see what they do (thought it should be pretty obvious based on their names :)
-
-	 *	@param {Object=} An object literal containing the properties to be affected. The naming convention is the same as 
+	 *	the documentation for the indivdual properties above to see what they do (thought it should be pretty obvious based on their names :)</p>
+	 *
+	 *	<p>Please also read carefully <a href='http://www.html5rocks.com/en/tutorials/speed/high-performance-animations/'>this article</a>.
+	 * 
+	 *	@param {Object=} values An object literal containing the properties to be affected. The naming convention is the same as 
 	 *	the transformtion properties of DomExtend objects, i.e. x, y, z, rotX, rotY, rotZ, scaleX, scaleY, scaleZ.
 	 *
 	 * @example
 // First select the object
 var e = EXT.select('#someElement');
 
-// Move the element 10px to the right
+// Move the element 10px to the right of it's original position
 e.ext.x = 10;
 e.ext.transform();
 
-// Move the element 10px down
+// Move the element 10px down from it's original position
 e.ext.transform({ y: 10 });
 
 // Increase the elements x position by 20
