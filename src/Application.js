@@ -44,8 +44,11 @@ var Application = (function() {
 
 		params = params || {};
 
-		router = HistoryRouter(app, params);
-		router.init();
+		console.log('%cMalibu v' + 
+			Framework.version + 
+			' b' + Framework.build + 
+			' (history:' + !params.disableHistoryAPI + ')'
+			, 'background: #ff3600; color: #ffdede; padding: 4px 10px 4px 10px');
 
 		window.addEventListener('resize', function(e) {
 			app.resize.trigger(e);
@@ -53,12 +56,10 @@ var Application = (function() {
 
 		window.addEventListener('orientationchange', function(e) {
 			app.resize.trigger(e);
-		});
+		});	
 
-		console.log('Malibu v' + 
-			Framework.version + 
-			' b' + Framework.build + 
-			' (history:' + !params.disableHistoryAPI + ')');
+		router = HistoryRouter(app, params);
+		router.init();	
 	}
 	
 	return app;

@@ -50,9 +50,10 @@ var Trigger = function() {
 	 *	@param {Object=} context - the context in which to invoke the function
 	 *	@description Adds a listener to this trigger
 	 */
-	t.on = function (callback, context) {
+	t.on = function (callback, context, callOnInit) {
 		callback.context = context;
 		listeners.push(callback);
+		if(callOnInit) callback();
 	};
 
 	/**
