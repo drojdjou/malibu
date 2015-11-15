@@ -50,13 +50,26 @@ var Application = (function() {
 			' (history:' + !params.disableHistoryAPI + ')'
 			, 'background: #ff3600; color: #ffdede; padding: 4px 10px 4px 10px');
 
+		var r = {
+			width: 0,
+			height: 0,
+			aspect: 0,
+			orientation: -1,
+			event: null
+		}
+
 		window.addEventListener('resize', function(e) {
-			app.resize.trigger(e);
+			r.width = window.innerWidth;
+			r.height = window.innerHeight;
+			r.aspect = r.width / r.height;
+			r.orientation = window.orientation;
+			r.event = e;
+			app.resize.trigger(r);
 		});
 
-		window.addEventListener('orientationchange', function(e) {
-			app.resize.trigger(e);
-		});	
+		// window.addEventListener('orientationchange', function(e) {
+		// 	app.resize.trigger(e);
+		// });	
 
 		router = HistoryRouter(app, params);
 		router.init();	

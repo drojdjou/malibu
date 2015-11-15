@@ -13,7 +13,7 @@ var ExtState = function(ext, element) {
 	 *	@description Sets the display CSS property of the object to the display type specified in the argument. Defaults to "block".
 	 */
 	ext.show = function(display) {
-		element.style.display = display || "block";
+		element.style.display = display || element.ext.__defaultDisplay || "block";
 	};
 
 	/**
@@ -22,6 +22,7 @@ var ExtState = function(ext, element) {
 	 *	@description Sets the display CSS property of the object to "none".
 	 */
 	ext.hide = function() {
+		element.ext.__defaultDisplay = ext.readCss('display');
 		element.style.display = "none";
 	};
 

@@ -13,8 +13,9 @@ var DomExtend = (function() {
 	 *	@description Created a HTMLElement of type defined by the tag. It first calls <code>document.createElement(tag)</code> 
 	 *	and the extends this element with DomExtend functionality.
 	 */
-	that.create = function(tag) {
+	that.create = function(tag, cssclass) {
 		var e = document.createElement(tag);
+		if(cssclass) e.classList.add(cssclass);
 		that.extend(e);
 		return e;
 	};
@@ -135,7 +136,6 @@ var DomExtend = (function() {
 		return element;
 	};
 
-	that.extend(document);
 	window.EXT = that;
 
 	return that;

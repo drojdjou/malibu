@@ -1,45 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Framework Tests</title>
+	<title>Malibu | A not-over-engineered Javascript framework</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-	<style type="text/css">
-		body {
-			font-family: monospace;
-			background-color: #000;
-			color: #0f0;
-		}
+	<script src="https://use.typekit.net/xte5chr.js"></script>
+	<script>try{Typekit.load({ async: true });}catch(e){}</script>
 
-		ol {
-			list-style-type: none;
-			padding: 0;
-			margin: 0;
-		}
-
-		a { 
-			color: inherit;
-			text-decoration: none;
-		}
-
-		a:hover {
-			text-decoration: underline;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="home/home.css">
 
 </head>
 <body>
-	<h2>Malibu JS</h2>
-	<ol>
+
+<div class="splash"></div>
+<div class="overlay"></div>
+
+<section id="content">
+
+	<ol class='left'>
+		<li><h1>MALIBU</h1></li>
+		<li><p>A Javascript framework that is not over engineered.</p></li>
 		<li><a href="docs/index.html">Reference</a></li>
 		<li><a href="https://github.com/drojdjou/malibu">Source code</a></li>
 	</ol>
-	<h2>Tests/examples</h3>
-	<ol>
+
+	<ol class='right'>
+		<li><h2>EXAMPLES</h2></li>
 		<li><a href="test/wheel.html">Virtual scroll</a></li>
 		<li><a href="test/wheel-simple.html">Virtual scroll simple</a></li>
-		<li><a href="test/wheel-multi.html">Virtual scroll multi speed</a></li>
+		<li><a href="test/wheel-multi.html">Virtual scroll paralax</a></li>
 		<li><a href="test/simplrz.html">Simplrz feature detection</a></li>
 		
 		<li><a href="test/tap.html">Tap</a></li>
@@ -56,7 +46,20 @@
 		<li><a href="test/css-animation.html">CSS Animation</a></li>
 		<li><a href="test/ext-animation.html">EXT Animation</a></li>
 		<li><a href="test/frame-impulse.html">Frame Impulse</a></li>
+
+		<li><a href="test/orientation.html">Screen orientation</a></li>
 	</ol>
+
+</section>
+
+<script>
+
+if(location.host.indexOf('local') > -1 || location.host.indexOf('192.168') > -1) {
+	document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>');
+}
+
+</script>
+
 </body>
 </html>   
 

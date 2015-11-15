@@ -1,0 +1,84 @@
+body {
+  margin: 0;
+  background-color: #000;
+  color: #ffffff;
+  font-family: "proxima-nova", sans-serif;
+  font-weight: 400;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+ol {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+ol li {
+  margin-top: 1px;
+}
+.splash {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-image: url(background.jpg);
+  -webkit-filter: blur(6px);
+  transform: scaleX(1.1) scaleY(1.1);
+}
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+#content {
+  position: relative;
+  margin: 15px;
+}
+#content h1,
+#content h2,
+#content p,
+#content a {
+  margin: 0;
+}
+#content p,
+#content a {
+  padding: 2px 8px 4px 8px;
+}
+#content h1,
+#content h2 {
+  color: #000;
+  display: inline-block;
+}
+#content h2 {
+  font-family: "proxima-nova", sans-serif;
+  font-weight: 700;
+}
+#content h1 {
+  font-family: "proxima-nova", sans-serif;
+  font-weight: 900;
+  font-size: 50px;
+  letter-spacing: 0.01em;
+}
+#content p {
+  background-color: #000;
+  display: inline-block;
+}
+#content a {
+  background-color: #000;
+  display: inline-block;
+}
+#content a:hover {
+  background-color: #fff;
+  color: #000;
+}
+#content .right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-align: right;
+}

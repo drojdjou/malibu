@@ -1,7 +1,11 @@
 /**
  *	@namespace FrameImpulse
  *
- *	@description A utility to handle <code>requestAnimationFrame</code> loops.
+ *	@description <p>A utility to handle <code>requestAnimationFrame</code> loops. It really only exists to eliminate a  common but hard debug problem: 
+ *	since RaF is sort of a recurent function, sometimes the code can accidentally start the loop twice (or even more times). This has diastrous 
+ *	conseuences for perofrmance, but it is not easy to spot at all.</p>
+ *
+ 	<p>With <code>FrameImpulse</code> you will not get into this kind of trouble easily.</p>
  *
  *	@example
 var render = function() {
@@ -72,7 +76,9 @@ var FrameImpulse = (function() {
 	 *	@static
 	 *
 	 *	@param {Function} callback - the function used as callback for the listener
-	 *	@description Adds a listener to be called on every frame
+	 *	@description Adds a listener to be called on every frame. The cool thing about this function, 
+	 *	is that the same function is added twice, it will not be called twice later on. However, this 
+	 *	does not work with anonymous functions, so we suggest to never use anonnymous functions with this.
 	 */
 	r.on = function(f) {
 		if(listeners.indexOf(f) > -1) { return; }
@@ -105,6 +111,13 @@ var FrameImpulse = (function() {
 		numListeners = listeners.length;
 	}
 
+	/**
+	 *	@method getListeners
+	 *	@memberof FrameImpulse
+	 *	@static
+	 *
+	 *	@description Returns a list of all currently registered functions. Useful for debugging.
+	 */
 	r.getListeners = function() {
 		return listeners;
 	}

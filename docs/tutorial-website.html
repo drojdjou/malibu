@@ -29,14 +29,14 @@
 
 <article>
     <h3>How to build a website with Malibu</h3><p>Hello! This tutorial will show you how all Malibu sites work. The Malibu framework is very loose and doesn't make you do things in any particular way. However, there is a set of best practices described below and a few tools that should help developing a stable one-page app.</p>
-<p>A typical web page is composed of three different types of code, all interacting with one another: Javascript, CSS and HTML. Each of them has it's strengths and weaknesses. The method tries to use all those tools in the most effective way. </p>
+<p>A typical web page is composed of three different types of code, all interacting with one another: Javascript, CSS and HTML. Each of them has it's strengths and weaknesses. The method tries to use all three in the most effective way. </p>
 <h2>HTML</h2><p>Everything starts with HTML. Many web apps these days tend to bypass the HTML document and generate the entire content and look of the website in Javascript. We prefer to use the HTML structure a bit more than that, because a static HTML document with a hierarchy of tags and content is SEO friendly and because it is easily editable even by non-programmers.</p>
 <p>However in many cases, keeping the HTML minimal and generating the content in JS is a better solution. One such case is if the content comes from external CMS (in form of a JSON file for example), or if the website is designed to be adapted to multiple language versions. This needs to be decisions taken on a case-by-case basis.</p>
 <p>Working with Malibu the only thing we need to do in HTML is to define a set of sections. Typically a view in HTML is represented by a section tag with an id, ex:</p>
 <pre class="prettyprint source"><code>&lt;section id='home-page'>&lt;/section></code></pre><p>Depending on the strategy we adopt above, we will fill this tag with HTML content or leave it empty, to be populated dynamically in JS, or anything in between. In other cases a <code>header</code> or <code>footer</code> or <code>nav</code> tag can also be used. </p>
 <p>In Malibu those sections tags together with a CSS style sheet and a Javascript class form the basic building block: a <strong>view</strong>.</p>
-<h2>Views</h2><p>Each project consists of a serie of parts that can be considered spearate <strong>views</strong>. There is an art in making good decisons on how to split the website into views and sometimes the initial plan needs to be changed afterwards. </p>
-<p>A typical approach consists of treating each section of a site as a separate view and additionally creating views for such elements as footers, headers &amp; menus. Larger sections can also be split into serveral views. Depending on the design, sometimes it makes sense to have a background as a separate view.</p>
+<h2>Views</h2><p>Each project consists of a number sections that can be considered spearate <strong>views</strong>. There is an art in making good decisons on how to split the website into views and sometimes the initial plan needs to be changed afterwards - a big view needs to be split into smaller one, or two small views need to be grouped into one larger.</p>
+<p>A typical approach consists of treating each section of a site as a separate view and additionally creating views for such elements as footers, headers &amp; menus. Larger sections can also be split into serveral views. Then, depending on the design, sometimes it makes sense to have a background as a separate view or an overlay video player, etc...</p>
 <p>What is important is to take a moment to think each project through and take desicions based on the specific needs of the project.</p>
 <p>However the views end up being organized there is one primary rule that should always be observed: in code, no view should ever hold a reference to another view. In fact, no reference to the views should exist anywhere in the code.</p>
 <p>Here's a base pattern to build a view class in Malibu:</p>
@@ -49,17 +49,27 @@
             container.ext.hide();
         }
     });
-}</code></pre><p>Now, in the main class, or wherever in code the site is started, we can create an instance of the view like this:</p>
-<pre class="prettyprint source"><code>SomeView($);</code></pre><p>Note that a reference to the object is not even kept. We just call the function and do not save any return value. This helps to keep things organized - if you do not have a reference to an object, you can't pass it around, right?</p>
-<p><em>The <code>$</code> object is called a state object. This is one way how views communicate with each other, we'll get back to this shortly.</em></p>
+}</code></pre><p>Now, in the main class, or wherever in code the site is booted, we can create an instance of the view like this:</p>
+<pre class="prettyprint source"><code>SomeView($);</code></pre><p>Note that a reference to the object is not even kept - the is now <code>var view =</code> at the beginning of each line. We just call the function and do not save the return value. This helps to keep things organized - if you do not have a reference to an object, you can't pass it around a create a mess of cross references, right?</p>
 <h2>Communication</h2><p>Now that we have views perfectly separated from each other, we need to establish a way for the to send and receive messages and talk to each other.</p>
-<h4>Application</h4><p>There are two ways to do this. One is the routing system that is built into the framework. It exists in the globla <code>Application</code> object as a value called <code>route</code> and trigger called <code>navigate</code>. Please refer to the documentation of the <a href="Value.html">Value</a> and <a href="Trigger.html">Trigger</a> classes for details.</p>
-<h4>State</h4><p>The other way to establish communication in the app is through a state object. A state object doesn't have any specific type or structure, but is typically names <code>$</code> and is a loose collection of Values, Triggers and primitive values such as numbers and booleans.</p>
+<p><em>The <code>$</code> object is called a state object, nothing to do with jQuery. We'll get back to this one shortly.</em></p>
+<h4>Application</h4><p>There is a routing system that is built into the framework. It exists in the global <code>Application</code> object as a value called <code>route</code> and trigger called <code>navigate</code>. To move to another page of the site, just trigger <code>navigate</code>:</p>
+<pre class="prettyprint source"><code>Application.navigate.trigger('home');</code></pre><p>To listen to the routing changes, use  <code>route</code>:</p>
+<pre class="prettyprint source"><code>Application.route.on(function(current, last) {
+        if(current.lastPart == 'home') {
+            // Chewy, we're home!
+        } else if(last.lastPart == 'home') {
+            // We just left home.
+        }
+    });
+}</code></pre><p><em>Please refer to the documentation of the <a href="Value.html">Value</a> and <a href="Trigger.html">Trigger</a> classes for details.</em></p>
+<h4>State</h4><p>The other way to establish communication in the app is through a state object. A state object doesn't have any specific type or structure, but is typically named <code>$</code> and is a loose collection of Values, Triggers and primitive values such as numbers, booleans or strings.</p>
 <p>With all this in mind, our typical startup code will look something like this:</p>
 <pre class="prettyprint source"><code>var $ = {
     onVideoStarted: new Trigger(),
     onVideoEnded: new Trigger(),
     soundVolume: new Value(1),
+    menuOpen: new Value(false),
     introPlayed: false
 }
 
@@ -72,6 +82,19 @@ SubPage($);
 Application.init();</code></pre><p>As you can see, there is a state object that declares two triggers, a value and a simple boolean. It is then passed as argument to each view constructor. </p>
 <p><em>One more rule that is worth keeping in mind is that the state object should not be altered inside the views - no properties should be added to it outside of this startup declaration.</em></p>
 <p>At the end we call <code>Application.init()</code> which starts the app and initializes the routing.</p>
+<h4>Changing the state and managing the state changes</h4><p>Each view is free to alter the values of the state object and expect other views to listen to those changes. For example, a video player view, when the video starts could trigger the property from the example above like this:</p>
+<pre class="prettyprint source"><code>$.onVideoStarted.trigger()</code></pre><p>Then, to continue the example, another view, that has some sort of background sound playing, can listen to this change an act accordingly:</p>
+<pre class="prettyprint source"><code>$.onVideoStarted.on(function() {
+    backgroundSound.mute();
+});</code></pre><p>Of course other views, that do not play any sounds are free to ignore this event and not even listen to when it changes. </p>
+<p>Most views will need to listen to routing changes however, to be able to see which page of the app we are on and if they should do anything about it. A view that prepresents a page will oviously show up or hide based on the routing value. A navigation view can use this infomration ot highlight the current section. Yet, a footer view for example can sometimes ignore the routing info, if the footer is persisten across all pages. </p>
+<p>Another example is an event that tells the views when the user opens some sort of overlay navigation (ex. user clicks on a hamburger menu icon to open a dock). Very often the current section needs to react somehow - pause a video if it is playing, maybe disable some mouse effects or fade in a black overlay on it's content. This is a good use case to create a value in the stage object:</p>
+<pre class="prettyprint source"><code>$.menuOpen = new Value(false)</code></pre><p>Then views representing the pages, can listen to this even like this:</p>
+<pre class="prettyprint source"><code>$.menuOpen.on(function(current) {
+    if(current) // Menu is open
+    else // Menu is closed
+});</code></pre><p>The navgation view, or any other view that has a functionality to either open or close the navigation dock, can then just change the value of this object:</p>
+<pre class="prettyprint source"><code>$.menuOpen.value = true; // or false...</code></pre>
 </article>
 
 </section>
@@ -79,13 +102,13 @@ Application.init();</code></pre><p>As you can see, there is a state object that 
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Gesture.html">Gesture</a></li><li><a href="HistoryRouter.html">HistoryRouter</a></li><li><a href="Timer.html">Timer</a></li><li><a href="Trigger.html">Trigger</a></li><li><a href="Value.html">Value</a></li></ul><h3>Namespaces</h3><ul><li><a href="Application.html">Application</a></li><li><a href="DomExtend.html">DomExtend</a></li><li><a href="FrameImpulse.html">FrameImpulse</a></li><li><a href="Loader.html">Loader</a></li><li><a href="Simplrz.html">Simplrz</a></li><li><a href="Util.html">Util</a></li><li><a href="VirtualScroll.html">VirtualScroll</a></li></ul><h3>Tutorials</h3><ul><li>website</li></ul><h3>Global</h3><ul><li><a href="global.html#Framework">Framework</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Gesture.html">Gesture</a></li><li><a href="HistoryRouter.html">HistoryRouter</a></li><li><a href="Timer.html">Timer</a></li><li><a href="Trigger.html">Trigger</a></li><li><a href="Value.html">Value</a></li></ul><h3>Namespaces</h3><ul><li><a href="Application.html">Application</a></li><li><a href="DomExtend.html">DomExtend</a></li><li><a href="FrameImpulse.html">FrameImpulse</a></li><li><a href="Loader.html">Loader</a></li><li><a href="Simplrz.html">Simplrz</a></li><li><a href="Util.html">Util</a></li><li><a href="VirtualScroll.html">VirtualScroll</a></li></ul><h3>Tutorials</h3><ul><li>home</li></ul><h3>Global</h3><ul><li><a href="global.html#Framework">Framework</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha13</a> on Sun Oct 18 2015 23:50:56 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha13</a> on Fri Nov 13 2015 12:26:42 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>

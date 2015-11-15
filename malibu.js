@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":78,"date":"2015-11-02T19:21:24.852Z"}
+var Framework = {"version":"4","build":80,"date":"2015-11-15T06:35:47.256Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -941,13 +941,26 @@ var Application = (function() {
 			' (history:' + !params.disableHistoryAPI + ')'
 			, 'background: #ff3600; color: #ffdede; padding: 4px 10px 4px 10px');
 
+		var r = {
+			width: 0,
+			height: 0,
+			aspect: 0,
+			orientation: -1,
+			event: null
+		}
+
 		window.addEventListener('resize', function(e) {
-			app.resize.trigger(e);
+			r.width = window.innerWidth;
+			r.height = window.innerHeight;
+			r.aspect = r.width / r.height;
+			r.orientation = window.orientation;
+			r.event = e;
+			app.resize.trigger(r);
 		});
 
-		window.addEventListener('orientationchange', function(e) {
-			app.resize.trigger(e);
-		});	
+		// window.addEventListener('orientationchange', function(e) {
+		// 	app.resize.trigger(e);
+		// });	
 
 		router = HistoryRouter(app, params);
 		router.init();	
@@ -977,8 +990,9 @@ var DomExtend = (function() {
 	 *	@description Created a HTMLElement of type defined by the tag. It first calls <code>document.createElement(tag)</code> 
 	 *	and the extends this element with DomExtend functionality.
 	 */
-	that.create = function(tag) {
+	that.create = function(tag, cssclass) {
 		var e = document.createElement(tag);
+		if(cssclass) e.classList.add(cssclass);
 		that.extend(e);
 		return e;
 	};
@@ -1099,7 +1113,6 @@ var DomExtend = (function() {
 		return element;
 	};
 
-	that.extend(document);
 	window.EXT = that;
 
 	return that;
@@ -1123,7 +1136,7 @@ var ExtState = function(ext, element) {
 	 *	@description Sets the display CSS property of the object to the display type specified in the argument. Defaults to "block".
 	 */
 	ext.show = function(display) {
-		element.style.display = display || "block";
+		element.style.display = display || element.ext.__defaultDisplay || "block";
 	};
 
 	/**
@@ -1132,6 +1145,7 @@ var ExtState = function(ext, element) {
 	 *	@description Sets the display CSS property of the object to "none".
 	 */
 	ext.hide = function() {
+		element.ext.__defaultDisplay = ext.readCss('display');
 		element.style.display = "none";
 	};
 
@@ -1722,7 +1736,11 @@ var ExtAnimation = function(ext, element, globalExt) {
 /**
  *	@namespace FrameImpulse
  *
- *	@description A utility to handle <code>requestAnimationFrame</code> loops.
+ *	@description <p>A utility to handle <code>requestAnimationFrame</code> loops. It really only exists to eliminate a  common but hard debug problem: 
+ *	since RaF is sort of a recurent function, sometimes the code can accidentally start the loop twice (or even more times). This has diastrous 
+ *	conseuences for perofrmance, but it is not easy to spot at all.</p>
+ *
+ 	<p>With <code>FrameImpulse</code> you will not get into this kind of trouble easily.</p>
  *
  *	@example
 var render = function() {
@@ -1793,7 +1811,9 @@ var FrameImpulse = (function() {
 	 *	@static
 	 *
 	 *	@param {Function} callback - the function used as callback for the listener
-	 *	@description Adds a listener to be called on every frame
+	 *	@description Adds a listener to be called on every frame. The cool thing about this function, 
+	 *	is that the same function is added twice, it will not be called twice later on. However, this 
+	 *	does not work with anonymous functions, so we suggest to never use anonnymous functions with this.
 	 */
 	r.on = function(f) {
 		if(listeners.indexOf(f) > -1) { return; }
@@ -1826,6 +1846,13 @@ var FrameImpulse = (function() {
 		numListeners = listeners.length;
 	}
 
+	/**
+	 *	@method getListeners
+	 *	@memberof FrameImpulse
+	 *	@static
+	 *
+	 *	@description Returns a list of all currently registered functions. Useful for debugging.
+	 */
 	r.getListeners = function() {
 		return listeners;
 	}

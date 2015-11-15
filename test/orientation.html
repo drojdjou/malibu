@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Screen size and orientation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<style type="text/css">
+
+body {
+	background-color: #000;
+	margin: 20px;
+	padding: 0;
+	color: #fff;
+	font-family: Arial;
+	font-size: 13px;
+}
+
+.console {
+	margin-top: 16px;
+	font-family: monospace;
+	white-space: pre;
+}
+
+button {
+	padding: 6px 20px 6px 20px;
+	border-radius: 5px;
+	border: 0;
+	outline: none;
+	color: #000;
+	background-color: #fff;
+}
+
+</style>
+
+
+<script type="text/javascript" src="../src/Simplrz.js"></script>
+<script type="text/javascript" src="../src/Trigger.js"></script>
+<script type="text/javascript" src="../src/Value.js"></script>
+<script type="text/javascript" src="../src/Util.js"></script>
+<script type="text/javascript" src="../src/Version.js"></script>
+<script type="text/javascript" src="../src/HistoryRouter.js"></script>
+<script type="text/javascript" src="../src/domExtend/DomExtend.js"></script>
+<script type="text/javascript" src="../src/domExtend/State.js"></script>
+<script type="text/javascript" src="../src/Application.js"></script>
+
+</head>
+<body>
+
+<h2>Screen orientation test</h2>
+
+<button>CLEAR</button>
+
+<div class='console'></div>
+
+<script type="text/javascript">
+
+var cl = EXT.select('.console');
+
+Application.resize.on(function(e) {
+	r = '-------\n';
+	r += 'width:       ' + e.width + 'px\n';
+	r += 'height:      ' + e.height + 'px\n';
+	r += 'aspect:      ' + e.aspect + '\n';
+	r += 'orientation: ' + e.orientation + '\n';
+	cl.innerHTML += r;
+});
+
+EXT.select('button').ext.on('click', function() {
+	cl.innerHTML = '';
+});
+
+Application.init({ disableHistoryAPI: true });
+
+</script>
+
+<!--
+
+Sample results:
+
+iPhone 6+
+Landscape: w 667  |  h 375  |  aspect 1.780  |  orientation  0
+Portrait:  w 375  |  h 559  |  aspect 0.672  |  orientation 90
+
+iPhone 5
+Landscape: w 568  |  h 320  |  aspect 1.770  |  orientation  0
+Portrait:  w 320  |  h 460  |  aspect 0.696  |  orientation 90
+
+Moto X
+Landscape: w 598  |  h 279  |  aspect 2.140  |  orientation 90
+Portrait:  w 360  |  h 511  |  apsect 0.705  |  orientation  0
+
+iPad Air
+Landscape: w 1024 |  h 704  |  aspect 1.450  |  orientation  0 
+Portrait:  w  768 |  h 960  |  aspect 0.800  |  orientation 90 
+
+-->
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
