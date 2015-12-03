@@ -14,7 +14,7 @@ var HistoryRouter = function (app, params) {
 	app.navigate = new Trigger();
 	app.hijackLinks = new Trigger();
 
-	var routeHistory = [];
+	Application.history = [];
 
 	var hijackLinks = function (element) {
 
@@ -96,7 +96,7 @@ var HistoryRouter = function (app, params) {
 		r.lastPart = r.parts[r.parts.length - 1];
 
 		if(r.route == app.route.value.route) return;
-		routeHistory.push(r);
+		Application.history.push(r);
 		app.route.value = r;
 	}
 

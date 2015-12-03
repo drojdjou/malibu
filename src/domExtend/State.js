@@ -22,7 +22,8 @@ var ExtState = function(ext, element) {
 	 *	@description Sets the display CSS property of the object to "none".
 	 */
 	ext.hide = function() {
-		element.ext.__defaultDisplay = ext.readCss('display');
+		var d = ext.readCss('display');
+		element.ext.__defaultDisplay = d == 'none' ? 'block' : d;
 		element.style.display = "none";
 	};
 

@@ -20,7 +20,7 @@
 
 <script type="text/javascript">
 
-    var s = document.ext.select("#square");
+    var s = EXT.select("#square");
     
     console.log(s.ext.visible());
     // s.ext.hide();
@@ -33,7 +33,7 @@
         s.ext.scaleX = Math.random()* 2;
         s.ext.scaleY = Math.random()* 2;
         s.ext.transform();
-        s.ext.css("backgroundColor","hsl(" + Math.random()*360 + ",100%,50%");
+        s.ext.backgroundColor = "hsl(" + Math.random()*360 + ", 100%, 50%)";
     });
 
     s.ext.x = window.innerWidth * 0.5 - s.ext.width() * 0.5;

@@ -56,7 +56,10 @@ var b05 = EXT.select('#b05');
 
 b02.addEventListener('click', function() {
 	var a = b02.ext.createAnimation('fade-in', 1, 'ease-out', 1);
-	b02.ext.animate(a, function() { console.log('on #b02 animation end') });
+	b02.ext.animate(a, function() { 
+		b02span.innerHTML = parseInt(b02span.innerHTML) + 1;
+		console.log('on #b02 animation end');
+	});
 });
 
 var b03reverse = false;

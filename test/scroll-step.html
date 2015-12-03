@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Step scroll</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<style type="text/css">
+
+body {
+	background-color: #000;
+	margin: 20px;
+	padding: 0;
+	color: #fff;
+	font-family: Arial;
+	font-size: 13px;
+	overflow: hidden;
+}
+
+.max, .bar, .bg, .min {
+	position: absolute;
+	left: 50%;
+	display: block;
+	width: 120px;
+	margin-left: -60px;
+	bottom: 50%;
+	transform-origin: 0% 100%;
+}
+
+.max, .min {
+	background-color: #fff;
+	height: 5px;
+}
+
+.bar {
+	height: 40%
+}
+
+.bar {
+	background-color: #ff8000;
+	transition: background-color 0.3s ease;
+}
+
+.bg {
+	background-color: #222222;
+	height: 80%;
+	bottom: 10%;
+}
+
+</style>
+
+
+<script type="text/javascript" src="../src/VirtualScroll.js"></script>
+<script type="text/javascript" src="../src/Trigger.js"></script>
+<script type="text/javascript" src="../src/Value.js"></script>
+<script type="text/javascript" src="../src/Simplrz.js"></script>
+<script type="text/javascript" src="../src/domExtend/DomExtend.js"></script>
+<script type="text/javascript" src="../src/domExtend/State.js"></script>
+<script type="text/javascript" src="../src/domExtend/Transform.js"></script>
+<script type="text/javascript" src="../src/FrameImpulse.js"></script>
+
+<script type="text/javascript" src="../extras/ScrollStep.js"></script>
+
+</head>
+<body>
+
+<h2>Scroll Step</h2>
+
+<div class='bg'></div>
+<div class='bar'></div>
+<div class='max'></div>
+<div class='min'></div>
+
+<script type="text/javascript">
+
+var max = EXT.select('.max');
+var min = EXT.select('.min');
+var bar = EXT.select('.bar');
+var size = window.innerHeight * 0.4;
+
+var st = new ScrollStep(400);
+
+max.ext.transform({ y: size * -st.threshold });
+min.ext.transform({ y: size *  st.threshold });
+
+st.up.on(function() {
+	bar.style.backgroundColor = '#ff0000';
+
+	setTimeout(function() {
+		bar.style.backgroundColor = '';
+		st.reset();
+	}, 1000);
+});
+
+FrameImpulse.on(function() {
+	bar.ext.scaleY =  st.level;
+	bar.ext.transform();
+});
+
+</script>
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -84,7 +84,7 @@
     var list = EXT.select('ul');
 
     var one = list.ext.select('li:first-child');
-    one.ext.attr('class', 'blue');
+    one.classList.add('blue');
 
     var two = EXT.select('li:nth-of-type(2)');
     
@@ -92,14 +92,14 @@
     three.innerHTML += '<br>' + three.ext.readCss('color');
 
     var four = EXT.select('li:nth-of-type(4)');
-    four.ext.css('background-color', 'rgba(0, 127, 0, 1)');
-    four.ext.css('marginTop', '10px');
+    four.style.backgroundColor = 'rgba(0, 127, 0, 1)';
+    four.style.marginTop = '10px';
 
     var five = EXT.select('li:nth-of-type(5)');
     // list.removeChild(five);
     list.insertBefore(five, three);
 
-    var eight = document.ext.select('li:last-child');
+    var eight = EXT.select('li:last-child');
     var eightB = EXT.create('li');
     eightB.innerHTML = "8b";
     list.replaceChild(eightB, eight);
@@ -108,11 +108,7 @@
     six.innerHTML = '6';
     list.appendChild(six);
 
-    six.ext.css('cursor', 'pointer');
-    six.ext.css('userSelect', 'none');
-    six.ext.css('webkitUserSelect', 'none');
-    six.ext.css('MozUserSelect', 'none');
-    six.ext.css('-moz-user-select', 'none');
+    six.style.cursor = 'pointer';
 
     six.ext.on('click', function() {
         var c = six.ext.attr('class');

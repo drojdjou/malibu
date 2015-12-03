@@ -4,6 +4,7 @@ body {
   color: #ffffff;
   font-family: "proxima-nova", sans-serif;
   font-weight: 400;
+  overflow: hidden;
 }
 a {
   color: inherit;
@@ -24,6 +25,8 @@ ol li {
   top: 0;
   left: 0;
   background-image: url(background.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
   -webkit-filter: blur(6px);
   transform: scaleX(1.1) scaleY(1.1);
 }
@@ -45,9 +48,8 @@ ol li {
 #content a {
   margin: 0;
 }
-#content p,
 #content a {
-  padding: 2px 8px 4px 8px;
+  padding: 2px 8px 4px 0px;
 }
 #content h1,
 #content h2 {
@@ -65,20 +67,46 @@ ol li {
   letter-spacing: 0.01em;
 }
 #content p {
-  background-color: #000;
+  color: #000;
+  padding: 2px 0px 10px 3px;
   display: inline-block;
 }
-#content a {
-  background-color: #000;
-  display: inline-block;
+#content .left {
+  display: block;
 }
-#content a:hover {
+#content .left a {
+  display: inline-block;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.75);
+  padding: 8px 12px 4px 12px;
+  margin-bottom: 2px;
+}
+#content .left a:hover {
+  color: #fff;
+}
+#content .left img {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0px 6px 8px 0px;
+}
+#content .right a {
+  background-color: rgba(0, 0, 0, 0.75);
+  display: inline-block;
+  padding: 2px 8px 4px 8px;
+}
+#content .right a:hover {
   background-color: #fff;
   color: #000;
 }
 #content .right {
-  position: absolute;
-  top: 0;
-  right: 0;
-  text-align: right;
+  margin-top: 20px;
+}
+@media (min-width: 768px) {
+  #content .right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-align: right;
+    margin-top: 0px;
+  }
 }

@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":80,"date":"2015-11-15T06:35:47.256Z"}
+var Framework = {"version":"4","build":82,"date":"2015-11-25T04:44:15.512Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -1145,7 +1145,8 @@ var ExtState = function(ext, element) {
 	 *	@description Sets the display CSS property of the object to "none".
 	 */
 	ext.hide = function() {
-		element.ext.__defaultDisplay = ext.readCss('display');
+		var d = ext.readCss('display');
+		element.ext.__defaultDisplay = d == 'none' ? 'block' : d;
 		element.style.display = "none";
 	};
 
@@ -1881,7 +1882,7 @@ var HistoryRouter = function (app, params) {
 	app.navigate = new Trigger();
 	app.hijackLinks = new Trigger();
 
-	var routeHistory = [];
+	Application.history = [];
 
 	var hijackLinks = function (element) {
 
@@ -1963,7 +1964,7 @@ var HistoryRouter = function (app, params) {
 		r.lastPart = r.parts[r.parts.length - 1];
 
 		if(r.route == app.route.value.route) return;
-		routeHistory.push(r);
+		Application.history.push(r);
 		app.route.value = r;
 	}
 
