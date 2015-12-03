@@ -4,7 +4,6 @@ body {
   color: #ffffff;
   font-family: "proxima-nova", sans-serif;
   font-weight: 400;
-  overflow: hidden;
 }
 a {
   color: inherit;
@@ -24,6 +23,7 @@ ol li {
   height: 100%;
   top: 0;
   left: 0;
+  position: fixed;
   background-image: url(background.jpg);
   background-repeat: no-repeat;
   background-size: cover;
