@@ -49,7 +49,7 @@ var onFrame = function() {
 VirtualScroll.on(onScroll);
 FrameImpulse.on(onFrame);
  */
-var VirtualScroll = (function(document) {
+var VirtualScroll = (function() {
 
 	var vs = {};
 
@@ -261,7 +261,8 @@ var VirtualScroll = (function(document) {
 	}
 
 	return vs;
-})(document);
+	
+})();
 
 
 

@@ -2,18 +2,20 @@ var ScrollStep = function(minForce, threshold) {
 
 	threshold = threshold || 0.9;
 
-	easeDown = 0.92;
-	easeUp = 0.20;
-
+	var easeDown = 0.92;
+	var easeUp = 0.20;
+	var touchMult = 64;
+	
+	if(Simplrz.touch) minForce /= touchMult;
 
 	var forceMult = 1 / minForce;
+
 	var locked = false;
 	var overDown = false;
 
 	var st = {
 		threshold: threshold,
-		up: new Trigger(),
-		down: new Trigger()
+		jump: new Trigger(),
 	}
 
 	var targetLevel = 0;
@@ -36,7 +38,7 @@ var ScrollStep = function(minForce, threshold) {
 
 		if(f > minForce && !locked && Math.abs(st.level) >= threshold) {
 			locked = true;
-			st.up.trigger();
+			st.jump.trigger(d > 0);
 		}
 	});
 
