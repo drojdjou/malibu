@@ -129,6 +129,8 @@ var VirtualScroll = (function() {
 		if(numListeners <= 0) destroyListeners();
 	}
 
+	var touchLock = function(e) { e.preventDefault(); };
+
 	/**
 	 *	@method lockTouch
 	 *	@memberof VirtualScroll
@@ -138,9 +140,18 @@ var VirtualScroll = (function() {
 	 *	This function will take care of that, however it's a failt simple mechanism - see in the source code, linked below.
 	 */
 	vs.lockTouch = function() {
-		document.addEventListener('touchmove', function(e) {
-			e.preventDefault();
-		});
+		document.addEventListener('touchmove', touchLock);
+	}
+
+	/**
+	 *	@method unlockTouch
+	 *	@memberof VirtualScroll
+	 *	@static
+	 *
+	 *	@description Restores all touch events to default. Useful for hybrid pages that have some VS and some regular scrolling content.
+	 */
+	vs.unlockTouch = function() {
+		document.removeEventListener('touchmove', touchLock);
 	}
 
 	var notify = function(e) {

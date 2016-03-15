@@ -175,7 +175,7 @@ Util.resizeTo(video, Util.fullContain(video));
 
 		var tapHandler = callback.___thProxy || (function() {
 
-			var th = {};
+			var h = {};
 			var minTime = 20000;
 			var startTime;
 			var minDistSq = 100;
@@ -183,20 +183,20 @@ Util.resizeTo(video, Util.fullContain(video));
 			var el = element;
 			var cb = callback;
 
-			th.click = function(e) {
-				e.preventDefault();
+			h.click = function(e) {
+				// e.preventDefault();
 			} 
 
-			th.touchStart = function(e) {
-				e.preventDefault();
+			h.touchStart = function(e) {
+				// e.preventDefault();
 
 				startTime = new Date().getTime();
 				sx = e.targetTouches[0].pageX;
 				sy = e.targetTouches[0].pageY;
 			}
 
-			th.touchEnd = function(e) {
-				e.preventDefault();
+			h.touchEnd = function(e) {
+				// e.preventDefault();
 
 				var t = new Date().getTime() - startTime;
 
@@ -207,7 +207,7 @@ Util.resizeTo(video, Util.fullContain(video));
 				if(t < minTime && dsq < minDistSq) cb.call(el, e);
 			}
 
-			return th;
+			return h;
 
 		})();
 
@@ -218,10 +218,43 @@ Util.resizeTo(video, Util.fullContain(video));
 		return tapHandler;
 	},
 
-	clearTapHandler: function(element, tapHandler) {
-		element.removeEventListener("touchstart", tapHandler.touchStart);
-		element.removeEventListener("touchend", tapHandler.touchEnd);
-		element.removeEventListener("click", tapHandler.click);
+	clearTapHandler: function(element, handler) {
+		element.removeEventListener("touchstart", handler.touchStart);
+		element.removeEventListener("touchend", handler.touchEnd);
+		element.removeEventListener("click", handler.click);
+	},
+
+	handleDC: function(element, callback) {
+
+		var dcHandler = callback.___dcProxy || (function() {
+
+			var h = {};
+			var el = element;
+			var cb = callback;
+
+			var lastTime = 0;
+			var minTime = 300;
+
+			h.click = function(e) {
+				var t = new Date().getTime();
+				if(t - lastTime < minTime) {
+					cb.call(el, e);
+					lastTime = 0;
+				} else {
+					lastTime = t;
+				}
+			} 
+
+			return h;
+
+		})();
+
+		element.addEventListener(Simplrz.touch ? "touchend" : "click", dcHandler.click);
+		return dcHandler;
+	},
+
+	clearDCHandler: function(element, handler) {
+		element.removeEventListener(Simplrz.touch ? "touchend" : "click", handler.click);
 	},
 
 	/**

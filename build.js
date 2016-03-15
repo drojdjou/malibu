@@ -16,6 +16,7 @@ var frameworkFiles = {
 		"Timer",
 		"Value",
 		"Application",
+		"Keyframes",
 
 		"domExtend/DomExtend",
 		"domExtend/State",
@@ -28,6 +29,7 @@ var frameworkFiles = {
 		"Loader",
 		"VirtualScroll",
 		"Gesture",
+		"Template",
 		"Util"
 	]
 };

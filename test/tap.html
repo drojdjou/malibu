@@ -1,47 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Tap handling on mobile</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Tap handling on mobile</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-    <style type="text/css">
+	<style type="text/css">
 
-        body {
-            background-color: #000;
-            margin: 0;
-            padding: 0;
-            color: #fff;
-            font-family: Arial;
-            font-size: 13px;
-        }
+		body {
+			background-color: #000;
+			margin: 0;
+			padding: 0;
+			color: #fff;
+			font-family: Arial;
+			font-size: 13px;
+		}
 
-        section {
-            padding: 20px;
-            position: absolute;
-            width: 100%;
-        }
+		section {
+			padding: 20px;
+			position: absolute;
+			width: 100%;
+		}
 
-        button {
-            background-color: #000;
-            border: 1px solid white;
-            text-transform: uppercase;
-            display: block;
-            margin: 0 0 20px 0;
-            padding: 10px;
-            color: white;
-            font-size: 1em;
-            outline: none;
-        }
+		button {
+			background-color: #000;
+			border: 1px solid white;
+			text-transform: uppercase;
+			display: block;
+			margin: 0 0 20px 0;
+			padding: 10px;
+			color: white;
+			font-size: 1em;
+			outline: none;
+		}
 
-        div {
-            font-size: 1em;
-            line-height: 1.5;
-        }
+		div {
+			font-size: 1em;
+			line-height: 1.5;
+		}
 
-        
+		
 
-    </style>
+	</style>
 
 <script type="text/javascript" src="../src/Util.js"></script>
 <script type="text/javascript" src="../src/Simplrz.js"></script>
@@ -51,43 +51,65 @@
 </head>
 <body>
 
-    <section>
-        <button id='register'>Register handler</button>
-        <button id='fire'>Fire handler</button>
-        <button id='remove'>Remove handler</button>
+	<section>
+		<button id='register'>Register tap handler</button>
+		<button id='fire'>Fire tap handler</button>
+		<button id='remove'>Remove tap handler</button>
 
-        <div id="log"></div>
-    </section>
+		<button id='registerdc'>Register dc handler</button>
+		<button id='firedc'>Fire dc handler</button>
+		<button id='removedc'>Remove dc handler</button>
 
-    <script type="text/javascript">
+		<div id="log"></div>
+	</section>
 
-        // Let's make use of this ugly feature where each #id has a 'id' variable in JS by default
+	<script type="text/javascript">
 
-        EXT.extend(register);
-        EXT.extend(fire);
-        EXT.extend(remove);
+		// Let's make use of this ugly feature where each #id has a 'id' variable in JS by default
+		EXT.extend(register);
+		EXT.extend(fire);
+		EXT.extend(remove);
 
-        var clickHandler = function() {
-            var hasProxy = clickHandler.___thProxy != null;
-            log.innerHTML += 'event fired, proxy: ' + hasProxy + '<br>';
-        }
+		EXT.extend(registerdc);
+		EXT.extend(firedc);
+		EXT.extend(removedc);
 
-        register.ext.on('click', function() {
-            log.innerHTML += 'event registered<br>';
-            fire.ext.on('click', clickHandler);
-        });
+		var clickHandler = function() {
+			var hasProxy = clickHandler.___thProxy != null;
+			log.innerHTML += 'event fired, proxy: ' + hasProxy + '<br>';
+		}
 
-        remove.ext.on('click', function() {
-            log.innerHTML += 'event unregistered<br>';
-            fire.ext.off('click', clickHandler);
-        });
+		register.ext.on('click', function() {
+			log.innerHTML += 'event registered<br>';
+			fire.ext.on('click', clickHandler);
+		});
 
-    </script>
+		remove.ext.on('click', function() {
+			log.innerHTML += 'event unregistered<br>';
+			fire.ext.off('click', clickHandler);
+		});
+
+		var dcHandler = function() {
+			var hasProxy = clickHandler.___dcProxy != null;
+			log.innerHTML += 'dc event fired, proxy: ' + hasProxy + '<br>';
+		}
+
+		registerdc.ext.on('click', function() {
+			log.innerHTML += 'dc event registered<br>';
+			firedc.ext.on('doubleclick', dcHandler);
+		});
+
+		removedc.ext.on('click', function() {
+			log.innerHTML += 'dc event unregistered<br>';
+			firedc.ext.off('doubleclick', dcHandler);
+		});
+
+	</script>
 
 <script type="text/javascript">
-    if(location.host.indexOf("localhost") > -1 || location.host.indexOf("192.168") > -1 || location.host.indexOf("127.0") > -1) {
-        document.write('<script src=\"http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1\"></' + 'script>');
-    }
+	if(location.host.indexOf("localhost") > -1 || location.host.indexOf("192.168") > -1 || location.host.indexOf("127.0") > -1) {
+		document.write('<script src=\"http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1\"></' + 'script>');
+	}
 </script>
 
 </body>

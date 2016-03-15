@@ -45,10 +45,13 @@ var ExtState = function(ext, element) {
 		if(Simplrz.touch && event == 'click') {
 			callback.___thProxy = Util.handleTap(element, callback);
 			return callback.___thProxy;
+		} else if(event == 'doubleclick') {
+			callback.___dcProxy = Util.handleDC(element, callback);
+			return callback.___dcProxy;
 		} else {
 			return element.addEventListener(event, callback, useCapture);
 		}
-	};
+	}
 
 	/**
 	 *	@method off
@@ -59,6 +62,8 @@ var ExtState = function(ext, element) {
 		if(callback.___thProxy) {
 			Util.clearTapHandler(element, callback.___thProxy);
 			callback.___thProxy = null;
+		} else if(callback.___proxy) {
+			callback.___dcProxy.clear() = null;
 		} else {
 			return element.removeEventListener(event, callback, useCapture);	
 		}

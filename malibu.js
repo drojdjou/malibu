@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":82,"date":"2015-11-25T04:44:15.512Z"}
+var Framework = {"version":"4","build":94,"date":"2016-02-26T07:10:45.646Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -972,6 +972,40 @@ var Application = (function() {
 
 
 
+
+/* --- --- [Keyframes] --- --- */
+
+var Keyframes = (function() {
+
+	var r = {}, style;
+
+	var lazyInit = function() {
+		style = document.createElement("style");
+		document.head.appendChild(style);
+	}
+
+	r.add = function(name, selectors) {
+
+		if(!style) lazyInit();
+
+		var r = '';
+
+		for(var s in selectors) {
+			r += s + '% { ' + selectors[s] + ' } ';
+		}
+
+		var rp = '@-' + Simplrz.prefix.lowercase + '-keyframes ' + name + ' {' + r + '}';;
+		style.appendChild(document.createTextNode(rp));
+
+		var rn = '@keyframes ' + name + ' {' + r + '}';;
+		style.appendChild(document.createTextNode(rn));
+
+		return name;
+	}
+
+	return r;
+
+})();
 
 /* --- --- [domExtend/DomExtend] --- --- */
 
@@ -2029,18 +2063,18 @@ var Loader = {
 	 *	@param {string} path - the path to the file, absolute or relative
 	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in string format will be passed to this callback as argument.
 	 */
-	loadText: function(path, onLoadedFunc){
+	loadText: function(path, onLoadedFunc, formData){
 
 		var request = new XMLHttpRequest();
-		request.open("GET", path);
+		request.open(formData ? "POST" : "GET", path);
 
-		request.onreadystatechange = function(){
+		request.addEventListener('readystatechange', function(e) {
 			if (request.readyState == 4) {
 				onLoadedFunc(request.responseText);
 			}
-		};
+		});
 
-		request.send();
+		request.send(formData);
 	},
 
 	/**
@@ -2053,12 +2087,21 @@ var Loader = {
 	 *	@param {string} path - the path to the file, absolute or relative
 	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in JS object format will be passed to this callback as argument.
 	 */
-	loadJSON: function(path, onLoadedFunc){
+	loadJSON: function(path, onLoadedFunc, formData){
 		Loader.loadText(path, function(text) {
 			onLoadedFunc(JSON.parse(text));
-		});
+		}, formData);
 	}
 };
+
+
+
+
+
+
+
+
+
 
 /* --- --- [VirtualScroll] --- --- */
 
@@ -2113,7 +2156,7 @@ var onFrame = function() {
 VirtualScroll.on(onScroll);
 FrameImpulse.on(onFrame);
  */
-var VirtualScroll = (function(document) {
+var VirtualScroll = (function() {
 
 	var vs = {};
 
@@ -2193,6 +2236,8 @@ var VirtualScroll = (function(document) {
 		if(numListeners <= 0) destroyListeners();
 	}
 
+	var touchLock = function(e) { e.preventDefault(); };
+
 	/**
 	 *	@method lockTouch
 	 *	@memberof VirtualScroll
@@ -2202,9 +2247,18 @@ var VirtualScroll = (function(document) {
 	 *	This function will take care of that, however it's a failt simple mechanism - see in the source code, linked below.
 	 */
 	vs.lockTouch = function() {
-		document.addEventListener('touchmove', function(e) {
-			e.preventDefault();
-		});
+		document.addEventListener('touchmove', touchLock);
+	}
+
+	/**
+	 *	@method unlockTouch
+	 *	@memberof VirtualScroll
+	 *	@static
+	 *
+	 *	@description Restores all touch events to default. Useful for hybrid pages that have some VS and some regular scrolling content.
+	 */
+	vs.unlockTouch = function() {
+		document.removeEventListener('touchmove', touchLock);
 	}
 
 	var notify = function(e) {
@@ -2325,7 +2379,8 @@ var VirtualScroll = (function(document) {
 	}
 
 	return vs;
-})(document);
+	
+})();
 
 
 
@@ -2497,6 +2552,99 @@ var Gesture = function(options) {
 	}
 
 	this.create();
+}
+
+/* --- --- [Template] --- --- */
+
+Template = function() {
+
+	var that = this;
+
+	this.content;
+
+	var selectorCache = {};
+
+	this.set = function(content) {
+		if(content instanceof HTMLElement) {
+			that.content = EXT.extend(content.cloneNode(true));
+		} else {
+			var df = document.createElement('div');
+			df.innerHTML = content.trim();
+			that.content = EXT.extend(df.firstChild);
+		}
+		return that;
+	}
+
+	this.select = function(sel) {
+		if(selectorCache[sel]) {
+			return selectorCache[sel];
+		} else {
+			var e = that.content.ext.select(sel);
+			if(!e) throw "Selector not found: " + sel;
+			selectorCache[sel] = e;
+			return e;
+		}
+	}
+
+	this.hide = function(sel) {
+		that.select(sel).style.display = 'none';
+	}
+
+	this.attachTo = function(parent, onAdded) {
+
+		if(!that.content) return;
+
+		that.content.ext.attachTo(parent);
+		if(onAdded) {
+			// http://jsfiddle.net/CAewW/2/
+			requestAnimationFrame(function() {
+				requestAnimationFrame(onAdded);
+			});
+		}
+	}
+
+	this.detach = function(onBeforeRemove) {
+
+		if(!that.content) return;
+
+		if(onBeforeRemove) {
+			onBeforeRemove(function() {
+				that.content.ext.detach();
+			});
+		} else {
+			that.content.ext.detach();
+		}
+	}
+
+	this.updateText = function(sel, text) {
+		that.select(sel).innerHTML = text;
+	}
+
+	this.appendText = function(sel, text) {
+		that.select(sel).innerHTML += text;
+	}
+
+	this.append = function(sel, elem) {
+		that.select(sel).appendChild(elem);
+	}
+
+	this.clone = function() {
+
+	}
+
+	this.insertList = function(sel, list, template) {
+		list.forEach(function(e) {
+
+			if(template) {
+				var t = template.content.cloneNode(true);
+				t.innerHTML = e;
+				that.append(sel, t);
+			} else {
+				that.appendText(sel, e);
+			}
+			
+		});
+	}
 }
 
 /* --- --- [Util] --- --- */
@@ -2687,11 +2835,11 @@ Util.resizeTo(video, Util.fullContain(video));
 			var cb = callback;
 
 			th.click = function(e) {
-				e.preventDefault();
+				// e.preventDefault();
 			} 
 
 			th.touchStart = function(e) {
-				e.preventDefault();
+				// e.preventDefault();
 
 				startTime = new Date().getTime();
 				sx = e.targetTouches[0].pageX;
@@ -2699,7 +2847,7 @@ Util.resizeTo(video, Util.fullContain(video));
 			}
 
 			th.touchEnd = function(e) {
-				e.preventDefault();
+				// e.preventDefault();
 
 				var t = new Date().getTime() - startTime;
 

@@ -6,4 +6,4 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":82,"date":"2015-11-25T04:44:15.512Z"}
+var Framework = {"version":"4","build":94,"date":"2016-02-26T07:10:45.646Z"}

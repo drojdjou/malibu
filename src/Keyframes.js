@@ -17,8 +17,11 @@ var Keyframes = (function() {
 			r += s + '% { ' + selectors[s] + ' } ';
 		}
 
-		var r = '@-' + Simplrz.prefix.lowercase + '-keyframes ' + name + ' {' + r + '}';;
-		style.appendChild(document.createTextNode(r));
+		var rp = '@-' + Simplrz.prefix.lowercase + '-keyframes ' + name + ' {' + r + '}';;
+		style.appendChild(document.createTextNode(rp));
+
+		var rn = '@keyframes ' + name + ' {' + r + '}';;
+		style.appendChild(document.createTextNode(rn));
 
 		return name;
 	}
