@@ -236,13 +236,9 @@ var Simplrz = (function() {
 	 *	@member {Boolean} touch
 	 *	@memberof Simplrz
 	 *	@description True if touch events are supported.
-	 *	<p>Experimental: some laptop PCs runnig Windows have a touch screen. 
-	 *	Chrome on such PCs will report true for the 'ontouchstart' event, 
-	 *	however the touch events are not supported well in such case. So this test
-	 *	will report `false` if we are on Win32 platform, even if touch screen is detected. 
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document && navigator.platform != 'Win32';
+		return 'ontouchstart' in document;
 	});
 
 	/**

@@ -232,16 +232,29 @@ Util.resizeTo(video, Util.fullContain(video));
 			var el = element;
 			var cb = callback;
 
-			var lastTime = 0;
-			var minTime = 300;
+			var t = Simplrz.touch;
+			var minTime = t ? 300 : 200, minDist = t ? 12 : 5;
+			var lastTime = 0, lastX = -minDist, lastY = -minDist;
+			
 
 			h.click = function(e) {
+
+				var x = e.changedTouches ? e.changedTouches[0].pageX : e.pageX;
+				var y = e.changedTouches ? e.changedTouches[0].pageY : e.pageY;
+
+				e.pageX = x;
+				e.pageY = y;
+
 				var t = new Date().getTime();
-				if(t - lastTime < minTime) {
+				if(t - lastTime < minTime && x - lastX < minDist && y - lastY < minDist) {
 					cb.call(el, e);
 					lastTime = 0;
+					lastX = -minDist;
+					lastY = -minDist;
 				} else {
 					lastTime = t;
+					lastX = x;
+					lastY = y;
 				}
 			} 
 

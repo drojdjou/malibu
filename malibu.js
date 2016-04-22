@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":94,"date":"2016-02-26T07:10:45.646Z"}
+var Framework = {"version":"4","build":101,"date":"2016-03-17T01:16:22.731Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -1202,10 +1202,13 @@ var ExtState = function(ext, element) {
 		if(Simplrz.touch && event == 'click') {
 			callback.___thProxy = Util.handleTap(element, callback);
 			return callback.___thProxy;
+		} else if(event == 'doubleclick') {
+			callback.___dcProxy = Util.handleDC(element, callback);
+			return callback.___dcProxy;
 		} else {
 			return element.addEventListener(event, callback, useCapture);
 		}
-	};
+	}
 
 	/**
 	 *	@method off
@@ -1216,6 +1219,8 @@ var ExtState = function(ext, element) {
 		if(callback.___thProxy) {
 			Util.clearTapHandler(element, callback.___thProxy);
 			callback.___thProxy = null;
+		} else if(callback.___proxy) {
+			callback.___dcProxy.clear() = null;
 		} else {
 			return element.removeEventListener(event, callback, useCapture);	
 		}
@@ -2826,7 +2831,7 @@ Util.resizeTo(video, Util.fullContain(video));
 
 		var tapHandler = callback.___thProxy || (function() {
 
-			var th = {};
+			var h = {};
 			var minTime = 20000;
 			var startTime;
 			var minDistSq = 100;
@@ -2834,11 +2839,11 @@ Util.resizeTo(video, Util.fullContain(video));
 			var el = element;
 			var cb = callback;
 
-			th.click = function(e) {
+			h.click = function(e) {
 				// e.preventDefault();
 			} 
 
-			th.touchStart = function(e) {
+			h.touchStart = function(e) {
 				// e.preventDefault();
 
 				startTime = new Date().getTime();
@@ -2846,7 +2851,7 @@ Util.resizeTo(video, Util.fullContain(video));
 				sy = e.targetTouches[0].pageY;
 			}
 
-			th.touchEnd = function(e) {
+			h.touchEnd = function(e) {
 				// e.preventDefault();
 
 				var t = new Date().getTime() - startTime;
@@ -2858,7 +2863,7 @@ Util.resizeTo(video, Util.fullContain(video));
 				if(t < minTime && dsq < minDistSq) cb.call(el, e);
 			}
 
-			return th;
+			return h;
 
 		})();
 
@@ -2869,10 +2874,56 @@ Util.resizeTo(video, Util.fullContain(video));
 		return tapHandler;
 	},
 
-	clearTapHandler: function(element, tapHandler) {
-		element.removeEventListener("touchstart", tapHandler.touchStart);
-		element.removeEventListener("touchend", tapHandler.touchEnd);
-		element.removeEventListener("click", tapHandler.click);
+	clearTapHandler: function(element, handler) {
+		element.removeEventListener("touchstart", handler.touchStart);
+		element.removeEventListener("touchend", handler.touchEnd);
+		element.removeEventListener("click", handler.click);
+	},
+
+	handleDC: function(element, callback) {
+
+		var dcHandler = callback.___dcProxy || (function() {
+
+			var h = {};
+			var el = element;
+			var cb = callback;
+
+			var t = Simplrz.touch;
+			var minTime = t ? 300 : 200, minDist = t ? 12 : 5;
+			var lastTime = 0, lastX = -minDist, lastY = -minDist;
+			
+
+			h.click = function(e) {
+
+				var x = e.changedTouches ? e.changedTouches[0].pageX : e.pageX;
+				var y = e.changedTouches ? e.changedTouches[0].pageY : e.pageY;
+
+				e.pageX = x;
+				e.pageY = y;
+
+				var t = new Date().getTime();
+				if(t - lastTime < minTime && x - lastX < minDist && y - lastY < minDist) {
+					cb.call(el, e);
+					lastTime = 0;
+					lastX = -minDist;
+					lastY = -minDist;
+				} else {
+					lastTime = t;
+					lastX = x;
+					lastY = y;
+				}
+			} 
+
+			return h;
+
+		})();
+
+		element.addEventListener(Simplrz.touch ? "touchend" : "click", dcHandler.click);
+		return dcHandler;
+	},
+
+	clearDCHandler: function(element, handler) {
+		element.removeEventListener(Simplrz.touch ? "touchend" : "click", handler.click);
 	},
 
 	/**
