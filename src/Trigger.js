@@ -51,6 +51,7 @@ var Trigger = function() {
 	 *	@description Adds a listener to this trigger
 	 */
 	t.on = function (callback, context, callOnInit) {
+		if(listeners.indexOf(callback) > -1) { return; }
 		callback.context = context;
 		listeners.push(callback);
 		if(callOnInit) callback();

@@ -4,7 +4,7 @@ Template = function() {
 
 	this.content;
 
-	var selectorCache = {};
+	var selectorCache;
 
 	this.set = function(content) {
 		if(content instanceof HTMLElement) {
@@ -14,6 +14,9 @@ Template = function() {
 			df.innerHTML = content.trim();
 			that.content = EXT.extend(df.firstChild);
 		}
+
+		selectorCache = {}; 
+		
 		return that;
 	}
 
@@ -26,6 +29,10 @@ Template = function() {
 			selectorCache[sel] = e;
 			return e;
 		}
+	}
+
+	this.clearCache = function() {
+		selectorCache = {}; 
 	}
 
 	this.hide = function(sel) {

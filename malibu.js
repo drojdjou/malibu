@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":101,"date":"2016-03-17T01:16:22.731Z"}
+var Framework = {"version":"4","build":110,"date":"2016-09-19T07:20:47.595Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -250,13 +250,9 @@ var Simplrz = (function() {
 	 *	@member {Boolean} touch
 	 *	@memberof Simplrz
 	 *	@description True if touch events are supported.
-	 *	<p>Experimental: some laptop PCs runnig Windows have a touch screen. 
-	 *	Chrome on such PCs will report true for the 'ontouchstart' event, 
-	 *	however the touch events are not supported well in such case. So this test
-	 *	will report `false` if we are on Win32 platform, even if touch screen is detected. 
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document && navigator.platform != 'Win32';
+		return 'ontouchstart' in document;
 	});
 
 	/**
@@ -389,6 +385,7 @@ var Trigger = function() {
 	 *	@description Adds a listener to this trigger
 	 */
 	t.on = function (callback, context, callOnInit) {
+		if(listeners.indexOf(callback) > -1) { return; }
 		callback.context = context;
 		listeners.push(callback);
 		if(callOnInit) callback();
@@ -2068,16 +2065,26 @@ var Loader = {
 	 *	@param {string} path - the path to the file, absolute or relative
 	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in string format will be passed to this callback as argument.
 	 */
-	loadText: function(path, onLoadedFunc, formData){
+	loadText: function(path, onLoadedFunc, formData, progressCallback){
 
 		var request = new XMLHttpRequest();
-		request.open(formData ? "POST" : "GET", path);
+		request.open(formData ? "POST" : "GET", path, true);
+		request.withCredentials = true;
 
 		request.addEventListener('readystatechange', function(e) {
 			if (request.readyState == 4) {
 				onLoadedFunc(request.responseText);
 			}
 		});
+
+		if(progressCallback) {
+			request.addEventListener('progress', function(e) {
+				if(e.lengthComputable) {
+					var t = e.loaded / e.total;
+					progressCallback(t, e.loaded, e.total);
+				}
+			});
+		}
 
 		request.send(formData);
 	},
@@ -2092,10 +2099,10 @@ var Loader = {
 	 *	@param {string} path - the path to the file, absolute or relative
 	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in JS object format will be passed to this callback as argument.
 	 */
-	loadJSON: function(path, onLoadedFunc, formData){
+	loadJSON: function(path, onLoadedFunc, formData, progressCallback){
 		Loader.loadText(path, function(text) {
 			onLoadedFunc(JSON.parse(text));
-		}, formData);
+		}, formData, progressCallback);
 	}
 };
 
@@ -2342,9 +2349,11 @@ var VirtualScroll = (function() {
 		notify(e);
 	}
 
+	var wheelOpts = { passive: true };
+
 	var initListeners = function() {
-		if(hasWheelEvent) document.addEventListener("wheel", onWheel);
-		if(hasMouseWheelEvent) document.addEventListener("mousewheel", onMouseWheel);
+		if(hasWheelEvent) document.addEventListener("wheel", onWheel, wheelOpts);
+		if(hasMouseWheelEvent) document.addEventListener("mousewheel", onMouseWheel, wheelOpts);
 
 		if(hasTouch) {
 			document.addEventListener("touchstart", onTouchStart);
@@ -2364,8 +2373,8 @@ var VirtualScroll = (function() {
 	}
 
 	var destroyListeners = function() {
-		if(hasWheelEvent) document.removeEventListener("wheel", onWheel);
-		if(hasMouseWheelEvent) document.removeEventListener("mousewheel", onMouseWheel);
+		if(hasWheelEvent) document.removeEventListener("wheel", onWheel, wheelOpts);
+		if(hasMouseWheelEvent) document.removeEventListener("mousewheel", onMouseWheel, wheelOpts);
 
 		if(hasTouch) {
 			document.removeEventListener("touchstart", onTouchStart);
@@ -2567,7 +2576,7 @@ Template = function() {
 
 	this.content;
 
-	var selectorCache = {};
+	var selectorCache;
 
 	this.set = function(content) {
 		if(content instanceof HTMLElement) {
@@ -2577,6 +2586,9 @@ Template = function() {
 			df.innerHTML = content.trim();
 			that.content = EXT.extend(df.firstChild);
 		}
+
+		selectorCache = {}; 
+		
 		return that;
 	}
 
@@ -2589,6 +2601,10 @@ Template = function() {
 			selectorCache[sel] = e;
 			return e;
 		}
+	}
+
+	this.clearCache = function() {
+		selectorCache = {}; 
 	}
 
 	this.hide = function(sel) {

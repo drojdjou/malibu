@@ -230,9 +230,11 @@ var VirtualScroll = (function() {
 		notify(e);
 	}
 
+	var wheelOpts = { passive: true };
+
 	var initListeners = function() {
-		if(hasWheelEvent) document.addEventListener("wheel", onWheel);
-		if(hasMouseWheelEvent) document.addEventListener("mousewheel", onMouseWheel);
+		if(hasWheelEvent) document.addEventListener("wheel", onWheel, wheelOpts);
+		if(hasMouseWheelEvent) document.addEventListener("mousewheel", onMouseWheel, wheelOpts);
 
 		if(hasTouch) {
 			document.addEventListener("touchstart", onTouchStart);
@@ -252,8 +254,8 @@ var VirtualScroll = (function() {
 	}
 
 	var destroyListeners = function() {
-		if(hasWheelEvent) document.removeEventListener("wheel", onWheel);
-		if(hasMouseWheelEvent) document.removeEventListener("mousewheel", onMouseWheel);
+		if(hasWheelEvent) document.removeEventListener("wheel", onWheel, wheelOpts);
+		if(hasMouseWheelEvent) document.removeEventListener("mousewheel", onMouseWheel, wheelOpts);
 
 		if(hasTouch) {
 			document.removeEventListener("touchstart", onTouchStart);
