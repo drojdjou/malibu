@@ -20,6 +20,13 @@ var Application = (function() {
 	});
 
 	/**
+	 *	@member {Trigger} start
+	 *	@memberof Application
+	 *	@static
+	 */
+	app.start = new Trigger();
+
+	/**
 	 *	@member {Trigger} resize
 	 *	@memberof Application
 	 *	@static
@@ -73,6 +80,8 @@ var Application = (function() {
 
 		router = HistoryRouter(app, params);
 		router.init();	
+
+		start.trigger();
 	}
 	
 	return app;

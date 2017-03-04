@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":110,"date":"2016-09-19T07:20:47.595Z"}
+var Framework = {"version":"4","build":112,"date":"2017-01-16T06:56:11.737Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -1196,10 +1196,11 @@ var ExtState = function(ext, element) {
 	 *	@description Equivalent of element.addEventListener but shorter and has a special touch handler for 'click' events.
 	 */	
 	ext.on = function(event, callback, useCapture) {
-		if(Simplrz.touch && event == 'click') {
-			callback.___thProxy = Util.handleTap(element, callback);
-			return callback.___thProxy;
-		} else if(event == 'doubleclick') {
+		// if(Simplrz.touch && event == 'click') {
+		// 	callback.___thProxy = Util.handleTap(element, callback);
+		// 	return callback.___thProxy;
+		// } else 
+		if(event == 'doubleclick') {
 			callback.___dcProxy = Util.handleDC(element, callback);
 			return callback.___dcProxy;
 		} else {
@@ -1213,10 +1214,11 @@ var ExtState = function(ext, element) {
 	 *	@description Equivalent of element.removeEventListener but shorter and works witht the special touch handler for 'click' events.
 	 */	
 	ext.off = function(event, callback, useCapture) {
-		if(callback.___thProxy) {
-			Util.clearTapHandler(element, callback.___thProxy);
-			callback.___thProxy = null;
-		} else if(callback.___proxy) {
+		// if(callback.___thProxy) {
+		// 	Util.clearTapHandler(element, callback.___thProxy);
+		// 	callback.___thProxy = null;
+		// } else 
+		if(callback.___proxy) {
 			callback.___dcProxy.clear() = null;
 		} else {
 			return element.removeEventListener(event, callback, useCapture);	
@@ -2591,6 +2593,12 @@ Template = function() {
 		
 		return that;
 	}
+
+	this.wrap = function(element) {
+		that.content = EXT.extend(element);
+		selectorCache = {}; 
+		return that;
+	} 
 
 	this.select = function(sel) {
 		if(selectorCache[sel]) {
