@@ -81,7 +81,7 @@ var Application = (function() {
 		router = HistoryRouter(app, params);
 		router.init();	
 
-		start.trigger();
+		app.start.trigger();
 	}
 	
 	return app;
