@@ -88,7 +88,10 @@ var VirtualScroll = (function() {
 	};
 
 	vs.on = function(f) {
-		if(!initialized) initListeners(); 
+		if(!initialized) {
+			initListeners(document); 
+			initialized = true;
+		}
 
 		var i = listeners.indexOf(f);
 		if(i != -1) return;
@@ -126,7 +129,10 @@ var VirtualScroll = (function() {
 
 		listeners.splice(i, 1);
 		numListeners = listeners.length;
-		if(numListeners <= 0) destroyListeners();
+		if(numListeners <= 0) {
+			destroyListeners(document);
+			initialized = false;
+		}
 	}
 
 	var touchLock = function(e) { e.preventDefault(); };
@@ -200,6 +206,9 @@ var VirtualScroll = (function() {
 		// e.preventDefault(); // < This needs to be managed externally
 		var t = (e.targetTouches) ? e.targetTouches[0] : e;
 
+		if(!touchStartX) touchStartX = t.pageX;
+		if(!touchStartY) touchStartY = t.pageY;
+
 		event.deltaX = (t.pageX - touchStartX) * touchMult;
 		event.deltaY = (t.pageY - touchStartY) * touchMult;
 		
@@ -232,45 +241,49 @@ var VirtualScroll = (function() {
 
 	var wheelOpts = { passive: true };
 
-	var initListeners = function() {
-		if(hasWheelEvent) document.addEventListener("wheel", onWheel, wheelOpts);
-		if(hasMouseWheelEvent) document.addEventListener("mousewheel", onMouseWheel, wheelOpts);
+	var initListeners = function(element) {
+		if(hasWheelEvent) element.addEventListener("wheel", onWheel, wheelOpts);
+		if(hasMouseWheelEvent) element.addEventListener("mousewheel", onMouseWheel, wheelOpts);
 
 		if(hasTouch) {
-			document.addEventListener("touchstart", onTouchStart);
-			document.addEventListener("touchmove", onTouchMove);
+			element.addEventListener("touchstart", onTouchStart);
+			element.addEventListener("touchmove", onTouchMove);
 		}
 		
 		if(hasPointer && hasTouchWin) {
-			bodyTouchAction = document.body.style.msTouchAction;
-			document.body.style.msTouchAction = "none";
-			document.addEventListener("MSPointerDown", onTouchStart, true);
-			document.addEventListener("MSPointerMove", onTouchMove, true);
+			bodyTouchAction = element.body.style.msTouchAction;
+			element.body.style.msTouchAction = "none";
+			element.addEventListener("MSPointerDown", onTouchStart, true);
+			element.addEventListener("MSPointerMove", onTouchMove, true);
 		}
 
-		if(hasKeyDown) document.addEventListener("keydown", onKeyDown);
-
-		initialized = true;
+		if(hasKeyDown) element.addEventListener("keydown", onKeyDown);
 	}
 
-	var destroyListeners = function() {
-		if(hasWheelEvent) document.removeEventListener("wheel", onWheel, wheelOpts);
-		if(hasMouseWheelEvent) document.removeEventListener("mousewheel", onMouseWheel, wheelOpts);
+	var destroyListeners = function(element) {
+		if(hasWheelEvent) element.removeEventListener("wheel", onWheel, wheelOpts);
+		if(hasMouseWheelEvent) element.removeEventListener("mousewheel", onMouseWheel, wheelOpts);
 
 		if(hasTouch) {
-			document.removeEventListener("touchstart", onTouchStart);
-			document.removeEventListener("touchmove", onTouchMove);
+			element.removeEventListener("touchstart", onTouchStart);
+			element.removeEventListener("touchmove", onTouchMove);
 		}
 		
 		if(hasPointer && hasTouchWin) {
-			document.body.style.msTouchAction = bodyTouchAction;
-			document.removeEventListener("MSPointerDown", onTouchStart, true);
-			document.removeEventListener("MSPointerMove", onTouchMove, true);
+			element.body.style.msTouchAction = bodyTouchAction;
+			element.removeEventListener("MSPointerDown", onTouchStart, true);
+			element.removeEventListener("MSPointerMove", onTouchMove, true);
 		}
 
-		if(hasKeyDown) document.removeEventListener("keydown", onKeyDown);
+		if(hasKeyDown) element.removeEventListener("keydown", onKeyDown);
+	}
 
-		initialized = false;
+	vs.trackFrame = function(frame) {
+		initListeners(frame);
+	}
+
+	vs.untrackFrame = function(frame) {
+		destroyListeners(frame);
 	}
 
 	return vs;

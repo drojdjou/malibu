@@ -238,7 +238,7 @@ var Simplrz = (function() {
 	 *	@description True if touch events are supported.
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document;
+		return 'ontouchstart' in document && navigator.platform != "Win32";
 	});
 
 	/**

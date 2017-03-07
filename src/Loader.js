@@ -48,10 +48,18 @@ var Loader = {
 	 *
 	 *	@param {string} path - the path to the file, absolute or relative
 	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in JS object format will be passed to this callback as argument.
+	 *	@param {FormData} formData - data to be sent via POST
+	 *	@param {Function} progressCallback - callback for loading progress
+	 *	@param {Function} errorCallback - callback called in case JSON parse fails
 	 */
 	loadJSON: function(path, onLoadedFunc, formData, progressCallback){
 		Loader.loadText(path, function(text) {
+			// try {
 			onLoadedFunc(JSON.parse(text));
+			// } catch(e) {
+			// 	if(Loader.onError) Loader.onError(e);
+			// 	else console.error(e);
+			// }
 		}, formData, progressCallback);
 	}
 };
