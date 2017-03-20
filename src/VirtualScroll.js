@@ -79,12 +79,16 @@ var VirtualScroll = (function() {
 
 	var isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
 
+	// console.log('hasTouch', hasTouch);
+	// console.log('hasPointer', hasPointer);
+
 	var event = {
 		y: 0,
 		x: 0,
 		deltaX: 0,
 		deltaY: 0,
-		originalEvent: null
+		originalEvent: null,
+		source: null
 	};
 
 	vs.on = function(f) {
@@ -146,7 +150,7 @@ var VirtualScroll = (function() {
 	 *	This function will take care of that, however it's a failt simple mechanism - see in the source code, linked below.
 	 */
 	vs.lockTouch = function() {
-		document.addEventListener('touchmove', touchLock);
+		document.addEventListener('touchmove', touchLock, { passive: false });
 	}
 
 	/**
@@ -157,13 +161,14 @@ var VirtualScroll = (function() {
 	 *	@description Restores all touch events to default. Useful for hybrid pages that have some VS and some regular scrolling content.
 	 */
 	vs.unlockTouch = function() {
-		document.removeEventListener('touchmove', touchLock);
+		document.removeEventListener('touchmove', touchLock, { passive: false });
 	}
 
-	var notify = function(e) {
+	var notify = function(e, s) {
 		event.x += event.deltaX;
 		event.y += event.deltaY;
 		event.originalEvent = e;
+		event.source = s;
 
 		for(var i = 0; i < numListeners; i++) {
 			listeners[i](event);
@@ -185,7 +190,7 @@ var VirtualScroll = (function() {
 		event.deltaX *= mouseMult;
 		event.deltaY *= mouseMult;
 
-		notify(e);
+		notify(e, "wheel");
 	}
 
 	var onMouseWheel = function(e) {
@@ -193,7 +198,7 @@ var VirtualScroll = (function() {
 		event.deltaX = (e.wheelDeltaX) ? e.wheelDeltaX : 0;
 		event.deltaY = (e.wheelDeltaY) ? e.wheelDeltaY : e.wheelDelta;
 
-		notify(e);	
+		notify(e, "wheel");	
 	}
 
 	var onTouchStart = function(e) {
@@ -215,7 +220,7 @@ var VirtualScroll = (function() {
 		touchStartX = t.pageX;
 		touchStartY = t.pageY;
 
-		notify(e);
+		notify(e, "touch");
 	}
 
 	var onKeyDown = function(e) {
@@ -236,12 +241,13 @@ var VirtualScroll = (function() {
 				break;
 		}
 
-		notify(e);
+		notify(e, "key");
 	}
 
 	var wheelOpts = { passive: true };
 
 	var initListeners = function(element) {
+
 		if(hasWheelEvent) element.addEventListener("wheel", onWheel, wheelOpts);
 		if(hasMouseWheelEvent) element.addEventListener("mousewheel", onMouseWheel, wheelOpts);
 

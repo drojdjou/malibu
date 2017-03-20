@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":118,"date":"2016-10-31T00:01:33.563Z"}
+var Framework = {"version":"4","build":121,"date":"2017-03-07T22:04:53.493Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -908,6 +908,13 @@ var Application = (function() {
 	});
 
 	/**
+	 *	@member {Trigger} start
+	 *	@memberof Application
+	 *	@static
+	 */
+	app.start = new Trigger();
+
+	/**
 	 *	@member {Trigger} resize
 	 *	@memberof Application
 	 *	@static
@@ -961,6 +968,8 @@ var Application = (function() {
 
 		router = HistoryRouter(app, params);
 		router.init();	
+
+		app.start.trigger();
 	}
 	
 	return app;
@@ -1196,10 +1205,11 @@ var ExtState = function(ext, element) {
 	 *	@description Equivalent of element.addEventListener but shorter and has a special touch handler for 'click' events.
 	 */	
 	ext.on = function(event, callback, useCapture) {
-		if(Simplrz.touch && event == 'click') {
-			callback.___thProxy = Util.handleTap(element, callback);
-			return callback.___thProxy;
-		} else if(event == 'doubleclick') {
+		// if(Simplrz.touch && event == 'click') {
+		// 	callback.___thProxy = Util.handleTap(element, callback);
+		// 	return callback.___thProxy;
+		// } else 
+		if(event == 'doubleclick') {
 			callback.___dcProxy = Util.handleDC(element, callback);
 			return callback.___dcProxy;
 		} else {
@@ -1213,10 +1223,11 @@ var ExtState = function(ext, element) {
 	 *	@description Equivalent of element.removeEventListener but shorter and works witht the special touch handler for 'click' events.
 	 */	
 	ext.off = function(event, callback, useCapture) {
-		if(callback.___thProxy) {
-			Util.clearTapHandler(element, callback.___thProxy);
-			callback.___thProxy = null;
-		} else if(callback.___proxy) {
+		// if(callback.___thProxy) {
+		// 	Util.clearTapHandler(element, callback.___thProxy);
+		// 	callback.___thProxy = null;
+		// } else 
+		if(callback.___proxy) {
 			callback.___dcProxy.clear() = null;
 		} else {
 			return element.removeEventListener(event, callback, useCapture);	
@@ -2073,6 +2084,12 @@ var Loader = {
 
 		request.addEventListener('readystatechange', function(e) {
 			if (request.readyState == 4) {
+
+				if(!request.responseText) {
+					console.warn('empty response'); // , path);
+					return;
+				}
+				
 				onLoadedFunc(request.responseText);
 			}
 		});
@@ -2211,7 +2228,8 @@ var VirtualScroll = (function() {
 		x: 0,
 		deltaX: 0,
 		deltaY: 0,
-		originalEvent: null
+		originalEvent: null,
+		source: null
 	};
 
 	vs.on = function(f) {
@@ -2273,7 +2291,7 @@ var VirtualScroll = (function() {
 	 *	This function will take care of that, however it's a failt simple mechanism - see in the source code, linked below.
 	 */
 	vs.lockTouch = function() {
-		document.addEventListener('touchmove', touchLock);
+		document.addEventListener('touchmove', touchLock, { passive: false });
 	}
 
 	/**
@@ -2284,13 +2302,14 @@ var VirtualScroll = (function() {
 	 *	@description Restores all touch events to default. Useful for hybrid pages that have some VS and some regular scrolling content.
 	 */
 	vs.unlockTouch = function() {
-		document.removeEventListener('touchmove', touchLock);
+		document.removeEventListener('touchmove', touchLock, { passive: false });
 	}
 
-	var notify = function(e) {
+	var notify = function(e, s) {
 		event.x += event.deltaX;
 		event.y += event.deltaY;
 		event.originalEvent = e;
+		event.source = s;
 
 		for(var i = 0; i < numListeners; i++) {
 			listeners[i](event);
@@ -2312,7 +2331,7 @@ var VirtualScroll = (function() {
 		event.deltaX *= mouseMult;
 		event.deltaY *= mouseMult;
 
-		notify(e);
+		notify(e, "wheel");
 	}
 
 	var onMouseWheel = function(e) {
@@ -2320,7 +2339,7 @@ var VirtualScroll = (function() {
 		event.deltaX = (e.wheelDeltaX) ? e.wheelDeltaX : 0;
 		event.deltaY = (e.wheelDeltaY) ? e.wheelDeltaY : e.wheelDelta;
 
-		notify(e);	
+		notify(e, "wheel");	
 	}
 
 	var onTouchStart = function(e) {
@@ -2342,7 +2361,7 @@ var VirtualScroll = (function() {
 		touchStartX = t.pageX;
 		touchStartY = t.pageY;
 
-		notify(e);
+		notify(e, "touch");
 	}
 
 	var onKeyDown = function(e) {
@@ -2363,7 +2382,7 @@ var VirtualScroll = (function() {
 				break;
 		}
 
-		notify(e);
+		notify(e, "key");
 	}
 
 	var wheelOpts = { passive: true };
@@ -2612,6 +2631,12 @@ Template = function() {
 		
 		return that;
 	}
+
+	this.wrap = function(element) {
+		that.content = EXT.extend(element);
+		selectorCache = {}; 
+		return that;
+	} 
 
 	this.select = function(sel) {
 		if(selectorCache[sel]) {

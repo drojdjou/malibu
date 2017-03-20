@@ -23,6 +23,12 @@ var Loader = {
 
 		request.addEventListener('readystatechange', function(e) {
 			if (request.readyState == 4) {
+
+				if(!request.responseText) {
+					console.warn('empty response'); // , path);
+					return;
+				}
+				
 				onLoadedFunc(request.responseText);
 			}
 		});

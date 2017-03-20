@@ -42,10 +42,11 @@ var ExtState = function(ext, element) {
 	 *	@description Equivalent of element.addEventListener but shorter and has a special touch handler for 'click' events.
 	 */	
 	ext.on = function(event, callback, useCapture) {
-		if(Simplrz.touch && event == 'click') {
-			callback.___thProxy = Util.handleTap(element, callback);
-			return callback.___thProxy;
-		} else if(event == 'doubleclick') {
+		// if(Simplrz.touch && event == 'click') {
+		// 	callback.___thProxy = Util.handleTap(element, callback);
+		// 	return callback.___thProxy;
+		// } else 
+		if(event == 'doubleclick') {
 			callback.___dcProxy = Util.handleDC(element, callback);
 			return callback.___dcProxy;
 		} else {
@@ -59,10 +60,11 @@ var ExtState = function(ext, element) {
 	 *	@description Equivalent of element.removeEventListener but shorter and works witht the special touch handler for 'click' events.
 	 */	
 	ext.off = function(event, callback, useCapture) {
-		if(callback.___thProxy) {
-			Util.clearTapHandler(element, callback.___thProxy);
-			callback.___thProxy = null;
-		} else if(callback.___proxy) {
+		// if(callback.___thProxy) {
+		// 	Util.clearTapHandler(element, callback.___thProxy);
+		// 	callback.___thProxy = null;
+		// } else 
+		if(callback.___proxy) {
 			callback.___dcProxy.clear() = null;
 		} else {
 			return element.removeEventListener(event, callback, useCapture);	

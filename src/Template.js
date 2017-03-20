@@ -20,6 +20,12 @@ Template = function() {
 		return that;
 	}
 
+	this.wrap = function(element) {
+		that.content = EXT.extend(element);
+		selectorCache = {}; 
+		return that;
+	} 
+
 	this.select = function(sel) {
 		if(selectorCache[sel]) {
 			return selectorCache[sel];
