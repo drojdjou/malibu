@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>New template</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+	<style type="text/css">
+
+		body {
+			background-color: #000;
+			margin: 0;
+			padding: 0;
+			color: #fff;
+			font-family: Arial;
+			font-size: 18px;
+		}
+
+		.templates {
+			display: none;
+		}
+
+		section {
+			padding: 20px;
+		}
+
+		ul {
+			list-style-type: none;
+			width: 120px;
+		}
+
+		li {
+			display: block;
+		}
+
+	</style>
+
+
+</head>
+<body>
+
+<section class="templates">
+	<div class="greeting">
+		<h1>Welcome!</h1>
+		<h2>Hi {{current}}!<br>We hope you like the new <b>template</b> {{current}}. <a class="link" href="">{{current}}</a></h2>
+		Bye {{last}}, new is {{current}}
+		<ul>
+			<li>{{a}} <span>{{stamp}}</span></li>
+			<li>{{b}} <span>{{stamp}}</span></li>
+			<li>{{c}} <span>{{stamp}}</span></li>
+			<li>{{d}} <span>{{stamp}}</span></li>
+			<li>{{e}} <span>{{stamp}}</span></li>
+			<li>{{f}} <span>{{stamp}}</span></li>
+			<li>{{g}} <span>{{stamp}}</span></li>
+			<li>{{h}} <span>{{stamp}}</span></li>
+			<li>{{i}} <span>{{stamp}}</span></li>
+		</ul>
+		<h6>{{stamp2}}</h6>
+	</div>
+</section>
+
+<section class="app">
+</section>
+
+<script type="text/javascript" src="../src/domExtend/DomExtend.js"></script>
+<script type="text/javascript" src="../src/domExtend/State.js"></script>
+<script type="text/javascript" src="../src/Template2.js"></script>
+<script type="text/javascript" src="../src/Value.js"></script>
+<script type="text/javascript">
+	
+(function() {
+
+	var s = new Date().getTime();
+	var t = Template2(EXT.select('.greeting'), true, {
+		current: "John", last: "Rick", stamp: 0
+	});
+
+	t.select('.link').href = "http://cnn.com";
+	t.select('.link').target = "_blank";
+
+	t.attachTo(EXT.select('.app'));
+
+	var h = t.select('h2');
+
+	var ns = ["Bartek", "Marcin", "Magda", "Franek", "Amelia", "Julia"];
+
+	var n = new Value(ns[1]);
+	n.on(function(c, l) {
+		t.vars.current = c;
+		t.vars.last = l || 0;
+		t.vars.stamp2 = new Date().getTime() - s;
+	});
+
+	var rv = function(letter) {
+		t.vars[letter] = letter.toUpperCase() + " : " + Math.round(Math.random() * 1000);
+	}
+
+	var drawFast = function() {
+		requestAnimationFrame(drawFast);
+
+		rv('a');
+		rv('b');
+		rv('c');
+		rv('d');
+		rv('e');
+		rv('f');
+		rv('g');
+		rv('h');
+		rv('i');
+
+		t.vars.stamp = new Date().getTime() - s;
+	}
+
+	var i = 0;
+	var u = function() {
+		n.value = ns[i];
+		i++;
+		if(i >= ns.length) i = 0;
+	};
+
+	var h = function() {
+		t.select('.link').href = "http://cnn.com/?" + Math.random();
+	}
+
+	// setInterval(h, 200);
+	setInterval(u, 1000);
+	drawFast();
+
+})();
+
+</script>
+
+<script type="text/javascript">
+	if(location.host.indexOf("localhost") > -1 || location.host.indexOf("192.168") > -1 || location.host.indexOf("127.0") > -1) {
+		document.write('<script src=\"http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1\"></' + 'script>');
+	}
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

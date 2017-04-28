@@ -31,6 +31,10 @@ var HistoryRouter = function (app, params) {
 		
 		allLinks = Array.prototype.slice.call(allLinks);
 
+		if(element && element.nodeName.toLowerCase() == "a") {
+			allLinks.unshift(element);	
+		}
+
 		for (var i = 0; i < allLinks.length; i++) {
 			var link = allLinks[i];
 
@@ -38,11 +42,10 @@ var HistoryRouter = function (app, params) {
 			var target = link.getAttribute('target');
 			var hj = link.getAttribute('data-hj');
 
-			if(url.indexOf(':') > -1 || target == '_blank' || hj == "no") {
-				// Skip absolute URLs, those that have a _blank target 
+			if(url == null || url.indexOf(':') > -1 || target == '_blank' || hj == "no") {
+				// Skip absolute URLs, those that have no URL, a _blank target 
 				// and those that are explicitely set to not be hijacked
 				// (this is done by adding an attribute like this: data-hj='no')
-
 				// console.log('HistoryRouter.hijackLinks: skipping', url);
 				continue;
 			}
@@ -50,7 +53,11 @@ var HistoryRouter = function (app, params) {
 			if (!link.hijacked) {
 				link.hijacked = true;
 
-				link.hijackedHref = base + link.getAttribute('href');
+				link.originalHref = link.getAttribute('href') || "";
+				link.hijackedHref = base + "/" + link.getAttribute('href');
+
+				if(link.hijackedHref.indexOf('//') == 0) link.hijackedHref = link.hijackedHref.substring(1); 
+				// normalize the URL, so it doesn't start with double slashes
 
 				var cb = function (e) {
 					if(e) e.preventDefault();
@@ -58,10 +65,10 @@ var HistoryRouter = function (app, params) {
 				}
 
 				if(Simplrz.touch) {
-					Util.handleTap(link, cb);
-				} else {
-					link.addEventListener('click', cb);
+					link.removeAttribute('href');
 				}
+
+				link.addEventListener('click', cb);
 			}
 		}
 	};
@@ -107,9 +114,22 @@ var HistoryRouter = function (app, params) {
 	}
 
 	app.hijackLinks.on(hijackLinks);
+
+	var nc;
+
+	app.setNavigateCondition = function(c) {
+		nc = c;
+	}
+
+	app.clearNavigateCondition = function() {
+		nc = null;
+	}
+
 	app.navigate.on(function(href) {
-		history.pushState(null, null, href);
-		notify();
+		if(!nc || nc()) {
+			history.pushState(null, null, href);
+			notify();
+		}
 	});
 
 	return {

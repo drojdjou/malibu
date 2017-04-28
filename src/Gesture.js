@@ -72,7 +72,7 @@ var Gesture = function(options) {
 	 */	
 	this.swipeRight = new Trigger();
 
-	tolerance = options.tolerance || 0.1;
+	var tolerance = options.tolerance || 0.1;
 
 	var start = { x:0, y:0 }, 
 		delta = { x: 0, y: 0 },
@@ -113,7 +113,7 @@ var Gesture = function(options) {
 
 	var onKeyDown = function(e) {
 		// 37 left arrow, 38 up arrow, 39 right arrow, 40 down arrow
-		event.deltaX = event.deltaY = 0;
+		delta.x = delta.y = 0;
 		switch(e.keyCode) {
 			case 39:
 				that.swipeLeft.trigger();

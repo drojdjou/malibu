@@ -1,4 +1,4 @@
-Template = function() {
+var Template = function() {
 
 	var that = this;
 
@@ -11,7 +11,7 @@ Template = function() {
 			that.content = EXT.extend(content.cloneNode(true));
 		} else {
 			var df = document.createElement('div');
-			df.innerHTML = content.trim();
+			df.innerHTML = content ? content.trim() : "";
 			that.content = EXT.extend(df.firstChild);
 		}
 
@@ -72,6 +72,11 @@ Template = function() {
 	}
 
 	this.updateText = function(sel, text) {
+		console.warn('Template.updateText is deprecated, use Template.text instead');
+		that.select(sel).innerHTML = text;
+	}
+
+	this.text = function(sel, text) {
 		that.select(sel).innerHTML = text;
 	}
 

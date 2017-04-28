@@ -83,6 +83,9 @@ var Value = function(_value, noInitCallback) {
 	 *	Same as saying <code>someValue.value = v;</code> but this method can be useful when chaining. 
 	 */
 	that.on = function(callback, test, param) {
+
+		if(observers.indexOf(callback) > -1) return;
+
 		var o = callback;
 		o.test = test;
 		o.param = param;
@@ -208,6 +211,5 @@ var Value = function(_value, noInitCallback) {
 			return last; 
 		},
 	});
-
 }
 

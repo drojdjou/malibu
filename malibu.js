@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":121,"date":"2017-03-07T22:04:53.493Z"}
+var Framework = {"version":"4","build":155,"date":"2017-04-26T20:38:37.577Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -252,7 +252,7 @@ var Simplrz = (function() {
 	 *	@description True if touch events are supported.
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document && navigator.platform != "Win32";
+		return 'ontouchstart' in document;
 	});
 
 	/**
@@ -261,7 +261,7 @@ var Simplrz = (function() {
 	 *	@description True if pointer API (sort of like touch but different spec, used mostly by MS) is supported.
 	 */
 	check("pointer", function() {
-		return (navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1);
+		return !!window.navigator.pointerEnabled || !!window.navigator.msPointerEnabled;
 	});
 
 	/**
@@ -754,6 +754,9 @@ var Value = function(_value, noInitCallback) {
 	 *	Same as saying <code>someValue.value = v;</code> but this method can be useful when chaining. 
 	 */
 	that.on = function(callback, test, param) {
+
+		if(observers.indexOf(callback) > -1) return;
+
 		var o = callback;
 		o.test = test;
 		o.param = param;
@@ -879,7 +882,6 @@ var Value = function(_value, noInitCallback) {
 			return last; 
 		},
 	});
-
 }
 
 
@@ -1191,6 +1193,16 @@ var ExtState = function(ext, element) {
 	};
 
 	/**
+	 *	@method toggle
+	 *	@memberof DomExtend.prototype
+	 *	@description Toggle the display CSS between "none" and "block".
+	 */
+	ext.toggle = function(show, display) {
+		if(show) ext.show(display);
+		else ext.hide();
+	};
+
+	/**
 	 *	@method visible
 	 *	@memberof DomExtend.prototype
 	 *	@description Returns true if the CSS display property is set to none on this element.
@@ -1227,8 +1239,9 @@ var ExtState = function(ext, element) {
 		// 	Util.clearTapHandler(element, callback.___thProxy);
 		// 	callback.___thProxy = null;
 		// } else 
-		if(callback.___proxy) {
-			callback.___dcProxy.clear() = null;
+		if(callback.___dcProxy) {
+			// callback.___dcProxy.clear = null;
+			Util.clearDCHandler(element, callback.___dcProxy);
 		} else {
 			return element.removeEventListener(event, callback, useCapture);	
 		}
@@ -1598,7 +1611,7 @@ var ExtTransition = function(ext, element) {
 			numTrans = ts.length;
 
 			// force repaint
-			element.offsetWidth = element.offsetWidth;
+			var w = element.offsetWidth;
 
 			element.addEventListener(trEvent, onEnded);
 			startTime = now();
@@ -1946,6 +1959,10 @@ var HistoryRouter = function (app, params) {
 		
 		allLinks = Array.prototype.slice.call(allLinks);
 
+		if(element && element.nodeName.toLowerCase() == "a") {
+			allLinks.unshift(element);	
+		}
+
 		for (var i = 0; i < allLinks.length; i++) {
 			var link = allLinks[i];
 
@@ -1953,11 +1970,10 @@ var HistoryRouter = function (app, params) {
 			var target = link.getAttribute('target');
 			var hj = link.getAttribute('data-hj');
 
-			if(url.indexOf(':') > -1 || target == '_blank' || hj == "no") {
-				// Skip absolute URLs, those that have a _blank target 
+			if(url == null || url.indexOf(':') > -1 || target == '_blank' || hj == "no") {
+				// Skip absolute URLs, those that have no URL, a _blank target 
 				// and those that are explicitely set to not be hijacked
 				// (this is done by adding an attribute like this: data-hj='no')
-
 				// console.log('HistoryRouter.hijackLinks: skipping', url);
 				continue;
 			}
@@ -1965,7 +1981,11 @@ var HistoryRouter = function (app, params) {
 			if (!link.hijacked) {
 				link.hijacked = true;
 
-				link.hijackedHref = base + link.getAttribute('href');
+				link.originalHref = link.getAttribute('href') || "";
+				link.hijackedHref = base + "/" + link.getAttribute('href');
+
+				if(link.hijackedHref.indexOf('//') == 0) link.hijackedHref = link.hijackedHref.substring(1); 
+				// normalize the URL, so it doesn't start with double slashes
 
 				var cb = function (e) {
 					if(e) e.preventDefault();
@@ -1973,10 +1993,10 @@ var HistoryRouter = function (app, params) {
 				}
 
 				if(Simplrz.touch) {
-					Util.handleTap(link, cb);
-				} else {
-					link.addEventListener('click', cb);
+					link.removeAttribute('href');
 				}
+
+				link.addEventListener('click', cb);
 			}
 		}
 	};
@@ -2022,9 +2042,22 @@ var HistoryRouter = function (app, params) {
 	}
 
 	app.hijackLinks.on(hijackLinks);
+
+	var nc;
+
+	app.setNavigateCondition = function(c) {
+		nc = c;
+	}
+
+	app.clearNavigateCondition = function() {
+		nc = null;
+	}
+
 	app.navigate.on(function(href) {
-		history.pushState(null, null, href);
-		notify();
+		if(!nc || nc()) {
+			history.pushState(null, null, href);
+			notify();
+		}
 	});
 
 	return {
@@ -2218,10 +2251,17 @@ var VirtualScroll = (function() {
 	var hasTouch = 'ontouchstart' in document;
 	var hasKeyDown = 'onkeydown' in document;
 
-	var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
-	var hasPointer = !!window.navigator.msPointerEnabled;
+	// var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
+	var hasPointer =   !!window.navigator.pointerEnabled;
+	var hasPointerMS = !!window.navigator.msPointerEnabled;
 
 	var isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
+
+	var isTouchDown = false;
+
+	// console.log('hasTouch', hasTouch);
+	// console.log('hasPointer', hasPointer);
+	// console.log('hasPointerMS', hasPointerMS);
 
 	var event = {
 		y: 0,
@@ -2346,9 +2386,15 @@ var VirtualScroll = (function() {
 		var t = (e.targetTouches) ? e.targetTouches[0] : e;
 		touchStartX = t.pageX;	
 		touchStartY = t.pageY;
+		isTouchDown = true;
+	}
+
+	var onTouchEnd = function() {
+		isTouchDown = false;
 	}
 
 	var onTouchMove = function(e) {
+		if(!isTouchDown) return;
 		// e.preventDefault(); // < This needs to be managed externally
 		var t = (e.targetTouches) ? e.targetTouches[0] : e;
 
@@ -2388,19 +2434,22 @@ var VirtualScroll = (function() {
 	var wheelOpts = { passive: true };
 
 	var initListeners = function(element) {
+
 		if(hasWheelEvent) element.addEventListener("wheel", onWheel, wheelOpts);
 		if(hasMouseWheelEvent) element.addEventListener("mousewheel", onMouseWheel, wheelOpts);
 
 		if(hasTouch) {
 			element.addEventListener("touchstart", onTouchStart);
 			element.addEventListener("touchmove", onTouchMove);
+			element.addEventListener("touchend", onTouchEnd);
 		}
 		
-		if(hasPointer && hasTouchWin) {
-			bodyTouchAction = element.body.style.msTouchAction;
-			element.body.style.msTouchAction = "none";
-			element.addEventListener("MSPointerDown", onTouchStart, true);
-			element.addEventListener("MSPointerMove", onTouchMove, true);
+		if(hasPointer || hasPointerMS) {
+			bodyTouchAction = element.body.style.touchAction;
+			element.body.style.touchAction = "none";
+			element.addEventListener(hasPointerMS ? "MSPointerDown" : "PointerDown", onTouchStart, true);
+			element.addEventListener(hasPointerMS ? "MSPointerMove" : "PointerMove", onTouchMove, true);
+			element.addEventListener(hasPointerMS ? "MSPointerUp" : "PointerUp", onTouchEnd, true);
 		}
 
 		if(hasKeyDown) element.addEventListener("keydown", onKeyDown);
@@ -2413,12 +2462,14 @@ var VirtualScroll = (function() {
 		if(hasTouch) {
 			element.removeEventListener("touchstart", onTouchStart);
 			element.removeEventListener("touchmove", onTouchMove);
+			element.removeEventListener("touchend", onTouchEnd);
 		}
 		
-		if(hasPointer && hasTouchWin) {
-			element.body.style.msTouchAction = bodyTouchAction;
-			element.removeEventListener("MSPointerDown", onTouchStart, true);
-			element.removeEventListener("MSPointerMove", onTouchMove, true);
+		if(hasPointer || hasPointerMS) {
+			element.body.style.touchAction = bodyTouchAction;
+			element.removeEventListener(hasPointerMS ? "MSPointerDown" : "PointerDown", onTouchStart, true);
+			element.removeEventListener(hasPointerMS ? "MSPointerMove" : "PointerMove", onTouchMove, true);
+			element.removeEventListener(hasPointerMS ? "MSPointerUp" : "PointerUp", onTouchEnd, true);
 		}
 
 		if(hasKeyDown) element.removeEventListener("keydown", onKeyDown);
@@ -2518,7 +2569,7 @@ var Gesture = function(options) {
 	 */	
 	this.swipeRight = new Trigger();
 
-	tolerance = options.tolerance || 0.1;
+	var tolerance = options.tolerance || 0.1;
 
 	var start = { x:0, y:0 }, 
 		delta = { x: 0, y: 0 },
@@ -2559,7 +2610,7 @@ var Gesture = function(options) {
 
 	var onKeyDown = function(e) {
 		// 37 left arrow, 38 up arrow, 39 right arrow, 40 down arrow
-		event.deltaX = event.deltaY = 0;
+		delta.x = delta.y = 0;
 		switch(e.keyCode) {
 			case 39:
 				that.swipeLeft.trigger();
@@ -2610,7 +2661,7 @@ var Gesture = function(options) {
 
 /* --- --- [Template] --- --- */
 
-Template = function() {
+var Template = function() {
 
 	var that = this;
 
@@ -2623,7 +2674,7 @@ Template = function() {
 			that.content = EXT.extend(content.cloneNode(true));
 		} else {
 			var df = document.createElement('div');
-			df.innerHTML = content.trim();
+			df.innerHTML = content ? content.trim() : "";
 			that.content = EXT.extend(df.firstChild);
 		}
 
@@ -2684,6 +2735,11 @@ Template = function() {
 	}
 
 	this.updateText = function(sel, text) {
+		console.warn('Template.updateText is deprecated, use Template.text instead');
+		that.select(sel).innerHTML = text;
+	}
+
+	this.text = function(sel, text) {
 		that.select(sel).innerHTML = text;
 	}
 

@@ -238,7 +238,7 @@ var Simplrz = (function() {
 	 *	@description True if touch events are supported.
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document && navigator.platform != "Win32";
+		return 'ontouchstart' in document;
 	});
 
 	/**
@@ -247,7 +247,7 @@ var Simplrz = (function() {
 	 *	@description True if pointer API (sort of like touch but different spec, used mostly by MS) is supported.
 	 */
 	check("pointer", function() {
-		return (navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1);
+		return !!window.navigator.pointerEnabled || !!window.navigator.msPointerEnabled;
 	});
 
 	/**

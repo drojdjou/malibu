@@ -74,13 +74,17 @@ var VirtualScroll = (function() {
 	var hasTouch = 'ontouchstart' in document;
 	var hasKeyDown = 'onkeydown' in document;
 
-	var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
-	var hasPointer = !!window.navigator.msPointerEnabled;
+	// var hasTouchWin = navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 1;
+	var hasPointer =   !!window.navigator.pointerEnabled;
+	var hasPointerMS = !!window.navigator.msPointerEnabled;
 
 	var isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
 
+	var isTouchDown = false;
+
 	// console.log('hasTouch', hasTouch);
 	// console.log('hasPointer', hasPointer);
+	// console.log('hasPointerMS', hasPointerMS);
 
 	var event = {
 		y: 0,
@@ -205,9 +209,15 @@ var VirtualScroll = (function() {
 		var t = (e.targetTouches) ? e.targetTouches[0] : e;
 		touchStartX = t.pageX;	
 		touchStartY = t.pageY;
+		isTouchDown = true;
+	}
+
+	var onTouchEnd = function() {
+		isTouchDown = false;
 	}
 
 	var onTouchMove = function(e) {
+		if(!isTouchDown) return;
 		// e.preventDefault(); // < This needs to be managed externally
 		var t = (e.targetTouches) ? e.targetTouches[0] : e;
 
@@ -254,13 +264,15 @@ var VirtualScroll = (function() {
 		if(hasTouch) {
 			element.addEventListener("touchstart", onTouchStart);
 			element.addEventListener("touchmove", onTouchMove);
+			element.addEventListener("touchend", onTouchEnd);
 		}
 		
-		if(hasPointer && hasTouchWin) {
-			bodyTouchAction = element.body.style.msTouchAction;
-			element.body.style.msTouchAction = "none";
-			element.addEventListener("MSPointerDown", onTouchStart, true);
-			element.addEventListener("MSPointerMove", onTouchMove, true);
+		if(hasPointer || hasPointerMS) {
+			bodyTouchAction = element.body.style.touchAction;
+			element.body.style.touchAction = "none";
+			element.addEventListener(hasPointerMS ? "MSPointerDown" : "PointerDown", onTouchStart, true);
+			element.addEventListener(hasPointerMS ? "MSPointerMove" : "PointerMove", onTouchMove, true);
+			element.addEventListener(hasPointerMS ? "MSPointerUp" : "PointerUp", onTouchEnd, true);
 		}
 
 		if(hasKeyDown) element.addEventListener("keydown", onKeyDown);
@@ -273,12 +285,14 @@ var VirtualScroll = (function() {
 		if(hasTouch) {
 			element.removeEventListener("touchstart", onTouchStart);
 			element.removeEventListener("touchmove", onTouchMove);
+			element.removeEventListener("touchend", onTouchEnd);
 		}
 		
-		if(hasPointer && hasTouchWin) {
-			element.body.style.msTouchAction = bodyTouchAction;
-			element.removeEventListener("MSPointerDown", onTouchStart, true);
-			element.removeEventListener("MSPointerMove", onTouchMove, true);
+		if(hasPointer || hasPointerMS) {
+			element.body.style.touchAction = bodyTouchAction;
+			element.removeEventListener(hasPointerMS ? "MSPointerDown" : "PointerDown", onTouchStart, true);
+			element.removeEventListener(hasPointerMS ? "MSPointerMove" : "PointerMove", onTouchMove, true);
+			element.removeEventListener(hasPointerMS ? "MSPointerUp" : "PointerUp", onTouchEnd, true);
 		}
 
 		if(hasKeyDown) element.removeEventListener("keydown", onKeyDown);

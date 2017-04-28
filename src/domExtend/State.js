@@ -28,6 +28,16 @@ var ExtState = function(ext, element) {
 	};
 
 	/**
+	 *	@method toggle
+	 *	@memberof DomExtend.prototype
+	 *	@description Toggle the display CSS between "none" and "block".
+	 */
+	ext.toggle = function(show, display) {
+		if(show) ext.show(display);
+		else ext.hide();
+	};
+
+	/**
 	 *	@method visible
 	 *	@memberof DomExtend.prototype
 	 *	@description Returns true if the CSS display property is set to none on this element.
@@ -64,8 +74,9 @@ var ExtState = function(ext, element) {
 		// 	Util.clearTapHandler(element, callback.___thProxy);
 		// 	callback.___thProxy = null;
 		// } else 
-		if(callback.___proxy) {
-			callback.___dcProxy.clear() = null;
+		if(callback.___dcProxy) {
+			// callback.___dcProxy.clear = null;
+			Util.clearDCHandler(element, callback.___dcProxy);
 		} else {
 			return element.removeEventListener(event, callback, useCapture);	
 		}

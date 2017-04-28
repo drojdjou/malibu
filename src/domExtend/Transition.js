@@ -90,7 +90,7 @@ var ExtTransition = function(ext, element) {
 			numTrans = ts.length;
 
 			// force repaint
-			element.offsetWidth = element.offsetWidth;
+			var w = element.offsetWidth;
 
 			element.addEventListener(trEvent, onEnded);
 			startTime = now();
