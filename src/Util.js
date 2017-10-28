@@ -262,12 +262,12 @@ Util.resizeTo(video, Util.fullContain(video));
 
 		})();
 
-		element.addEventListener(Simplrz.touch ? "touchend" : "click", dcHandler.click);
+		element.addEventListener("click", dcHandler.click);
 		return dcHandler;
 	},
 
 	clearDCHandler: function(element, handler) {
-		element.removeEventListener(Simplrz.touch ? "touchend" : "click", handler.click);
+		element.removeEventListener("click", handler.click);
 	},
 
 	/**

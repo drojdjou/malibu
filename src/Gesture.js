@@ -140,7 +140,7 @@ var Gesture = function(options) {
 	 *	was called before and we want to reuse the object.
 	 */	
 	this.create = function() {
-		document.addEventListener(downEvent, onStart);
+		(options.element || document).addEventListener(downEvent, onStart);
 		document.addEventListener(moveEvent, onMove);
 		document.addEventListener(upEvent, onStop);
 		if(!options.noKeyboard) document.addEventListener("keydown", onKeyDown);
@@ -153,7 +153,7 @@ var Gesture = function(options) {
 	 *	@description deregisters all listeners
 	 */	
 	this.destroy = function() {
-		document.removeEventListener(downEvent, onStart);
+		(options.element || document).removeEventListener(downEvent, onStart);
 		document.removeEventListener(moveEvent, onMove);
 		document.removeEventListener(upEvent, onStop);
 		if(!options.noKeyboard) document.removeEventListener("keydown", onKeyDown);

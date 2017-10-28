@@ -81,7 +81,7 @@ var concat = function(set) {
 
 updateVersion();
 
-console.log("\033[31mFramework " + version.version + " build " + version.build + "\033[0m");
+console.log("[ Framework " + version.version + " build " + version.build + " ]");
 
 var minifiedFramework = minify(frameworkFiles, false);
 var concatenatedFramework = concat(frameworkFiles, false);

@@ -143,7 +143,7 @@ var VirtualScroll = (function() {
 		}
 	}
 
-	var touchLock = function(e) { e.preventDefault(); };
+	var lockEvent = function(e) { e.preventDefault(); };
 
 	/**
 	 *	@method lockTouch
@@ -154,7 +154,7 @@ var VirtualScroll = (function() {
 	 *	This function will take care of that, however it's a failt simple mechanism - see in the source code, linked below.
 	 */
 	vs.lockTouch = function() {
-		document.addEventListener('touchmove', touchLock, { passive: false });
+		document.addEventListener('touchmove', lockEvent, { passive: false });
 	}
 
 	/**
@@ -165,7 +165,31 @@ var VirtualScroll = (function() {
 	 *	@description Restores all touch events to default. Useful for hybrid pages that have some VS and some regular scrolling content.
 	 */
 	vs.unlockTouch = function() {
-		document.removeEventListener('touchmove', touchLock, { passive: false });
+		document.removeEventListener('touchmove', lockEvent, { passive: false });
+	}
+
+	/**
+	 *	@method lockWheel
+	 *	@memberof VirtualScroll
+	 *	@static
+	 *
+	 *	@description Lock the wehll event so that interacting with the wheel (or touch pad) does not fire the scroll event.
+	 */
+	vs.lockWheel = function() {
+		if(hasWheelEvent) document.addEventListener("wheel", lockEvent, { passive: false });
+		if(hasMouseWheelEvent) document.addEventListener("mousewheel", lockEvent, { passive: false });
+	}
+
+	/**
+	 *	@method unlockWheel
+	 *	@memberof VirtualScroll
+	 *	@static
+	 *
+	 *	@description Unlock the wheel and make interacting with it correctly scroll the page.
+	 */
+	vs.unlockWheel = function() {
+		if(hasWheelEvent) document.removeEventListener("wheel", lockEvent, { passive: false });
+		if(hasMouseWheelEvent) document.removeEventListener("mousewheel", lockEvent, { passive: false });
 	}
 
 	var notify = function(e, s) {

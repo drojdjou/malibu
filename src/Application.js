@@ -51,11 +51,13 @@ var Application = (function() {
 
 		params = params || {};
 
-		console.log('%cMalibu v' + 
-			Framework.version + 
-			' b' + Framework.build + 
-			' (history:' + !params.disableHistoryAPI + ')'
-			, 'background: #ff3600; color: #ffdede; padding: 4px 10px 4px 10px');
+		if(!params.dontPrintVersion) {
+			console.log('%cMalibu v' + 
+				Framework.version + 
+				' b' + Framework.build + 
+				' (history:' + !params.disableHistoryAPI + ')'
+				, 'background: #ff3600; color: #ffdede; padding: 4px 10px 4px 10px');
+		}
 
 		var r = {
 			width: 0,

@@ -187,6 +187,22 @@ var Simplrz = (function() {
 	s.iPad = (navigator.platform == 'iPad');
 	classes.push(s.iPad ? "ipad" : "no-ipad");
 
+	/**
+	 *	@member {Boolean} win
+	 *	@memberof Simplrz
+	 *	@description True if the device is running Windows.
+	 */
+	s.win = (navigator.platform == 'Win32' || navigator.platform == 'Win64');
+	classes.push(s.win ? "win" : "no-win");
+
+	/**
+	 *	@member {Boolean} win
+	 *	@memberof Simplrz
+	 *	@description True if the device is running Windows.
+	 */
+	s.android = ( navigator.userAgent.toLowerCase().indexOf("android") > -1);
+	classes.push(s.android ? "android" : "no-android");
+
 	// -- BROWSER HACKS END -- 
 
 
@@ -238,7 +254,7 @@ var Simplrz = (function() {
 	 *	@description True if touch events are supported.
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document;
+		return 'ontouchstart' in document && navigator.platform != "Win32";
 	});
 
 	/**

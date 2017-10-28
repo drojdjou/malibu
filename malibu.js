@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":155,"date":"2017-04-26T20:38:37.577Z"}
+var Framework = {"version":"4","build":178,"date":"2017-09-07T23:55:45.654Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -201,6 +201,22 @@ var Simplrz = (function() {
 	s.iPad = (navigator.platform == 'iPad');
 	classes.push(s.iPad ? "ipad" : "no-ipad");
 
+	/**
+	 *	@member {Boolean} win
+	 *	@memberof Simplrz
+	 *	@description True if the device is running Windows.
+	 */
+	s.win = (navigator.platform == 'Win32');
+	classes.push(s.win ? "win" : "no-win");
+
+	/**
+	 *	@member {Boolean} win
+	 *	@memberof Simplrz
+	 *	@description True if the device is running Windows.
+	 */
+	s.android = ( navigator.userAgent.toLowerCase().indexOf("android") > -1);
+	classes.push(s.android ? "android" : "no-android");
+
 	// -- BROWSER HACKS END -- 
 
 
@@ -252,7 +268,7 @@ var Simplrz = (function() {
 	 *	@description True if touch events are supported.
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document;
+		return 'ontouchstart' in document && navigator.platform != "Win32";
 	});
 
 	/**
@@ -941,11 +957,13 @@ var Application = (function() {
 
 		params = params || {};
 
-		console.log('%cMalibu v' + 
-			Framework.version + 
-			' b' + Framework.build + 
-			' (history:' + !params.disableHistoryAPI + ')'
-			, 'background: #ff3600; color: #ffdede; padding: 4px 10px 4px 10px');
+		if(!params.dontPrintVersion) {
+			console.log('%cMalibu v' + 
+				Framework.version + 
+				' b' + Framework.build + 
+				' (history:' + !params.disableHistoryAPI + ')'
+				, 'background: #ff3600; color: #ffdede; padding: 4px 10px 4px 10px');
+		}
 
 		var r = {
 			width: 0,
@@ -1944,16 +1962,15 @@ var HistoryRouter = function (app, params) {
 
 	Application.history = [];
 
-	var hijackLinks = function (element) {
-
+	var setBase = function() {
 		var base = document.querySelector('base');
 		base = (base && base.getAttribute('href')) ? base.getAttribute('href') : '/';
-
 		if(base == '/') base = '';
 		if(base[base.length-1] == '/') base = base.substring(0, base.length - 1);
-
 		app.baseUrl = base;
+	}
 
+	var hijackLinks = function (element) {
 		var allLinksSelector = 'a[href]';
 		var allLinks = (element || document).querySelectorAll(allLinksSelector);
 		
@@ -1974,7 +1991,6 @@ var HistoryRouter = function (app, params) {
 				// Skip absolute URLs, those that have no URL, a _blank target 
 				// and those that are explicitely set to not be hijacked
 				// (this is done by adding an attribute like this: data-hj='no')
-				// console.log('HistoryRouter.hijackLinks: skipping', url);
 				continue;
 			}
 			
@@ -1982,7 +1998,7 @@ var HistoryRouter = function (app, params) {
 				link.hijacked = true;
 
 				link.originalHref = link.getAttribute('href') || "";
-				link.hijackedHref = base + "/" + link.getAttribute('href');
+				link.hijackedHref = app.baseUrl + "/" + link.getAttribute('href');
 
 				if(link.hijackedHref.indexOf('//') == 0) link.hijackedHref = link.hijackedHref.substring(1); 
 				// normalize the URL, so it doesn't start with double slashes
@@ -1990,10 +2006,6 @@ var HistoryRouter = function (app, params) {
 				var cb = function (e) {
 					if(e) e.preventDefault();
 					app.navigate.trigger(this.hijackedHref);
-				}
-
-				if(Simplrz.touch) {
-					link.removeAttribute('href');
 				}
 
 				link.addEventListener('click', cb);
@@ -2043,27 +2055,40 @@ var HistoryRouter = function (app, params) {
 
 	app.hijackLinks.on(hijackLinks);
 
-	var nc;
+	var navCond;
+
+	// https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
+	var bu = function(e) {
+		var m = navCond();
+		e.returnValue = m;
+		return m;
+	}
 
 	app.setNavigateCondition = function(c) {
-		nc = c;
+		navCond = c;
+		window.addEventListener('beforeunload', bu);
 	}
 
 	app.clearNavigateCondition = function() {
-		nc = null;
+		window.removeEventListener('beforeunload', bu);
+		navCond = null;
 	}
 
 	app.navigate.on(function(href) {
-		if(!nc || nc()) {
+
+		var n = function() {
 			history.pushState(null, null, href);
 			notify();
 		}
+
+		if(navCond) navCond(n, href);
+		else n();
 	});
 
 	return {
 
 		init: function () {
-			hijackLinks();
+			setBase();
 			if (!disableHistoryAPI) {
 				notify();
 			} else {
@@ -2320,7 +2345,7 @@ var VirtualScroll = (function() {
 		}
 	}
 
-	var touchLock = function(e) { e.preventDefault(); };
+	var lockEvent = function(e) { e.preventDefault(); };
 
 	/**
 	 *	@method lockTouch
@@ -2331,7 +2356,7 @@ var VirtualScroll = (function() {
 	 *	This function will take care of that, however it's a failt simple mechanism - see in the source code, linked below.
 	 */
 	vs.lockTouch = function() {
-		document.addEventListener('touchmove', touchLock, { passive: false });
+		document.addEventListener('touchmove', lockEvent, { passive: false });
 	}
 
 	/**
@@ -2342,7 +2367,31 @@ var VirtualScroll = (function() {
 	 *	@description Restores all touch events to default. Useful for hybrid pages that have some VS and some regular scrolling content.
 	 */
 	vs.unlockTouch = function() {
-		document.removeEventListener('touchmove', touchLock, { passive: false });
+		document.removeEventListener('touchmove', lockEvent, { passive: false });
+	}
+
+	/**
+	 *	@method lockWheel
+	 *	@memberof VirtualScroll
+	 *	@static
+	 *
+	 *	@description Lock the wehll event so that interacting with the wheel (or touch pad) does not fire the scroll event.
+	 */
+	vs.lockWheel = function() {
+		if(hasWheelEvent) document.addEventListener("wheel", lockEvent, { passive: false });
+		if(hasMouseWheelEvent) document.addEventListener("mousewheel", lockEvent, { passive: false });
+	}
+
+	/**
+	 *	@method unlockWheel
+	 *	@memberof VirtualScroll
+	 *	@static
+	 *
+	 *	@description Unlock the wheel and make interacting with it correctly scroll the page.
+	 */
+	vs.unlockWheel = function() {
+		if(hasWheelEvent) document.removeEventListener("wheel", lockEvent, { passive: false });
+		if(hasMouseWheelEvent) document.removeEventListener("mousewheel", lockEvent, { passive: false });
 	}
 
 	var notify = function(e, s) {
@@ -2637,7 +2686,7 @@ var Gesture = function(options) {
 	 *	was called before and we want to reuse the object.
 	 */	
 	this.create = function() {
-		document.addEventListener(downEvent, onStart);
+		(options.element || document).addEventListener(downEvent, onStart);
 		document.addEventListener(moveEvent, onMove);
 		document.addEventListener(upEvent, onStop);
 		if(!options.noKeyboard) document.addEventListener("keydown", onKeyDown);
@@ -2650,7 +2699,7 @@ var Gesture = function(options) {
 	 *	@description deregisters all listeners
 	 */	
 	this.destroy = function() {
-		document.removeEventListener(downEvent, onStart);
+		(options.element || document).removeEventListener(downEvent, onStart);
 		document.removeEventListener(moveEvent, onMove);
 		document.removeEventListener(upEvent, onStop);
 		if(!options.noKeyboard) document.removeEventListener("keydown", onKeyDown);
@@ -3036,12 +3085,12 @@ Util.resizeTo(video, Util.fullContain(video));
 
 		})();
 
-		element.addEventListener(Simplrz.touch ? "touchend" : "click", dcHandler.click);
+		element.addEventListener("click", dcHandler.click);
 		return dcHandler;
 	},
 
 	clearDCHandler: function(element, handler) {
-		element.removeEventListener(Simplrz.touch ? "touchend" : "click", handler.click);
+		element.removeEventListener("click", handler.click);
 	},
 
 	/**
