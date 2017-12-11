@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":178,"date":"2017-09-07T23:55:45.654Z"}
+var Framework = {"version":"4","build":179,"date":"2017-10-28T00:16:59.522Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -206,7 +206,7 @@ var Simplrz = (function() {
 	 *	@memberof Simplrz
 	 *	@description True if the device is running Windows.
 	 */
-	s.win = (navigator.platform == 'Win32');
+	s.win = (navigator.platform == 'Win32' || navigator.platform == 'Win64');
 	classes.push(s.win ? "win" : "no-win");
 
 	/**
