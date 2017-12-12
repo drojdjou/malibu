@@ -97,7 +97,13 @@ var ExtState = function(ext, element) {
 	 *	<p>This method uses computed styles to fetch the actual CSS value of a property.
 	 */	
 	ext.readCss = function(property, notCalculated) {
-		return (notCalculated) ? element.style[property] : getComputedStyle(element).getPropertyValue(property);
+		if(notCalculated) {
+			return element.style[property]; 
+		} else {
+			var s = getComputedStyle(element);
+			if(!s) element.style[property]; // Bug in Firefox - this will be null if in iframe and it's set to display:none
+			else return s.getPropertyValue(property);
+		}
 	}
 
 	/**

@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":179,"date":"2017-10-28T00:16:59.522Z"}
+var Framework = {"version":"4","build":181,"date":"2017-12-12T00:53:15.939Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -98,8 +98,10 @@ var Simplrz = (function() {
 
 		if(window.getComputedStyle) {
 			styles = window.getComputedStyle(document.documentElement, '');
-			pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o']))[1];
-			dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+			if(styles) { // Bug in Firefox - this will be null if in iframe and it's set to display:none
+				pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o']))[1];
+				dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+			}
 		}
 
 		return {
@@ -233,9 +235,11 @@ var Simplrz = (function() {
 		if(prefix.lowercase == 'ms') {
 			var div = document.createElement("div");
 			div.style[prefix.css + "transform"] = 'translateZ(0px)';
-			var cs = getComputedStyle(div);
-			var a = cs.getPropertyValue(prefix.css + "transform");
-			return a && a != '' && a != 'none';
+			var cs = window.getComputedStyle(div);
+			if(cs) { // Bug in Firefox - this will be null if in iframe and it's set to display:none
+				var a = cs.getPropertyValue(prefix.css + "transform");
+				return a && a != '' && a != 'none';
+			}
 		}
 
 		return false;
@@ -1280,7 +1284,13 @@ var ExtState = function(ext, element) {
 	 *	<p>This method uses computed styles to fetch the actual CSS value of a property.
 	 */	
 	ext.readCss = function(property, notCalculated) {
-		return (notCalculated) ? element.style[property] : getComputedStyle(element).getPropertyValue(property);
+		if(notCalculated) {
+			return element.style[property]; 
+		} else {
+			var s = getComputedStyle(element);
+			if(!s) element.style[property]; // Bug in Firefox - this will be null if in iframe and it's set to display:none
+			else return s.getPropertyValue(property);
+		}
 	}
 
 	/**
