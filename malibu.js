@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":182,"date":"2018-02-09T21:29:47.988Z"}
+var Framework = {"version":"4","build":183,"date":"2018-02-09T22:11:01.545Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -2496,6 +2496,8 @@ var VirtualScroll = (function() {
 	
 				event.x2 = t.pageX;
 				event.y2 = t.pageY;
+			} else {
+				event.multiTouch = false;
 			}
 	
 			notify(e, "touch");

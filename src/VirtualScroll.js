@@ -284,6 +284,8 @@ var VirtualScroll = (function() {
 	
 				event.x2 = t.pageX;
 				event.y2 = t.pageY;
+			} else {
+				event.multiTouch = false;
 			}
 	
 			notify(e, "touch");
