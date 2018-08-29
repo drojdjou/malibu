@@ -19,6 +19,13 @@ var HistoryRouter = function (app, params) {
 	var setBase = function() {
 		var base = document.querySelector('base');
 		base = (base && base.getAttribute('href')) ? base.getAttribute('href') : '/';
+
+		// In case base href is a full URL with protocol & domain
+		// - this gets just the part we need
+		var prs = document.createElement('a');
+		prs.href = base;
+		base = prs.pathname;
+
 		if(base == '/') base = '';
 		if(base[base.length-1] == '/') base = base.substring(0, base.length - 1);
 		app.baseUrl = base;
@@ -62,6 +69,12 @@ var HistoryRouter = function (app, params) {
 					app.navigate.trigger(this.hijackedHref);
 				}
 
+				link.removeHijack = function() {
+					link.removeEventListener('click', cb);
+					link.hijacked = false;
+				}
+
+				link.hijackCallback = cb;
 				link.addEventListener('click', cb);
 			}
 		}

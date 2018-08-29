@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":183,"date":"2018-02-09T22:11:01.545Z"}
+var Framework = {"version":"4","build":191,"date":"2018-06-14T00:14:24.839Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -219,6 +219,9 @@ var Simplrz = (function() {
 	s.android = ( navigator.userAgent.toLowerCase().indexOf("android") > -1);
 	classes.push(s.android ? "android" : "no-android");
 
+	s.vrbrowser = /(OculusBrowser|Mobile\sVR)/g.test(navigator.userAgent);
+	classes.push(s.vrbrowser ? "vrbrowser" : "no-vrbrowser");
+
 	// -- BROWSER HACKS END -- 
 
 
@@ -272,7 +275,7 @@ var Simplrz = (function() {
 	 *	@description True if touch events are supported.
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document && navigator.platform != "Win32";
+		return 'ontouchstart' in document && navigator.platform.indexOf("Win") == -1;
 	});
 
 	/**
@@ -1846,28 +1849,31 @@ var FrameImpulse = (function() {
 
     var vendors = ['webkit', 'moz'];
 
-    var r = {};
 	var listeners = [], numListeners = 0, toRemove = [], numToRemove;
 	var lastTime = 0;
 
-    for(var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
-        window.requestAnimationFrame = window[vendors[i] + 'RequestAnimationFrame'];
-    }
+	var provider = window;
 
-    if (!window.requestAnimationFrame) {
-        window.requestAnimationFrame = function(callback) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { 
-            	callback(currTime + timeToCall); 
-            }, timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
-    }
+	var r = {};
+
+    // for(var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
+    //     window.requestAnimationFrame = window[vendors[i] + 'RequestAnimationFrame'];
+    // }
+
+    // if (!window.requestAnimationFrame) {
+    //     window.requestAnimationFrame = function(callback) {
+    //         var currTime = new Date().getTime();
+    //         var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+    //         var id = window.setTimeout(function() { 
+    //         	callback(currTime + timeToCall); 
+    //         }, timeToCall);
+    //         lastTime = currTime + timeToCall;
+    //         return id;
+    //     };
+    // }
 
 	var run = function(deltaTime) {
-		requestAnimationFrame(run);
+		provider.requestAnimationFrame(run);
 
 		if(numListeners == 0) return;
 		
@@ -1945,12 +1951,15 @@ var FrameImpulse = (function() {
 	r.getListeners = function() {
 		return listeners;
 	}
-	
+
+	r.setProvider = function(p) {
+		provider = p || window;
+	}
+
 	run();
 	return r;
 
 })();
-
 
 /* --- --- [HistoryRouter] --- --- */
 
@@ -1975,6 +1984,13 @@ var HistoryRouter = function (app, params) {
 	var setBase = function() {
 		var base = document.querySelector('base');
 		base = (base && base.getAttribute('href')) ? base.getAttribute('href') : '/';
+
+		// In case base href is a full URL with protocol & domain
+		// - this gets just the part we need
+		var prs = document.createElement('a');
+		prs.href = base;
+		base = prs.pathname;
+
 		if(base == '/') base = '';
 		if(base[base.length-1] == '/') base = base.substring(0, base.length - 1);
 		app.baseUrl = base;

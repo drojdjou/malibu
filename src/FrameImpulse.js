@@ -22,28 +22,31 @@ var FrameImpulse = (function() {
 
     var vendors = ['webkit', 'moz'];
 
-    var r = {};
 	var listeners = [], numListeners = 0, toRemove = [], numToRemove;
 	var lastTime = 0;
 
-    for(var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
-        window.requestAnimationFrame = window[vendors[i] + 'RequestAnimationFrame'];
-    }
+	var provider = window;
 
-    if (!window.requestAnimationFrame) {
-        window.requestAnimationFrame = function(callback) {
-            var currTime = new Date().getTime();
-            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-            var id = window.setTimeout(function() { 
-            	callback(currTime + timeToCall); 
-            }, timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
-    }
+	var r = {};
+
+    // for(var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
+    //     window.requestAnimationFrame = window[vendors[i] + 'RequestAnimationFrame'];
+    // }
+
+    // if (!window.requestAnimationFrame) {
+    //     window.requestAnimationFrame = function(callback) {
+    //         var currTime = new Date().getTime();
+    //         var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+    //         var id = window.setTimeout(function() { 
+    //         	callback(currTime + timeToCall); 
+    //         }, timeToCall);
+    //         lastTime = currTime + timeToCall;
+    //         return id;
+    //     };
+    // }
 
 	var run = function(deltaTime) {
-		requestAnimationFrame(run);
+		provider.requestAnimationFrame(run);
 
 		if(numListeners == 0) return;
 		
@@ -121,7 +124,11 @@ var FrameImpulse = (function() {
 	r.getListeners = function() {
 		return listeners;
 	}
-	
+
+	r.setProvider = function(p) {
+		provider = p || window;
+	}
+
 	run();
 	return r;
 

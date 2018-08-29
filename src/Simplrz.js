@@ -205,6 +205,9 @@ var Simplrz = (function() {
 	s.android = ( navigator.userAgent.toLowerCase().indexOf("android") > -1);
 	classes.push(s.android ? "android" : "no-android");
 
+	s.vrbrowser = /(OculusBrowser|Mobile\sVR)/g.test(navigator.userAgent);
+	classes.push(s.vrbrowser ? "vrbrowser" : "no-vrbrowser");
+
 	// -- BROWSER HACKS END -- 
 
 
@@ -258,7 +261,7 @@ var Simplrz = (function() {
 	 *	@description True if touch events are supported.
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document && navigator.platform != "Win32";
+		return 'ontouchstart' in document && navigator.platform.indexOf("Win") == -1;
 	});
 
 	/**
