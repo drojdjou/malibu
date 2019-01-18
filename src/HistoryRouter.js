@@ -59,7 +59,7 @@ var HistoryRouter = function (app, params) {
 				link.hijacked = true;
 
 				link.originalHref = link.getAttribute('href') || "";
-				link.hijackedHref = app.baseUrl + "/" + link.getAttribute('href');
+				link.hijackedHref = app.baseUrl + "/" + link.originalHref;
 
 				if(link.hijackedHref.indexOf('//') == 0) link.hijackedHref = link.hijackedHref.substring(1); 
 				// normalize the URL, so it doesn't start with double slashes
@@ -69,10 +69,13 @@ var HistoryRouter = function (app, params) {
 					app.navigate.trigger(this.hijackedHref);
 				}
 
-				link.removeHijack = function() {
-					link.removeEventListener('click', cb);
-					link.hijacked = false;
-				}
+				link.removeHijack = (function() {
+					var l = link;
+					return function() {
+						l.removeEventListener('click', cb);
+						l.hijacked = false;
+					}
+				})();
 
 				link.hijackCallback = cb;
 				link.addEventListener('click', cb);
@@ -140,6 +143,13 @@ var HistoryRouter = function (app, params) {
 		window.removeEventListener('beforeunload', bu);
 		navCond = null;
 	}
+
+	window.addEventListener('popstate', function(e) {
+		if(navCond) {
+			window.removeEventListener('beforeunload', bu);
+			navCond = null;
+		}
+	}, false);
 
 	app.navigate.on(function(href) {
 

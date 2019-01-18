@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":192,"date":"2018-08-29T23:02:28.745Z"}
+var Framework = {"version":"4","build":198,"date":"2019-01-17T19:52:04.003Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -99,8 +99,11 @@ var Simplrz = (function() {
 		if(window.getComputedStyle) {
 			styles = window.getComputedStyle(document.documentElement, '');
 			if(styles) { // Bug in Firefox - this will be null if in iframe and it's set to display:none
-				pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o']))[1];
-				dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+				var m = Array.prototype.slice.call(styles).join('');
+				if(m) {
+					pre = (m.match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o']))[1];
+					dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+				}
 			}
 		}
 
@@ -140,33 +143,14 @@ var Simplrz = (function() {
 	} 
 
 	// -- BROWSER HACKS BEGIN -- 
-	// These properties are for browser specific hack (yes, they are sometimes necessary)
-	var ie = (function(){
-	    var v = 3, div = document.createElement('div'), all = div.getElementsByTagName('i');
-	    while (
-	        div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
-	        all[0]
-	    ) {
-	    	// console.log(div.innerHTML);
-	    }
-	    return v > 4 ? v : null;
-	})();
-
-	// IE 10 doesn't use conditional comments anymore
-	if(ie == null) {
-		var p = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
-		var ua = navigator.userAgent;
-		var m = ua.match(p);
-		ie = (m && m.length > 1) ? parseInt(m[1]) : null;
-	}
 
 	/**
 	 *	@member {Boolean} ie
 	 *	@memberof Simplrz
-	 *	@description false if browser is not IE, otherwise the version number (8, 9, 10...)
+	 *	@description false if browser is not IE, true it is is. No version detection.
 	 */
-	s.ie = ie || false;
-	classes.push((ie) ? "ie-" + ie : "no-ie");
+	s.ie = navigator.userAgent.match(/MSIE/) || navigator.userAgent.match(/Trident/);
+	classes.push(s.ie ? "ie" : "no-ie");
 
 	/**
 	 *	@member {Boolean} firefox
@@ -249,25 +233,25 @@ var Simplrz = (function() {
 	});
 
 	/**
-	 *	@member {Boolean} csstransitions
-	 *	@memberof Simplrz
-	 *	@description True if CSS Transitions are supported.
-	 */
-	check("csstransitions", function() { return !ie || ie >= 10; });
+	*	@member {Boolean} csstransitions
+	*	@memberof Simplrz
+	*	@description True if CSS Transitions are supported - as of b197 (Jan 2019) always true.
+	*/
+	check("csstransitions", function() { return true; });
 
 	/**
-	 *	@member {Boolean} cssanimations
-	 *	@memberof Simplrz
-	 *	@description True if CSS Animations are supported.
-	 */
-	check("cssanimations", function() { return !ie || ie >= 10; });
+	*	@member {Boolean} cssanimations
+	*	@memberof Simplrz
+	*	@description True if CSS Animations are supported - as of b197 (Jan 2019) always true.
+	*/
+	check("cssanimations", function() { return true; });
 
 	/**
-	 *	@member {Boolean} css2d
-	 *	@memberof Simplrz
-	 *	@description True if CSS 2d transforms are supported.
-	 */
-	check("css2d", function() { return !ie || ie >= 9; });
+	*	@member {Boolean} css2d
+	*	@memberof Simplrz
+	*	@description True if CSS 2d transforms are supported - as of b197 (Jan 2019) always true
+	*/
+	check("css2d", function() { return true; });
 
 	/**
 	 *	@member {Boolean} touch
@@ -2024,7 +2008,7 @@ var HistoryRouter = function (app, params) {
 				link.hijacked = true;
 
 				link.originalHref = link.getAttribute('href') || "";
-				link.hijackedHref = app.baseUrl + "/" + link.getAttribute('href');
+				link.hijackedHref = app.baseUrl + "/" + link.originalHref;
 
 				if(link.hijackedHref.indexOf('//') == 0) link.hijackedHref = link.hijackedHref.substring(1); 
 				// normalize the URL, so it doesn't start with double slashes
@@ -2034,10 +2018,13 @@ var HistoryRouter = function (app, params) {
 					app.navigate.trigger(this.hijackedHref);
 				}
 
-				link.removeHijack = function() {
-					link.removeEventListener('click', cb);
-					link.hijacked = false;
-				}
+				link.removeHijack = (function() {
+					var l = link;
+					return function() {
+						l.removeEventListener('click', cb);
+						l.hijacked = false;
+					}
+				})();
 
 				link.hijackCallback = cb;
 				link.addEventListener('click', cb);
@@ -2105,6 +2092,13 @@ var HistoryRouter = function (app, params) {
 		window.removeEventListener('beforeunload', bu);
 		navCond = null;
 	}
+
+	window.addEventListener('popstate', function(e) {
+		if(navCond) {
+			window.removeEventListener('beforeunload', bu);
+			navCond = null;
+		}
+	}, false);
 
 	app.navigate.on(function(href) {
 
