@@ -27,14 +27,20 @@ var Template = function() {
 	} 
 
 	this.select = function(sel) {
+		if(!selectorCache) selectorCache = {};
+
 		if(selectorCache[sel]) {
 			return selectorCache[sel];
 		} else {
 			var e = that.content.ext.select(sel);
-			if(!e) throw "Selector not found: " + sel;
-			selectorCache[sel] = e;
+			if(!e) console.warn("Template: selector not found: " + sel);
+			else selectorCache[sel] = e;
 			return e;
 		}
+	}
+
+	this.selectAll = function(sel) {
+		return this.content ? this.content.ext.selectAll(sel) : null;
 	}
 
 	this.clearCache = function() {
