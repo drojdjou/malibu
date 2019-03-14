@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":198,"date":"2019-01-17T19:52:04.003Z"}
+var Framework = {"version":"4","build":199,"date":"2019-03-14T16:51:36.143Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -2793,14 +2793,20 @@ var Template = function() {
 	} 
 
 	this.select = function(sel) {
+		if(!selectorCache) selectorCache = {};
+
 		if(selectorCache[sel]) {
 			return selectorCache[sel];
 		} else {
 			var e = that.content.ext.select(sel);
-			if(!e) throw "Selector not found: " + sel;
-			selectorCache[sel] = e;
+			if(!e) console.warn("Template: selector not found: " + sel);
+			else selectorCache[sel] = e;
 			return e;
 		}
+	}
+
+	this.selectAll = function(sel) {
+		return this.content ? this.content.ext.selectAll(sel) : null;
 	}
 
 	this.clearCache = function() {
