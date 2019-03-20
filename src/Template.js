@@ -1,9 +1,6 @@
 var Template = function() {
 
 	var that = this;
-
-	this.content;
-
 	var selectorCache;
 
 	this.set = function(content) {
@@ -31,7 +28,7 @@ var Template = function() {
 
 		if(selectorCache[sel]) {
 			return selectorCache[sel];
-		} else {
+		} else if(that.content) {
 			var e = that.content.ext.select(sel);
 			if(!e) console.warn("Template: selector not found: " + sel);
 			else selectorCache[sel] = e;

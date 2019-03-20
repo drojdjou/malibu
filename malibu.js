@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":199,"date":"2019-03-14T16:51:36.143Z"}
+var Framework = {"version":"4","build":200,"date":"2019-03-16T01:31:42.630Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -2767,9 +2767,6 @@ var Gesture = function(options) {
 var Template = function() {
 
 	var that = this;
-
-	this.content;
-
 	var selectorCache;
 
 	this.set = function(content) {
@@ -2797,7 +2794,7 @@ var Template = function() {
 
 		if(selectorCache[sel]) {
 			return selectorCache[sel];
-		} else {
+		} else if(that.content) {
 			var e = that.content.ext.select(sel);
 			if(!e) console.warn("Template: selector not found: " + sel);
 			else selectorCache[sel] = e;
