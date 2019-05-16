@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":200,"date":"2019-03-16T01:31:42.630Z"}
+var Framework = {"version":"4","build":201,"date":"2019-05-16T19:11:23.459Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -1196,8 +1196,10 @@ var ExtState = function(ext, element) {
 	 *	@description Sets the display CSS property of the object to "none".
 	 */
 	ext.hide = function() {
-		var d = ext.readCss('display');
-		element.ext.__defaultDisplay = d == 'none' ? 'block' : d;
+		if(!element.ext.__defaultDisplay) {
+			var d = ext.readCss('display');
+			element.ext.__defaultDisplay = d == 'none' ? 'block' : d;
+		}
 		element.style.display = "none";
 	};
 
