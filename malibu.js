@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":201,"date":"2019-05-16T19:11:23.459Z"}
+var Framework = {"version":"4","build":205,"date":"2019-10-11T19:31:05.992Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -182,9 +182,9 @@ var Simplrz = (function() {
 	/**
 	 *	@member {Boolean} iPad
 	 *	@memberof Simplrz
-	 *	@description True if the device is an iPad.
+	 *	@description True if the device is an iPad (as of iOS 13 we need to outsmart Apple a bit)
 	 */
-	s.iPad = (navigator.platform == 'iPad');
+	s.iPad = (navigator.platform == 'iPad') || (navigator.platform == "MacIntel" && screen.height == 1024 && 'ontouchstart' in document);
 	classes.push(s.iPad ? "ipad" : "no-ipad");
 
 	/**
@@ -196,7 +196,15 @@ var Simplrz = (function() {
 	classes.push(s.win ? "win" : "no-win");
 
 	/**
-	 *	@member {Boolean} win
+	 *	@member {Boolean} osx
+	 *	@memberof Simplrz
+	 *	@description True if the device is a Mac running OSX.
+	 */
+	s.osx = navigator.platform.toLowerCase().indexOf('mac') >= 0;
+	classes.push(s.osx ? "osx" : "no-osx");
+
+	/**
+	 *	@member {Boolean} android
 	 *	@memberof Simplrz
 	 *	@description True if the device is running Windows.
 	 */
@@ -964,18 +972,26 @@ var Application = (function() {
 			event: null
 		}
 
-		window.addEventListener('resize', function(e) {
-			r.width = window.innerWidth;
-			r.height = window.innerHeight;
-			r.aspect = r.width / r.height;
-			r.orientation = window.orientation;
-			r.event = e;
-			app.resize.trigger(r);
-		});
+		var triggerResize = function(e) {
+			var f = function() {
+				r.width = window.innerWidth;
+				r.height = window.innerHeight;
+				r.aspect = r.width / r.height;
+				r.orientation = window.orientation;
+				r.event = e;
+				app.resize.trigger(r);
+			}
 
-		// window.addEventListener('orientationchange', function(e) {
-		// 	app.resize.trigger(e);
-		// });	
+			f();
+
+			if(Simplrz.iOS) {
+				window.scroll(0, 0);
+				setTimeout(f, 400);
+				setTimeout(f, 1000);
+			}
+		}
+
+		window.addEventListener('resize', triggerResize);	
 
 		router = HistoryRouter(app, params);
 		router.init();	

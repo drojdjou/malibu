@@ -67,18 +67,26 @@ var Application = (function() {
 			event: null
 		}
 
-		window.addEventListener('resize', function(e) {
-			r.width = window.innerWidth;
-			r.height = window.innerHeight;
-			r.aspect = r.width / r.height;
-			r.orientation = window.orientation;
-			r.event = e;
-			app.resize.trigger(r);
-		});
+		var triggerResize = function(e) {
+			var f = function() {
+				r.width = window.innerWidth;
+				r.height = window.innerHeight;
+				r.aspect = r.width / r.height;
+				r.orientation = window.orientation;
+				r.event = e;
+				app.resize.trigger(r);
+			}
 
-		// window.addEventListener('orientationchange', function(e) {
-		// 	app.resize.trigger(e);
-		// });	
+			f();
+
+			if(Simplrz.iOS) {
+				window.scroll(0, 0);
+				setTimeout(f, 400);
+				setTimeout(f, 1000);
+			}
+		}
+
+		window.addEventListener('resize', triggerResize);	
 
 		router = HistoryRouter(app, params);
 		router.init();	

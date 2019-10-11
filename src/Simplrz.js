@@ -168,9 +168,9 @@ var Simplrz = (function() {
 	/**
 	 *	@member {Boolean} iPad
 	 *	@memberof Simplrz
-	 *	@description True if the device is an iPad.
+	 *	@description True if the device is an iPad (as of iOS 13 we need to outsmart Apple a bit)
 	 */
-	s.iPad = (navigator.platform == 'iPad');
+	s.iPad = (navigator.platform == 'iPad') || (navigator.platform == "MacIntel" && screen.height == 1024 && 'ontouchstart' in document);
 	classes.push(s.iPad ? "ipad" : "no-ipad");
 
 	/**
@@ -182,7 +182,15 @@ var Simplrz = (function() {
 	classes.push(s.win ? "win" : "no-win");
 
 	/**
-	 *	@member {Boolean} win
+	 *	@member {Boolean} osx
+	 *	@memberof Simplrz
+	 *	@description True if the device is a Mac running OSX.
+	 */
+	s.osx = navigator.platform.toLowerCase().indexOf('mac') >= 0;
+	classes.push(s.osx ? "osx" : "no-osx");
+
+	/**
+	 *	@member {Boolean} android
 	 *	@memberof Simplrz
 	 *	@description True if the device is running Windows.
 	 */
