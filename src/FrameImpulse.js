@@ -45,13 +45,13 @@ var FrameImpulse = (function() {
     //     };
     // }
 
-	var run = function(deltaTime) {
+	var run = function(time, frame) {
 		provider.requestAnimationFrame(run);
 
 		if(numListeners == 0) return;
-		
+
 		for(var i = 0; i < numListeners; i++) {
-			listeners[i].call(deltaTime);
+			listeners[i].apply(null, arguments);
 		}
 
 		if(numToRemove > 0) {
@@ -126,7 +126,9 @@ var FrameImpulse = (function() {
 	}
 
 	r.setProvider = function(p) {
+		var newprov = p && p != provider;
 		provider = p || window;
+		if(newprov) provider.requestAnimationFrame(run);
 	}
 
 	run();

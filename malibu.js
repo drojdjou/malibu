@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":205,"date":"2019-10-11T19:31:05.992Z"}
+var Framework = {"version":"4","build":214,"date":"2021-01-29T22:53:23.822Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -76,6 +76,8 @@ if(Simplrz.touch) {
 var Simplrz = (function() {
 
 	var s = {}, classes = ['js']; // Add 'js' class by default (bc if this code runs, JS is enabled, right?)
+
+	var isLocal = location.host.indexOf('local') > -1 || location.host.indexOf('192.168') > -1 || location.host.indexOf('10.0') > -1;
 
 	var check = function(feature, test) {
 		var result = test();
@@ -157,7 +159,7 @@ var Simplrz = (function() {
 	 *	@memberof Simplrz
 	 *	@description True if the device is an iPad.
 	 */
-	s.firefox = prefix.lowercase == "moz";
+	s.firefox = navigator.userAgent.match(/Firefox/); // prefix.lowercase == "moz";
 	classes.push(s.firefox ? "firefox" : "no-firefox");
 
 	/**
@@ -174,9 +176,9 @@ var Simplrz = (function() {
 	/**
 	 *	@member {Boolean} iOS
 	 *	@memberof Simplrz
-	 *	@description True if the device runs on iOS.
+	 *	@description True if the device runs on iOS (as of iOS 13 we need to outsmart Apple a bit)
 	 */
-	s.iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+	s.iOS = /(iPad|iPhone|iPod)/g.test(navigator.platform) || (navigator.platform == "MacIntel" && 'ontouchstart' in document);
 	classes.push(s.iOS ? "ios" : "no-ios");
 
 	/**
@@ -184,7 +186,7 @@ var Simplrz = (function() {
 	 *	@memberof Simplrz
 	 *	@description True if the device is an iPad (as of iOS 13 we need to outsmart Apple a bit)
 	 */
-	s.iPad = (navigator.platform == 'iPad') || (navigator.platform == "MacIntel" && screen.height == 1024 && 'ontouchstart' in document);
+	s.iPad = (navigator.platform == 'iPad') || (navigator.platform == "MacIntel" && 'ontouchstart' in document);
 	classes.push(s.iPad ? "ipad" : "no-ipad");
 
 	/**
@@ -267,7 +269,7 @@ var Simplrz = (function() {
 	 *	@description True if touch events are supported.
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document && navigator.platform.indexOf("Win") == -1;
+		return 'ontouchstart' in document && (navigator.platform.indexOf("Win") == -1 || isLocal);
 	});
 
 	/**
@@ -1243,7 +1245,7 @@ var ExtState = function(ext, element) {
 	 *	@memberof DomExtend.prototype
 	 *	@description Equivalent of element.addEventListener but shorter and has a special touch handler for 'click' events.
 	 */	
-	ext.on = function(event, callback, useCapture) {
+	ext.on = function(event, callback, options) {
 		// if(Simplrz.touch && event == 'click') {
 		// 	callback.___thProxy = Util.handleTap(element, callback);
 		// 	return callback.___thProxy;
@@ -1252,7 +1254,9 @@ var ExtState = function(ext, element) {
 			callback.___dcProxy = Util.handleDC(element, callback);
 			return callback.___dcProxy;
 		} else {
-			return element.addEventListener(event, callback, useCapture);
+			// if(!options) options = { passive: true };
+			if(!options) options = { };
+			return element.addEventListener(event, callback, options);
 		}
 	}
 
@@ -1874,13 +1878,13 @@ var FrameImpulse = (function() {
     //     };
     // }
 
-	var run = function(deltaTime) {
+	var run = function(time, frame) {
 		provider.requestAnimationFrame(run);
 
 		if(numListeners == 0) return;
-		
+
 		for(var i = 0; i < numListeners; i++) {
-			listeners[i].call(deltaTime);
+			listeners[i].apply(null, arguments);
 		}
 
 		if(numToRemove > 0) {
@@ -1955,7 +1959,9 @@ var FrameImpulse = (function() {
 	}
 
 	r.setProvider = function(p) {
+		var newprov = p && p != provider;
 		provider = p || window;
+		if(newprov) provider.requestAnimationFrame(run);
 	}
 
 	run();
@@ -2168,6 +2174,8 @@ var HistoryRouter = function (app, params) {
  */
 var Loader = {
 
+	error: new Trigger(),
+
 	/**
 	 *	@method loadText
 	 *	@memberof Loader
@@ -2176,25 +2184,35 @@ var Loader = {
 	 *	@description Loads a text file through AJAX
 	 *
 	 *	@param {string} path - the path to the file, absolute or relative
-	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in string format will be passed to this callback as argument.
+	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in JS object format will be passed to this callback as argument.
+	 *	@param {FormData} formData - data to be sent via POST
+	 *	@param {Function} progressCallback - callback for loading progress
+	 *	@param {boolean} withCredentials - defaults to true
 	 */
-	loadText: function(path, onLoadedFunc, formData, progressCallback){
+	loadText: function(path, onLoadedFunc, formData, progressCallback, withCredentials){
 
 		var request = new XMLHttpRequest();
 		request.open(formData ? "POST" : "GET", path, true);
-		request.withCredentials = true;
+		request.withCredentials = withCredentials === null ? true : false;
 
 		request.addEventListener('readystatechange', function(e) {
-			if (request.readyState == 4) {
+			if (this.readyState == 4) {
 
-				if(!request.responseText) {
-					console.warn('empty response'); // , path);
+				if(!this.responseText) {
+					console.error("Empty response from " + path);
 					return;
 				}
 				
 				onLoadedFunc(request.responseText);
 			}
 		});
+
+		request.addEventListener("error", function(e) {
+			Loader.error.trigger({
+				path: path,
+				error: e
+			});
+		})
 
 		if(progressCallback) {
 			request.addEventListener('progress', function(e) {
@@ -2219,9 +2237,9 @@ var Loader = {
 	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in JS object format will be passed to this callback as argument.
 	 *	@param {FormData} formData - data to be sent via POST
 	 *	@param {Function} progressCallback - callback for loading progress
-	 *	@param {Function} errorCallback - callback called in case JSON parse fails
+	 *	@param {boolean} withCredentials - defaults to true
 	 */
-	loadJSON: function(path, onLoadedFunc, formData, progressCallback){
+	loadJSON: function(path, onLoadedFunc, formData, progressCallback, withCredentials){
 		Loader.loadText(path, function(text) {
 			// try {
 			onLoadedFunc(JSON.parse(text));
@@ -2229,7 +2247,7 @@ var Loader = {
 			// 	if(Loader.onError) Loader.onError(e);
 			// 	else console.error(e);
 			// }
-		}, formData, progressCallback);
+		}, formData, progressCallback, withCredentials);
 	}
 };
 

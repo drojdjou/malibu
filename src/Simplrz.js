@@ -63,6 +63,8 @@ var Simplrz = (function() {
 
 	var s = {}, classes = ['js']; // Add 'js' class by default (bc if this code runs, JS is enabled, right?)
 
+	var isLocal = location.host.indexOf('local') > -1 || location.host.indexOf('192.168') > -1 || location.host.indexOf('10.0') > -1;
+
 	var check = function(feature, test) {
 		var result = test();
 		s[feature] = (result) ? true : false;
@@ -143,7 +145,7 @@ var Simplrz = (function() {
 	 *	@memberof Simplrz
 	 *	@description True if the device is an iPad.
 	 */
-	s.firefox = prefix.lowercase == "moz";
+	s.firefox = navigator.userAgent.match(/Firefox/); // prefix.lowercase == "moz";
 	classes.push(s.firefox ? "firefox" : "no-firefox");
 
 	/**
@@ -160,9 +162,9 @@ var Simplrz = (function() {
 	/**
 	 *	@member {Boolean} iOS
 	 *	@memberof Simplrz
-	 *	@description True if the device runs on iOS.
+	 *	@description True if the device runs on iOS (as of iOS 13 we need to outsmart Apple a bit)
 	 */
-	s.iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+	s.iOS = /(iPad|iPhone|iPod)/g.test(navigator.platform) || (navigator.platform == "MacIntel" && 'ontouchstart' in document);
 	classes.push(s.iOS ? "ios" : "no-ios");
 
 	/**
@@ -170,7 +172,7 @@ var Simplrz = (function() {
 	 *	@memberof Simplrz
 	 *	@description True if the device is an iPad (as of iOS 13 we need to outsmart Apple a bit)
 	 */
-	s.iPad = (navigator.platform == 'iPad') || (navigator.platform == "MacIntel" && screen.height == 1024 && 'ontouchstart' in document);
+	s.iPad = (navigator.platform == 'iPad') || (navigator.platform == "MacIntel" && 'ontouchstart' in document);
 	classes.push(s.iPad ? "ipad" : "no-ipad");
 
 	/**
@@ -253,7 +255,7 @@ var Simplrz = (function() {
 	 *	@description True if touch events are supported.
 	 */
 	check("touch", function() {
-		return 'ontouchstart' in document && navigator.platform.indexOf("Win") == -1;
+		return 'ontouchstart' in document && (navigator.platform.indexOf("Win") == -1 || isLocal);
 	});
 
 	/**

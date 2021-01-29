@@ -5,6 +5,8 @@
  */
 var Loader = {
 
+	error: new Trigger(),
+
 	/**
 	 *	@method loadText
 	 *	@memberof Loader
@@ -13,25 +15,35 @@ var Loader = {
 	 *	@description Loads a text file through AJAX
 	 *
 	 *	@param {string} path - the path to the file, absolute or relative
-	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in string format will be passed to this callback as argument.
+	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in JS object format will be passed to this callback as argument.
+	 *	@param {FormData} formData - data to be sent via POST
+	 *	@param {Function} progressCallback - callback for loading progress
+	 *	@param {boolean} withCredentials - defaults to true
 	 */
-	loadText: function(path, onLoadedFunc, formData, progressCallback){
+	loadText: function(path, onLoadedFunc, formData, progressCallback, withCredentials){
 
 		var request = new XMLHttpRequest();
 		request.open(formData ? "POST" : "GET", path, true);
-		request.withCredentials = true;
+		request.withCredentials = withCredentials === null ? true : false;
 
 		request.addEventListener('readystatechange', function(e) {
-			if (request.readyState == 4) {
+			if (this.readyState == 4) {
 
-				if(!request.responseText) {
-					console.warn('empty response'); // , path);
+				if(!this.responseText) {
+					console.error("Empty response from " + path);
 					return;
 				}
 				
 				onLoadedFunc(request.responseText);
 			}
 		});
+
+		request.addEventListener("error", function(e) {
+			Loader.error.trigger({
+				path: path,
+				error: e
+			});
+		})
 
 		if(progressCallback) {
 			request.addEventListener('progress', function(e) {
@@ -56,9 +68,9 @@ var Loader = {
 	 *	@param {Function} onLoadedFunc - callback for when the file is loaded. The contents of the file in JS object format will be passed to this callback as argument.
 	 *	@param {FormData} formData - data to be sent via POST
 	 *	@param {Function} progressCallback - callback for loading progress
-	 *	@param {Function} errorCallback - callback called in case JSON parse fails
+	 *	@param {boolean} withCredentials - defaults to true
 	 */
-	loadJSON: function(path, onLoadedFunc, formData, progressCallback){
+	loadJSON: function(path, onLoadedFunc, formData, progressCallback, withCredentials){
 		Loader.loadText(path, function(text) {
 			// try {
 			onLoadedFunc(JSON.parse(text));
@@ -66,7 +78,7 @@ var Loader = {
 			// 	if(Loader.onError) Loader.onError(e);
 			// 	else console.error(e);
 			// }
-		}, formData, progressCallback);
+		}, formData, progressCallback, withCredentials);
 	}
 };
 

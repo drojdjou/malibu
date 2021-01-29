@@ -53,7 +53,7 @@ var ExtState = function(ext, element) {
 	 *	@memberof DomExtend.prototype
 	 *	@description Equivalent of element.addEventListener but shorter and has a special touch handler for 'click' events.
 	 */	
-	ext.on = function(event, callback, useCapture) {
+	ext.on = function(event, callback, options) {
 		// if(Simplrz.touch && event == 'click') {
 		// 	callback.___thProxy = Util.handleTap(element, callback);
 		// 	return callback.___thProxy;
@@ -62,7 +62,9 @@ var ExtState = function(ext, element) {
 			callback.___dcProxy = Util.handleDC(element, callback);
 			return callback.___dcProxy;
 		} else {
-			return element.addEventListener(event, callback, useCapture);
+			// if(!options) options = { passive: true };
+			if(!options) options = { };
+			return element.addEventListener(event, callback, options);
 		}
 	}
 
