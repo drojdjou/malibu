@@ -8,7 +8,7 @@
  *	@property {string} date - the date of the build
  */
 // DO NOT EDIT. Updated from version.json
-var Framework = {"version":"4","build":215,"date":"2021-05-19T23:59:52.172Z"}
+var Framework = {"version":"4","build":216,"date":"2021-07-25T14:11:42.208Z"}
 
 /* --- --- [Simplrz] --- --- */
 
@@ -2202,16 +2202,19 @@ var Loader = {
 					console.error("Empty response from " + path);
 					return;
 				}
+
+				if(this.status >= 400) {
+					// console.error("Loader error " + this.status);
+					Loader.error.trigger({ path: path, error: e });
+					return;
+				}
 				
 				onLoadedFunc(request.responseText);
 			}
 		});
 
 		request.addEventListener("error", function(e) {
-			Loader.error.trigger({
-				path: path,
-				error: e
-			});
+			Loader.error.trigger({ path: path, error: e });
 		})
 
 		if(progressCallback) {
