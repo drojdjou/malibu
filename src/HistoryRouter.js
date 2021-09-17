@@ -86,30 +86,23 @@ var HistoryRouter = function (app, params) {
 	var notify = function(href) {
 
 		var r = {};
+		var h;
 
-		if(disableHistoryAPI)  {
-
-			r.route = href || '';
-			
+		if(disableHistoryAPI && href) {
+			h = href;
 		} else {
-
-			var qs = document.location.href.indexOf('?');
-			var hs = document.location.href.indexOf('#');
-
-			var route = document.location.href;
-
-			if(qs > -1) route = route.substring(0, qs);
-			if(hs > -1) route = route.substring(0, hs);
-			r.route = route.substring(rootUrl.length + 1 + app.baseUrl.length);			
-
+			h = document.location.href.replace(rootUrl + app.baseUrl, "");	
 		}
 
-		r.parts = r.route.split('/');
+		h = h.replace(/(^\/)|(\/$)/, '');
 
-		// Get rid of all trailing stuff
-		while(r.parts[0] == '') r.parts.shift();
-		while(r.parts[r.parts.length - 1] == '') r.parts.pop();
+		var qs = h.indexOf('?');
+		var hs = h.indexOf('#');
+		if(qs > -1) h = h.substring(0, qs);
+		if(hs > -1) h = h.substring(0, hs);
 
+		r.route = h;
+		r.parts = h.split('/');
 		r.lastPart = r.parts[r.parts.length - 1];
 
 		if(r.route == app.route.value.route) return;
@@ -154,8 +147,8 @@ var HistoryRouter = function (app, params) {
 	app.navigate.on(function(href) {
 
 		var n = function() {
-			history.pushState(null, null, href);
-			notify();
+			if(!disableHistoryAPI) history.pushState(null, null, href);
+			notify(href);
 		}
 
 		if(navCond) navCond(n, href);
@@ -166,28 +159,7 @@ var HistoryRouter = function (app, params) {
 
 		init: function () {
 			setBase();
-			if (!disableHistoryAPI) {
-				notify();
-			} else {
-				var home, qs = document.location.search;
-
-				if(params && params.home) home = params.home;
-
-				if(qs.indexOf('=') > -1) {
-					var aq = qs.substring(1).split('&');
-					aq.forEach(function(q) {
-						if(q.indexOf('id=') > -1) {
-							home = q.split('=')[1];
-						}
-					});
-				} else if(qs) {
-					home = qs.substring(1);
-				}
-
-				// console.log('home', qs, home);
-
-				notify(home || '');
-			}
+			notify();
 		}
 	}
 };
