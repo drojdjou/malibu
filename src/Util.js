@@ -312,10 +312,23 @@ e.ext.transition({ opacity: 0 }, 300, Util.cssEase.easeInQuint);
 		'easeOutBack': 'cubic-bezier(.175, .885,.32,1.275)',
 		'easeInOutBack': 'cubic-bezier(.68,-.55,.265,1.55)'
 	}
-
 };
 
 
-
-
-
+// https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-and-arrays-by-string-path
+Object.fromStringPath = function(o, s) {
+	if(!o) return null;
+	if(!s || s == "") return o;
+    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s = s.replace(/^\./, '');           // strip a leading dot
+    var a = s.split('.');
+    for (var i = 0, n = a.length; i < n; ++i) {
+        var k = a[i];
+        if (o != null && typeof o === 'object' && k in o) {
+            o = o[k];
+        } else {
+            return null;
+        }
+    }
+    return o;
+}

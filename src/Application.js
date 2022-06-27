@@ -80,7 +80,7 @@ var Application = (function() {
 			f();
 
 			if(Simplrz.iOS) {
-				window.scroll(0, 0);
+				// window.scroll(0, 0); // This was causing some weird behavior on iPhones, of course!
 				setTimeout(f, 400);
 				setTimeout(f, 1000);
 			}
