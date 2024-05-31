@@ -95,12 +95,19 @@ var Simplrz = (function() {
 			}
 		}
 
-		return {
+		let pf = {
 			dom: dom,
 			lowercase: pre,
 			css: '-' + pre + '-',
 			js: (pre == "") ? "" : pre[0].toUpperCase() + pre.substr(1)
 		};
+
+		// FF seems to be no longer supporting these in CSS...
+		if(pf.css == "-moz-") {
+			pf.css = "";
+		};
+
+		return pf;
 	})();
 
 	/**
