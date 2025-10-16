@@ -122,9 +122,12 @@ var HistoryRouter = function (app, params) {
 
 	// https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
 	var bu = function(e) {
-		var m = navCond();
-		e.returnValue = m;
-		return m;
+		var shouldBlock = navCond();
+		if(shouldBlock) {
+			e.preventDefault();
+			e.returnValue = '';
+			return '';
+		}
 	}
 
 	app.setNavigateCondition = function(c) {
